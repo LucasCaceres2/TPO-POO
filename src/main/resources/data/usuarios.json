@@ -1,0 +1,82 @@
+[
+  {
+    "legajo": "L1001",
+    "inscripciones": [],
+    "idUsuario": "A001",
+    "nombre": "Lucas",
+    "apellido": "Caceres",
+    "email": "lucas@email.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO"
+  },
+  {
+    "matricula": "M2001",
+    "cursosDictados": [],
+    "idUsuario": "D001",
+    "nombre": "Maria",
+    "apellido": "Perez",
+    "email": "maria@email.com",
+    "contrasena": "abcd",
+    "tipoUsuario": "DOCENTE"
+  },
+  {
+    "legajo": "L001",
+    "inscripciones": [],
+    "idUsuario": "A001",
+    "nombre": "Lucas",
+    "apellido": "Caceres",
+    "email": "lucas@example.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO"
+  },
+  {
+    "matricula": "M001",
+    "cursosDictados": [],
+    "idUsuario": "D001",
+    "nombre": "Juan",
+    "apellido": "Perez",
+    "email": "juan@example.com",
+    "contrasena": "abcd",
+    "tipoUsuario": "DOCENTE"
+  },
+  {
+    "legajo": "L001",
+    "inscripciones": [],
+    "idUsuario": "A001",
+    "nombre": "Lucas",
+    "apellido": "Caceres",
+    "email": "lucas@example.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO"
+  },
+  {
+    "matricula": "M001",
+    "cursosDictados": [],
+    "idUsuario": "D001",
+    "nombre": "Juan",
+    "apellido": "Perez",
+    "email": "juan@example.com",
+    "contrasena": "abcd",
+    "tipoUsuario": "DOCENTE"
+  },
+  {
+    "legajo": "L001",
+    "inscripciones": [],
+    "idUsuario": "A001",
+    "nombre": "Lucas",
+    "apellido": "Caceres",
+    "email": "lucas@example.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO"
+  },
+  {
+    "matricula": "M001",
+    "cursosDictados": [],
+    "idUsuario": "D001",
+    "nombre": "Juan",
+    "apellido": "Perez",
+    "email": "juan@example.com",
+    "contrasena": "abcd",
+    "tipoUsuario": "DOCENTE"
+  }
+]

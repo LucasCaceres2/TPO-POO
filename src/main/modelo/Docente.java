@@ -19,11 +19,6 @@ public class Docente extends Usuario {
         System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
     }
 
-    public void agregarContenido(Curso curso, Contenido contenido) {
-        curso.agregarContenido(contenido);
-        System.out.println("Contenido agregado al curso: " + curso.getTitulo());
-    }
-
     public void modificarContenido(Curso curso, Contenido contenido) {
         curso.modificarContenido(contenido);
     }

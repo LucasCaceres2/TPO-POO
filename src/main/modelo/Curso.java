@@ -3,6 +3,7 @@ package main.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Curso {
     private String idCurso;
     private String titulo;
@@ -22,11 +23,22 @@ public class Curso {
         this.inscripciones = new ArrayList<>();
     }
 
-    // Métodos de negocio
-    public void agregarContenido(Contenido contenido) {
+    // Métodos
+    public void modificarContenido(Contenido contenido) {
+        for (int i = 0; i < contenidos.size(); i++) {
+            if (contenidos.get(i).getIdContenido().equals(contenido.getIdContenido())) {
+                contenidos.set(i, contenido); // actualiza
+                System.out.println("Contenido actualizado: " + contenido.getDescripcion());
+                return;
+            }
+        }
+        // si no existe, agregar
         contenidos.add(contenido);
         contenido.setCurso(this);
+        System.out.println("Contenido agregado: " + contenido.getDescripcion());
     }
+
+
 
     public void listarAlumnos() {
         System.out.println("Alumnos inscriptos en " + titulo + ":");
@@ -49,6 +61,10 @@ public class Curso {
 
     public void agregarInscripcion(Inscripcion inscripcion) {
         inscripciones.add(inscripcion);
+        // Opcional: asegurar que el alumno tenga esta inscripción en su lista
+        if (!inscripcion.getAlumno().getInscripciones().contains(inscripcion)) {
+            inscripcion.getAlumno().getInscripciones().add(inscripcion);
+        }
     }
 
     // Getters y Setters

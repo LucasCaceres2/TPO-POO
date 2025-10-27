@@ -7,18 +7,23 @@ public class Alumno extends Usuario {
     private String legajo;
     private List<Inscripcion> inscripciones;
 
-    public Alumno(String idUsuario, String nombre, String apellido, String email, String contraseña, String legajo) {
-        super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.ALUMNO);
+    //Constructor
+    public Alumno(String idUsuario, String nombre, String apellido, String email, String contrasena, String legajo) {
+        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
         this.legajo = legajo;
         this.inscripciones = new ArrayList<>();
     }
+
+    //Getters
+    public String getLegajo() { return legajo; }
+    public List<Inscripcion> getInscripciones() { return inscripciones; }
+
 
     public void inscribirse(Curso curso) {
         // Lógica básica de inscripción
         if (curso.tieneCupo()) {
             Inscripcion inscripcion = new Inscripcion(this, curso);
             curso.agregarInscripcion(inscripcion);
-            inscripciones.add(inscripcion);
             System.out.println(nombre + " se inscribió al curso: " + curso.getTitulo());
         } else {
             System.out.println("No hay cupo disponible para el curso: " + curso.getTitulo());
@@ -58,6 +63,4 @@ public class Alumno extends Usuario {
     public void actualizarPerfil() {
         System.out.println("Perfil de alumno actualizado.");
     }
-
-    public String getLegajo() { return legajo; }
 }
