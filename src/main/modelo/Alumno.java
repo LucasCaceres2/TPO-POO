@@ -24,6 +24,7 @@ public class Alumno extends Usuario {
         if (curso.tieneCupo()) {
             Inscripcion inscripcion = new Inscripcion(this, curso);
             curso.agregarInscripcion(inscripcion);
+            this.inscripciones.add(inscripcion);
             System.out.println(nombre + " se inscribió al curso: " + curso.getTitulo());
         } else {
             System.out.println("No hay cupo disponible para el curso: " + curso.getTitulo());

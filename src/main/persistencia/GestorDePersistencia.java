@@ -2,7 +2,6 @@ package main.persistencia;
 
 import com.google.gson.*;
 import main.modelo.*;
-import main.dto.*;
 
 import java.io.*;
 import java.util.*;
@@ -10,146 +9,249 @@ import java.util.*;
 public class GestorDePersistencia {
 
     private final String fileUsuarios = "src/main/resources/data/usuarios.json";
-    private final String fileCursos = "src/main/resources/data/cursos.json";
+    private final String fileCursos   = "src/main/resources/data/cursos.json";
     private final Gson gson;
 
     public GestorDePersistencia() {
-        gson = new GsonBuilder().setPrettyPrinting().create();
-        new File(fileUsuarios).getParentFile().mkdirs();
-        new File(fileCursos).getParentFile().mkdirs();
-    }
+        this.gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
 
-    // ------------------- USUARIOS -------------------
+        // Asegurar que existan las carpetas/archivos
+        File fUsuarios = new File(fileUsuarios);
+        File fCursos   = new File(fileCursos);
 
-    public void guardarUsuario(Usuario usuario) {
-        List<UsuarioDTO> lista = cargarUsuariosDTO();
-        UsuarioDTO dto = convertirAUsuarioDTO(usuario);
-        lista.add(dto);
-        escribirJSON(lista, fileUsuarios);
-        System.out.println("✅ Usuario registrado correctamente: " + usuario.getNombre());
-    }
+        fUsuarios.getParentFile().mkdirs();
+        fCursos.getParentFile().mkdirs();
 
-    private UsuarioDTO convertirAUsuarioDTO(Usuario u) {
-        UsuarioDTO dto = new UsuarioDTO();
-        dto.setIdUsuario(u.getIdUsuario());
-        dto.setNombre(u.getNombre());
-        dto.setApellido(u.getApellido());
-        dto.setEmail(u.getEmail());
-        dto.setContrasena(u.getContrasena());
-        dto.setTipoUsuario(u.getTipoUsuario().toString());
-        if (u instanceof Alumno) dto.setLegajo(((Alumno) u).getLegajo());
-        if (u instanceof Docente) dto.setMatricula(((Docente) u).getMatricula());
-        return dto;
-    }
+        try {
+            if (!fUsuarios.exists()) fUsuarios.createNewFile();
+            if (!fCursos.exists())   fCursos.createNewFile();
 
-    private List<UsuarioDTO> cargarUsuariosDTO() {
-        List<UsuarioDTO> lista = new ArrayList<>();
-        File file = new File(fileUsuarios);
-        if (!file.exists()) return lista;
-        try (FileReader fr = new FileReader(file)) {
-            JsonArray array = JsonParser.parseReader(fr).getAsJsonArray();
-            for (JsonElement elem : array) {
-                lista.add(gson.fromJson(elem, UsuarioDTO.class));
+            // Si están vacíos, inicializarlos como []
+            if (fUsuarios.length() == 0) {
+                try (FileWriter fw = new FileWriter(fUsuarios)) {
+                    fw.write("[]");
+                }
             }
-        } catch (IOException e) { e.printStackTrace(); }
-        return lista;
+            if (fCursos.length() == 0) {
+                try (FileWriter fw = new FileWriter(fCursos)) {
+                    fw.write("[]");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error inicializando archivos: " + e.getMessage());
+        }
+    }
+
+    // ==========================
+    // USUARIOS
+    // ==========================
+
+    public void guardarUsuarios(List<Usuario> usuarios) {
+        JsonArray arr = new JsonArray();
+
+        for (Usuario u : usuarios) {
+            JsonObject jsonU = new JsonObject();
+            jsonU.addProperty("idUsuario",   u.getIdUsuario());
+            jsonU.addProperty("nombre",      u.getNombre());
+            jsonU.addProperty("apellido",    u.getApellido());
+            jsonU.addProperty("email",       u.getEmail());
+            jsonU.addProperty("contrasena",  u.getContrasena());
+            jsonU.addProperty("tipoUsuario", u.getTipoUsuario().toString());
+
+            if (u instanceof Alumno) {
+                Alumno a = (Alumno) u;
+                jsonU.addProperty("legajo", a.getLegajo());
+            }
+
+            if (u instanceof Docente) {
+                Docente d = (Docente) u;
+                jsonU.addProperty("matricula", d.getMatricula());
+            }
+
+            arr.add(jsonU);
+        }
+
+        try (FileWriter fw = new FileWriter(fileUsuarios)) {
+            gson.toJson(arr, fw);
+        } catch (IOException e) {
+            System.out.println("Error guardando usuarios: " + e.getMessage());
+        }
     }
 
     public List<Usuario> cargarUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>();
-        for (UsuarioDTO dto : cargarUsuariosDTO()) {
-            if ("ALUMNO".equals(dto.getTipoUsuario())) {
-                usuarios.add(new Alumno(dto.getIdUsuario(), dto.getNombre(), dto.getApellido(),
-                        dto.getEmail(), dto.getContrasena(), dto.getLegajo()));
-            } else if ("DOCENTE".equals(dto.getTipoUsuario())) {
-                usuarios.add(new Docente(dto.getIdUsuario(), dto.getNombre(), dto.getApellido(),
-                        dto.getEmail(), dto.getContrasena(), dto.getMatricula()));
-            }
-        }
-        return usuarios;
-    }
+        List<Usuario> resultado = new ArrayList<>();
 
-    // ------------------- CURSOS -------------------
+        try (FileReader fr = new FileReader(fileUsuarios)) {
+            JsonArray arr = JsonParser.parseReader(fr).getAsJsonArray();
 
-    public void guardarCurso(Curso curso) {
-        List<CursoDTO> lista = cargarCursosDTO();
-        CursoDTO dto = convertirACursoDTO(curso);
-        lista.add(dto);
-        escribirJSON(lista, fileCursos);
-        System.out.println("✅ Curso guardado correctamente: " + curso.getTitulo());
-    }
+            for (JsonElement elem : arr) {
+                JsonObject o = elem.getAsJsonObject();
 
-    private CursoDTO convertirACursoDTO(Curso c) {
-        List<String> alumnosIds = new ArrayList<>();
-        for (Inscripcion i : c.getInscripciones()) alumnosIds.add(i.getAlumno().getIdUsuario());
-        return new CursoDTO(c.getIdCurso(), c.getTitulo(), c.getCupoMax(),
-                c.getDocente().getIdUsuario(), alumnosIds);
-    }
+                String id          = o.get("idUsuario").getAsString();
+                String nombre      = o.get("nombre").getAsString();
+                String apellido    = o.get("apellido").getAsString();
+                String email       = o.get("email").getAsString();
+                String contrasena  = o.get("contrasena").getAsString();
+                String tipo        = o.get("tipoUsuario").getAsString();
 
-    private List<CursoDTO> cargarCursosDTO() {
-        List<CursoDTO> lista = new ArrayList<>();
-        File file = new File(fileCursos);
-        if (!file.exists()) return lista;
-        try (FileReader fr = new FileReader(file)) {
-            JsonArray array = JsonParser.parseReader(fr).getAsJsonArray();
-            for (JsonElement elem : array) {
-                lista.add(gson.fromJson(elem, CursoDTO.class));
-            }
-        } catch (IOException e) { e.printStackTrace(); }
-        return lista;
-    }
+                if ("ALUMNO".equalsIgnoreCase(tipo)) {
+                    String legajo = o.has("legajo") ? o.get("legajo").getAsString() : "";
+                    Alumno a = new Alumno(id, nombre, apellido, email, contrasena, legajo);
+                    resultado.add(a);
 
-    public List<Curso> cargarCursos() {
-        List<Curso> cursos = new ArrayList<>();
-        List<Usuario> usuarios = cargarUsuarios();
-        Map<String, Usuario> mapUsuarios = new HashMap<>();
-        for (Usuario u : usuarios) mapUsuarios.put(u.getIdUsuario(), u);
+                } else if ("DOCENTE".equalsIgnoreCase(tipo)) {
+                    String matricula = o.has("matricula") ? o.get("matricula").getAsString() : "";
+                    Docente d = new Docente(id, nombre, apellido, email, contrasena, matricula);
+                    resultado.add(d);
 
-        for (CursoDTO dto : cargarCursosDTO()) {
-            Docente docente = (Docente) mapUsuarios.get(dto.getIdDocente());
-            Curso curso = new Curso(dto.getIdCurso(), dto.getTitulo(), dto.getCupoMax(), docente);
-
-            if (dto.getAlumnosIds() != null) {
-                for (String idAlumno : dto.getAlumnosIds()) {
-                    Alumno a = (Alumno) mapUsuarios.get(idAlumno);
-                    if (a != null) curso.agregarInscripcion(new Inscripcion(a, curso));
+                } else {
+                    System.out.println("TipoUsuario desconocido: " + tipo);
                 }
             }
-            cursos.add(curso);
+
+        } catch (IOException e) {
+            System.out.println("Error cargando usuarios: " + e.getMessage());
         }
-        return cursos;
+
+        return resultado;
     }
 
-    public Curso cargarCurso(String idCurso) {
-        for (Curso c : cargarCursos()) if (c.getIdCurso().equals(idCurso)) return c;
-        return null;
+    // ==========================
+    // CURSOS
+    // ==========================
+
+    // Guarda TODOS los cursos (lista completa) en cursos.json
+    public void guardarCursos(List<Curso> cursos) {
+        JsonArray arr = new JsonArray();
+
+        for (Curso c : cursos) {
+            JsonObject o = new JsonObject();
+
+            o.addProperty("idCurso",   c.getIdCurso());
+            o.addProperty("titulo",    c.getTitulo());
+            o.addProperty("cupoMax",   c.getCupoMax());
+            o.addProperty("idDocente", c.getDocente() != null ? c.getDocente().getIdUsuario() : null);
+
+            // Guardamos el contenido/temario del curso (String)
+            o.addProperty("contenido", c.getContenido());
+
+            // Guardamos también qué alumnos están inscriptos
+            JsonArray alumnosIds = new JsonArray();
+            for (Inscripcion insc : c.getInscripciones()) {
+                Alumno alumno = insc.getAlumno();
+                if (alumno != null) {
+                    alumnosIds.add(alumno.getIdUsuario());
+                }
+            }
+            o.add("alumnosIds", alumnosIds);
+
+            arr.add(o);
+        }
+
+        try (FileWriter fw = new FileWriter(fileCursos)) {
+            gson.toJson(arr, fw);
+        } catch (IOException e) {
+            System.out.println("Error guardando cursos: " + e.getMessage());
+        }
     }
 
-    // ------------------- UTILS -------------------
+    // Carga TODOS los cursos desde cursos.json (reconstruye objetos reales)
+    public List<Curso> cargarCursos() {
+        List<Curso> resultado = new ArrayList<>();
 
-    private <T> void escribirJSON(List<T> lista, String path) {
-        try (FileWriter fw = new FileWriter(path)) {
-            gson.toJson(lista, fw);
-        } catch (IOException e) { e.printStackTrace(); }
+        // Necesitamos los usuarios para mapear docente y alumnos
+        List<Usuario> usuarios = cargarUsuarios();
+
+        try (FileReader fr = new FileReader(fileCursos)) {
+            JsonArray arr = JsonParser.parseReader(fr).getAsJsonArray();
+
+            for (JsonElement elem : arr) {
+                JsonObject o = elem.getAsJsonObject();
+
+                String idCurso   = o.get("idCurso").getAsString();
+                String titulo    = o.get("titulo").getAsString();
+                int cupoMax      = o.get("cupoMax").getAsInt();
+
+                String idDocente = o.has("idDocente") && !o.get("idDocente").isJsonNull()
+                        ? o.get("idDocente").getAsString()
+                        : null;
+
+                String contenido = o.has("contenido")
+                        ? o.get("contenido").getAsString()
+                        : "";
+
+                // Buscar docente por id
+                Docente docenteEncontrado = null;
+                if (idDocente != null) {
+                    for (Usuario u : usuarios) {
+                        if (u instanceof Docente && u.getIdUsuario().equals(idDocente)) {
+                            docenteEncontrado = (Docente) u;
+                            break;
+                        }
+                    }
+                }
+
+                // Reconstruimos el curso
+                Curso curso = new Curso(idCurso, titulo, cupoMax, docenteEncontrado, contenido);
+
+                // Reconstruimos las inscripciones alumno <-> curso
+                if (o.has("alumnosIds")) {
+                    JsonArray arrAlu = o.get("alumnosIds").getAsJsonArray();
+                    for (JsonElement aluIdElem : arrAlu) {
+                        String aluId = aluIdElem.getAsString();
+
+                        // Busco el Alumno correspondiente
+                        for (Usuario u : usuarios) {
+                            if (u instanceof Alumno && u.getIdUsuario().equals(aluId)) {
+                                Alumno alumnoEncontrado = (Alumno) u;
+
+                                // Creo la inscripción
+                                Inscripcion insc = new Inscripcion(alumnoEncontrado, curso);
+
+                                // La agrego al curso
+                                curso.agregarInscripcion(insc);
+
+                                // Y también al Alumno (para mantener consistencia en memoria)
+                                alumnoEncontrado.getInscripciones().add(insc);
+                            }
+                        }
+                    }
+                }
+
+                resultado.add(curso);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error cargando cursos: " + e.getMessage());
+        }
+
+        return resultado;
     }
 
-    public List<Alumno> cargarAlumnosDeCurso(Curso curso) {
-        List<Alumno> alumnos = new ArrayList<>();
-        if (curso == null) return alumnos;
-        for (Inscripcion i : curso.getInscripciones()) alumnos.add(i.getAlumno());
-        return alumnos;
-    }
+    // Guarda UN curso puntual y actualiza el archivo
+    // (compatibilidad con Docente.crearCurso(...))
+    public void guardarCurso(Curso curso) {
+        // 1. Cargo todos los cursos actuales del archivo
+        List<Curso> cursosExistentes = cargarCursos();
 
-    public List<Docente> cargarDocentes() {
-        List<Docente> lista = new ArrayList<>();
-        for (Usuario u : cargarUsuarios()) if (u instanceof Docente) lista.add((Docente) u);
-        return lista;
-    }
+        // 2. Veo si ya existía un curso con ese idCurso
+        boolean reemplazado = false;
+        for (int i = 0; i < cursosExistentes.size(); i++) {
+            if (cursosExistentes.get(i).getIdCurso().equals(curso.getIdCurso())) {
+                cursosExistentes.set(i, curso);
+                reemplazado = true;
+                break;
+            }
+        }
 
-    public List<Alumno> cargarAlumnos() {
-        List<Alumno> lista = new ArrayList<>();
-        for (Usuario u : cargarUsuarios()) if (u instanceof Alumno) lista.add((Alumno) u);
-        return lista;
-    }
+        // 3. Si no estaba, lo agrego
+        if (!reemplazado) {
+            cursosExistentes.add(curso);
+        }
 
+        // 4. Reescribo el archivo completo usando guardarCursos(...)
+        guardarCursos(cursosExistentes);
+    }
 }

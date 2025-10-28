@@ -4,6 +4,10 @@
     "titulo": "Programación 1",
     "cupoMax": 30,
     "idDocente": "d001",
-    "alumnosIds": []
+    "contenido": "Introducción a variables, condicionales, bucles y arreglos.",
+    "alumnosIds": [
+      "a001",
+      "a002"
+    ]
   }
 ]

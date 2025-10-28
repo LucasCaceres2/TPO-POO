@@ -23,10 +23,10 @@ public class Docente extends Usuario {
         gestor.guardarCurso(curso);
     }
 
-    public void modificarContenido(Curso curso, Contenido contenido) {
-        curso.modificarContenido(contenido);
+    /*public void modificarContenido(Curso curso, Contenido contenido) {
+
         System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
-    }
+    }*/
 
     public void verAlumnos(Curso curso) {
         curso.listarAlumnos();

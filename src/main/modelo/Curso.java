@@ -9,21 +9,21 @@ public class Curso {
     private int cupoMax;
     private Docente docente;
     //private Area area;
-    private List<Contenido> contenidos;
+    private String contenido;
     private List<Inscripcion> inscripciones;
 
-    public Curso(String idCurso, String titulo, int cupoMax, Docente docente/*Area area*/) {
+    public Curso(String idCurso, String titulo, int cupoMax, Docente docente, String contenido) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         /*this.area = area;*/
-        this.contenidos = new ArrayList<>();
+        this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
     }
 
     // Métodos
-    public void modificarContenido(Contenido contenido) {
+/*    public void modificarContenido(Contenido contenido) {
         boolean encontrado = false;
         for (int i = 0; i < contenidos.size(); i++) {
             if (contenidos.get(i).getIdContenido().equals(contenido.getIdContenido())) {
@@ -36,7 +36,9 @@ public class Curso {
         if (!encontrado) {
             contenidos.add(contenido);
         }
-    }
+    }*/
+
+
 
     public void listarAlumnos() {
         System.out.println("Alumnos inscriptos en " + titulo + ":");
@@ -73,7 +75,7 @@ public class Curso {
     public int getCupoMax() { return cupoMax; }
     public Docente getDocente() { return docente; }
     /*public Area getArea() { return area; }*/
-    public List<Contenido> getContenidos() { return contenidos; }
+//    public List<Contenido> getContenidos() { return contenidos; }
     public List<Inscripcion> getInscripciones() { return inscripciones; }
 
     public void setDocente(Docente docente) { this.docente = docente; }
@@ -82,5 +84,13 @@ public class Curso {
     @Override
     public String toString() {
         return "Curso{" + idCurso + " - " + titulo + "}";
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
     }
 }
