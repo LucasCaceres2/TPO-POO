@@ -1,0 +1,9 @@
+[
+  {
+    "idCurso": "c001",
+    "titulo": "Programación 1",
+    "cupoMax": 30,
+    "idDocente": "d001",
+    "alumnosIds": []
+  }
+]

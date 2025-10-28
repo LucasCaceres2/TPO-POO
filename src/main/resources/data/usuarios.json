@@ -1,82 +1,29 @@
 [
   {
-    "legajo": "L1001",
-    "inscripciones": [],
-    "idUsuario": "A001",
+    "idUsuario": "a001",
     "nombre": "Lucas",
-    "apellido": "Caceres",
-    "email": "lucas@email.com",
+    "apellido": "Gomez",
+    "email": "lucas@gmail.com",
     "contrasena": "1234",
-    "tipoUsuario": "ALUMNO"
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L001"
   },
   {
-    "matricula": "M2001",
-    "cursosDictados": [],
-    "idUsuario": "D001",
-    "nombre": "Maria",
-    "apellido": "Perez",
-    "email": "maria@email.com",
-    "contrasena": "abcd",
-    "tipoUsuario": "DOCENTE"
-  },
-  {
-    "legajo": "L001",
-    "inscripciones": [],
-    "idUsuario": "A001",
-    "nombre": "Lucas",
-    "apellido": "Caceres",
-    "email": "lucas@example.com",
+    "idUsuario": "a002",
+    "nombre": "María",
+    "apellido": "Lopez",
+    "email": "maria@gmail.com",
     "contrasena": "1234",
-    "tipoUsuario": "ALUMNO"
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L002"
   },
   {
-    "matricula": "M001",
-    "cursosDictados": [],
-    "idUsuario": "D001",
-    "nombre": "Juan",
-    "apellido": "Perez",
-    "email": "juan@example.com",
-    "contrasena": "abcd",
-    "tipoUsuario": "DOCENTE"
-  },
-  {
-    "legajo": "L001",
-    "inscripciones": [],
-    "idUsuario": "A001",
-    "nombre": "Lucas",
-    "apellido": "Caceres",
-    "email": "lucas@example.com",
+    "idUsuario": "d001",
+    "nombre": "Ana",
+    "apellido": "Pérez",
+    "email": "ana@uade.edu.ar",
     "contrasena": "1234",
-    "tipoUsuario": "ALUMNO"
-  },
-  {
-    "matricula": "M001",
-    "cursosDictados": [],
-    "idUsuario": "D001",
-    "nombre": "Juan",
-    "apellido": "Perez",
-    "email": "juan@example.com",
-    "contrasena": "abcd",
-    "tipoUsuario": "DOCENTE"
-  },
-  {
-    "legajo": "L001",
-    "inscripciones": [],
-    "idUsuario": "A001",
-    "nombre": "Lucas",
-    "apellido": "Caceres",
-    "email": "lucas@example.com",
-    "contrasena": "1234",
-    "tipoUsuario": "ALUMNO"
-  },
-  {
-    "matricula": "M001",
-    "cursosDictados": [],
-    "idUsuario": "D001",
-    "nombre": "Juan",
-    "apellido": "Perez",
-    "email": "juan@example.com",
-    "contrasena": "abcd",
-    "tipoUsuario": "DOCENTE"
+    "tipoUsuario": "DOCENTE",
+    "matricula": "M001"
   }
 ]

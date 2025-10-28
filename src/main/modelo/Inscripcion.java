@@ -6,7 +6,7 @@ public class Inscripcion {
     private String idInscripcion;
     private Date fecha;
     private Alumno alumno;
-    private Curso curso;
+    private transient Curso curso; // evita ciclo infinito
     private Pago pago;
 
     public Inscripcion(Alumno alumno, Curso curso) {
@@ -17,11 +17,11 @@ public class Inscripcion {
     }
 
     public void confirmarInscripcion() {
-        System.out.println("Inscripción confirmada para " + alumno.getNombre() + " en " + curso.getTitulo());
+        System.out.println("Inscripción confirmada para " + alumno.getNombre() + " en " + (curso != null ? curso.getTitulo() : "Curso N/A"));
     }
 
     public void cancelarInscripcion() {
-        System.out.println("Inscripción cancelada de " + alumno.getNombre() + " en " + curso.getTitulo());
+        System.out.println("Inscripción cancelada de " + alumno.getNombre() + " en " + (curso != null ? curso.getTitulo() : "Curso N/A"));
     }
 
     // Getters y Setters
@@ -31,5 +31,6 @@ public class Inscripcion {
     public Curso getCurso() { return curso; }
     public Pago getPago() { return pago; }
 
+    public void setCurso(Curso curso) { this.curso = curso; }
     public void setPago(Pago pago) { this.pago = pago; }
 }

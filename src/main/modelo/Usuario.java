@@ -32,6 +32,7 @@ public abstract class Usuario {
     }
 
     //Getters
+    public String getIdUsuario() { return idUsuario; }
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getEmail() { return email; }

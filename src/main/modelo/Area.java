@@ -13,13 +13,13 @@ public class Area {
         this.nombre = nombre;
         this.cursos = new ArrayList<>();
     }
-
+/*
     public void agregarCurso(Curso curso) {
         cursos.add(curso);
         curso.setArea(this);
         System.out.println("Curso agregado al área: " + nombre);
     }
-
+*/
     public void listarCursos() {
         System.out.println("Cursos del área " + nombre + ":");
         if (cursos.isEmpty()) {

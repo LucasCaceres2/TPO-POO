@@ -3,42 +3,40 @@ package main.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Curso {
     private String idCurso;
     private String titulo;
     private int cupoMax;
     private Docente docente;
-    private Area area;
+    //private Area area;
     private List<Contenido> contenidos;
     private List<Inscripcion> inscripciones;
 
-    public Curso(String idCurso, String titulo, int cupoMax, Docente docente, Area area) {
+    public Curso(String idCurso, String titulo, int cupoMax, Docente docente/*Area area*/) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
-        this.area = area;
+        /*this.area = area;*/
         this.contenidos = new ArrayList<>();
         this.inscripciones = new ArrayList<>();
     }
 
     // Métodos
     public void modificarContenido(Contenido contenido) {
+        boolean encontrado = false;
         for (int i = 0; i < contenidos.size(); i++) {
             if (contenidos.get(i).getIdContenido().equals(contenido.getIdContenido())) {
-                contenidos.set(i, contenido); // actualiza
+                contenidos.set(i, contenido);
                 System.out.println("Contenido actualizado: " + contenido.getDescripcion());
-                return;
+                encontrado = true;
+                break;
             }
         }
-        // si no existe, agregar
-        contenidos.add(contenido);
-        contenido.setCurso(this);
-        System.out.println("Contenido agregado: " + contenido.getDescripcion());
+        if (!encontrado) {
+            contenidos.add(contenido);
+        }
     }
-
-
 
     public void listarAlumnos() {
         System.out.println("Alumnos inscriptos en " + titulo + ":");
@@ -61,10 +59,12 @@ public class Curso {
 
     public void agregarInscripcion(Inscripcion inscripcion) {
         inscripciones.add(inscripcion);
-        // Opcional: asegurar que el alumno tenga esta inscripción en su lista
+        // Asociar la inscripción al alumno
         if (!inscripcion.getAlumno().getInscripciones().contains(inscripcion)) {
             inscripcion.getAlumno().getInscripciones().add(inscripcion);
         }
+        // Asociar la inscripción al curso en memoria
+        inscripcion.setCurso(this);
     }
 
     // Getters y Setters
@@ -72,10 +72,15 @@ public class Curso {
     public String getTitulo() { return titulo; }
     public int getCupoMax() { return cupoMax; }
     public Docente getDocente() { return docente; }
-    public Area getArea() { return area; }
+    /*public Area getArea() { return area; }*/
     public List<Contenido> getContenidos() { return contenidos; }
     public List<Inscripcion> getInscripciones() { return inscripciones; }
 
     public void setDocente(Docente docente) { this.docente = docente; }
-    public void setArea(Area area) { this.area = area; }
+    /*public void setArea(Area area) { this.area = area; }*/
+
+    @Override
+    public String toString() {
+        return "Curso{" + idCurso + " - " + titulo + "}";
+    }
 }

@@ -1,5 +1,7 @@
 package main.modelo;
 
+import main.persistencia.GestorDePersistencia;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +15,17 @@ public class Docente extends Usuario {
         this.cursosDictados = new ArrayList<>();
     }
 
-    public void crearCurso(Curso curso) {
+    public void crearCurso(Curso curso, GestorDePersistencia gestor) {
         cursosDictados.add(curso);
         curso.setDocente(this);
         System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
+
+        gestor.guardarCurso(curso);
     }
 
     public void modificarContenido(Curso curso, Contenido contenido) {
         curso.modificarContenido(contenido);
+        System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
     }
 
     public void verAlumnos(Curso curso) {
