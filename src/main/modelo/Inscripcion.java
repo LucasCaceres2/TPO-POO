@@ -18,6 +18,20 @@ public class Inscripcion {
         this.pago = pago;
         this.estado = EstadoInscripcion.PENDIENTE_PAGO; // al crear la inscripción
     }
+    public Inscripcion(Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estado) {
+        this(alumno, curso, pago);
+        this.estado = (estado != null) ? estado : EstadoInscripcion.PENDIENTE_PAGO;
+    }
+
+    public Inscripcion(String idInscripcion, Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estado) {
+        this.idInscripcion = idInscripcion;
+        this.alumno = alumno;
+        this.curso = curso;
+        this.pago = pago;
+        this.estado = estado;
+    }
+
+
 
     public Inscripcion(Alumno alumno, Curso curso) {
         this(alumno, curso, null); // Llama al constructor principal

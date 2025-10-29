@@ -1,0 +1,12 @@
+[
+  {
+    "idArea": "AR001",
+    "nombre": "Programación",
+    "nombreCursos": []
+  },
+  {
+    "idArea": "AR002",
+    "nombre": "Bases de Datos",
+    "nombreCursos": []
+  }
+]

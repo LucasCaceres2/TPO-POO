@@ -10,7 +10,7 @@ public class Curso {
     private Docente docente;
     private Area area;
     private String contenido;
-    private List<Inscripcion> inscripciones;
+    private transient List<Inscripcion> inscripciones;
 
     public Curso(String idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
         this.idCurso = idCurso;
@@ -22,10 +22,7 @@ public class Curso {
         this.inscripciones = new ArrayList<>();
     }
 
-    // Métodos
-    public void modificarContenido(Contenido contenido) {
 
-    }
 
     public void listarAlumnos() {
         System.out.println("Alumnos inscriptos en " + titulo + ":");

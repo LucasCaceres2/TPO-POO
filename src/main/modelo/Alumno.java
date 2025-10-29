@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Alumno extends Usuario {
     private String legajo;
-    private List<Inscripcion> inscripciones;
+    private transient List<Inscripcion> inscripciones;
 
     //Constructor
     public Alumno(String idUsuario, String nombre, String apellido, String email, String contrasena, String legajo) {
