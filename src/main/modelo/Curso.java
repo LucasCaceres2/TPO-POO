@@ -9,33 +9,22 @@ public class Curso {
     private int cupoMax;
     private Docente docente;
     private Area area;
-    private List<Contenido> contenidos;
+    private String contenido;
     private List<Inscripcion> inscripciones;
 
-    public Curso(String idCurso, String titulo, int cupoMax, Docente docente, Area area) {
+    public Curso(String idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
-        this.contenidos = new ArrayList<>();
+        this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
     }
 
     // Métodos
     public void modificarContenido(Contenido contenido) {
-        boolean encontrado = false;
-        for (int i = 0; i < contenidos.size(); i++) {
-            if (contenidos.get(i).getIdContenido().equals(contenido.getIdContenido())) {
-                contenidos.set(i, contenido);
-                System.out.println("Contenido actualizado: " + contenido.getDescripcion());
-                encontrado = true;
-                break;
-            }
-        }
-        if (!encontrado) {
-            contenidos.add(contenido);
-        }
+
     }
 
     public void listarAlumnos() {
@@ -73,11 +62,12 @@ public class Curso {
     public int getCupoMax() { return cupoMax; }
     public Docente getDocente() { return docente; }
     public Area getArea() { return area; }
-    public List<Contenido> getContenidos() { return contenidos; }
+    public String getContenido() { return contenido; }
     public List<Inscripcion> getInscripciones() { return inscripciones; }
 
     public void setDocente(Docente docente) { this.docente = docente; }
     public void setArea(Area area) { this.area = area; }
+    public void setContenido(String contenido) { this.contenido = contenido; }
 
     @Override
     public String toString() {

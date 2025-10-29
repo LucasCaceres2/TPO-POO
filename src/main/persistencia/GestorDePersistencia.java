@@ -11,6 +11,9 @@ public class GestorDePersistencia {
 
     private final String fileUsuarios = "src/main/resources/data/usuarios.json";
     private final String fileCursos = "src/main/resources/data/cursos.json";
+    private final String fileAreas = "src/main/resources/data/areas.json";
+    private final String fileInscripciones = "src/main/resources/data/inscripciones.json";
+
     private final Gson gson;
 
     public GestorDePersistencia() {
@@ -81,9 +84,21 @@ public class GestorDePersistencia {
 
     private CursoDTO convertirACursoDTO(Curso c) {
         List<String> alumnosIds = new ArrayList<>();
-        for (Inscripcion i : c.getInscripciones()) alumnosIds.add(i.getAlumno().getIdUsuario());
-        return new CursoDTO(c.getIdCurso(), c.getTitulo(), c.getCupoMax(),
-                c.getDocente().getIdUsuario(), alumnosIds);
+        for (Inscripcion i : c.getInscripciones()) {
+            alumnosIds.add(i.getAlumno().getIdUsuario());
+        }
+
+        String nombreArea = (c.getArea() != null) ? c.getArea().getNombre() : null;
+
+        return new CursoDTO(
+                c.getIdCurso(),
+                c.getTitulo(),
+                c.getCupoMax(),
+                c.getDocente().getIdUsuario(),
+                nombreArea, // 🔹 ahora guardamos el nombre del área
+                c.getContenido(),
+                alumnosIds
+        );
     }
 
     private List<CursoDTO> cargarCursosDTO() {
@@ -102,13 +117,21 @@ public class GestorDePersistencia {
     public List<Curso> cargarCursos() {
         List<Curso> cursos = new ArrayList<>();
         List<Usuario> usuarios = cargarUsuarios();
+        List<Area> areas = cargarAreas(); // 🔹 cargamos las áreas primero
+
         Map<String, Usuario> mapUsuarios = new HashMap<>();
         for (Usuario u : usuarios) mapUsuarios.put(u.getIdUsuario(), u);
 
+        Map<String, Area> mapAreas = new HashMap<>();
+        for (Area a : areas) mapAreas.put(a.getNombre(), a); // 🔹 clave = nombre
+
         for (CursoDTO dto : cargarCursosDTO()) {
             Docente docente = (Docente) mapUsuarios.get(dto.getIdDocente());
-            Curso curso = new Curso(dto.getIdCurso(), dto.getTitulo(), dto.getCupoMax(), docente, dto.getIdArea());
+            Area area = (dto.getNombreArea() != null) ? mapAreas.get(dto.getNombreArea()) : null;
 
+            Curso curso = new Curso(dto.getIdCurso(), dto.getTitulo(), dto.getCupoMax(), docente, area, dto.getContenido());
+
+            if (area != null) area.getCursos().add(curso);
             if (dto.getAlumnosIds() != null) {
                 for (String idAlumno : dto.getAlumnosIds()) {
                     Alumno a = (Alumno) mapUsuarios.get(idAlumno);
@@ -120,10 +143,190 @@ public class GestorDePersistencia {
         return cursos;
     }
 
-    public Curso cargarCurso(String idCurso) {
-        for (Curso c : cargarCursos()) if (c.getIdCurso().equals(idCurso)) return c;
-        return null;
+    // ------------------- ÁREAS -------------------
+
+    public void guardarArea(Area area) {
+        List<AreaDTO> lista = cargarAreasDTO();
+        AreaDTO dto = convertirAAreaDTO(area);
+        lista.add(dto);
+        escribirJSON(lista, fileAreas);
+        System.out.println("✅ Área guardada correctamente: " + area.getNombre());
     }
+
+    private AreaDTO convertirAAreaDTO(Area area) {
+        List<String> nombreCursos = new ArrayList<>();
+        for (Curso curso : area.getCursos() ) {
+            nombreCursos.add(curso.getTitulo());
+        }
+
+        AreaDTO dto = new AreaDTO();
+        dto.setIdArea(area.getIdArea());
+        dto.setNombre(area.getNombre());
+        dto.setNombreCursos(nombreCursos);
+        return dto;
+    }
+
+    private List<AreaDTO> cargarAreasDTO() {
+        List<AreaDTO> lista = new ArrayList<>();
+        File file = new File(fileAreas);
+        if (!file.exists()) return lista;
+
+        try (FileReader fr = new FileReader(file)) {
+            JsonArray array = JsonParser.parseReader(fr).getAsJsonArray();
+            for (JsonElement elem : array) {
+                lista.add(gson.fromJson(elem, AreaDTO.class));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public List<Area> cargarAreas() {
+        List<Area> areas = new ArrayList<>();
+        List<Curso> cursos = cargarCursos();
+        Map<String, Curso> mapCursos = new HashMap<>();
+        for (Curso c : cursos) mapCursos.put(c.getIdCurso(), c);
+
+        for (AreaDTO dto : cargarAreasDTO()) {
+            Area area = new Area(dto.getIdArea(), dto.getNombre());
+            for (String nombreCurso : dto.getNombreCursos()) {
+                for (Curso curso : cursos) {
+                    if (curso.getTitulo().equals(nombreCurso)) {
+                        area.getCursos().add(curso);
+                        curso.setArea(area);
+                        break;
+                    }
+                }
+            }
+
+            areas.add(area);
+        }
+        return areas;
+    }
+
+    // --------------- INSCRIPCION -----------------
+
+    public void guardarInscripcion(Inscripcion inscripcion) {
+        List<InscripcionDTO> lista = cargarInscripcionesDTO();
+        InscripcionDTO dto = convertirAInscripcionDTO(inscripcion);
+        lista.add(dto);
+        escribirJSON(lista, fileInscripciones);
+        System.out.println("✅ Inscripción guardada: " + inscripcion.getIdInscripcion());
+    }
+
+    private InscripcionDTO convertirAInscripcionDTO(Inscripcion i) {
+        Pago pago = i.getPago();
+        PagoDTO pagoDTO = null;
+
+        // Convertimos el Pago a PagoDTO si existe
+        if (pago != null) {
+            pagoDTO = new PagoDTO(
+                    pago.getIdPago(),
+                    pago.getFecha(),
+                    pago.getMonto(),
+                    pago.getAlumno().getIdUsuario()
+            );
+        }
+
+        // Guardamos el estado como String para el JSON
+        String estadoStr = (i.getEstado() != null) ? i.getEstado().name() : EstadoInscripcion.PENDIENTE_PAGO.name();
+
+        return new InscripcionDTO(
+                i.getIdInscripcion(),
+                i.getFecha(),
+                i.getAlumno().getIdUsuario(),
+                (i.getCurso() != null ? i.getCurso().getIdCurso() : null),
+                estadoStr,
+                pagoDTO
+        );
+    }
+
+
+    // Cargar todas las inscripciones como DTOs
+    private List<InscripcionDTO> cargarInscripcionesDTO() {
+        List<InscripcionDTO> lista = new ArrayList<>();
+        File file = new File(fileInscripciones);
+        if (!file.exists()) return lista;
+        try (FileReader fr = new FileReader(file)) {
+            JsonArray array = JsonParser.parseReader(fr).getAsJsonArray();
+            for (JsonElement elem : array) {
+                lista.add(gson.fromJson(elem, InscripcionDTO.class));
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+        return lista;
+    }
+
+    public List<Inscripcion> cargarInscripciones() {
+        List<Inscripcion> inscripciones = new ArrayList<>();
+        List<Alumno> alumnos = cargarAlumnos();
+        List<Curso> cursos = cargarCursos();
+
+        Map<String, Alumno> mapAlumnos = new HashMap<>();
+        for (Alumno a : alumnos) mapAlumnos.put(a.getIdUsuario(), a);
+
+        Map<String, Curso> mapCursos = new HashMap<>();
+        for (Curso c : cursos) mapCursos.put(c.getIdCurso(), c);
+
+        for (InscripcionDTO dto : cargarInscripcionesDTO()) {
+            Alumno alumno = mapAlumnos.get(dto.getIdAlumno());
+            Curso curso = mapCursos.get(dto.getIdCurso());
+
+            if (alumno != null && curso != null) {
+                // Constructor que asigna por defecto PENDIENTE_PAGO
+                Inscripcion i = new Inscripcion(alumno, curso);
+
+                // Asignar estado según el DTO
+                if (dto.getEstado() != null) {
+                    i.setEstado(EstadoInscripcion.valueOf(dto.getEstado()));
+                }
+
+                // Convertir PagoDTO a Pago si existe
+                if (dto.getPago() != null) {
+                    PagoDTO pagoDTO = dto.getPago();
+                    Pago pago = new Pago(
+                            pagoDTO.getIdPago(),
+                            pagoDTO.getFecha(),
+                            pagoDTO.getMonto(),
+                            alumno
+                    );
+                    i.setPago(pago);
+                }
+
+                curso.agregarInscripcion(i); // mantiene la relación curso ↔ inscripción
+                inscripciones.add(i);
+            }
+        }
+        return inscripciones;
+    }
+
+
+    // ----------------BORRAR DATOS ----------------
+
+    public void eliminarUsuario(String idUsuario) {
+        List<UsuarioDTO> lista = cargarUsuariosDTO();
+        lista.removeIf(u -> u.getIdUsuario().equals(idUsuario));
+        escribirJSON(lista, fileUsuarios);
+    }
+
+    public void eliminarCurso(String idCurso) {
+        List<CursoDTO> lista = cargarCursosDTO();
+        lista.removeIf(c -> c.getIdCurso().equals(idCurso));
+        escribirJSON(lista, fileCursos);
+    }
+
+    public void eliminarArea(String idArea) {
+        List<AreaDTO> lista = cargarAreasDTO();
+        lista.removeIf(a -> a.getIdArea().equals(idArea));
+        escribirJSON(lista, fileAreas);
+    }
+
+    public void eliminarInscripcion(Inscripcion inscripcion) {
+        List<InscripcionDTO> lista = cargarInscripcionesDTO();
+        lista.removeIf(dto -> dto.getIdInscripcion().equals(inscripcion.getIdInscripcion()));
+        escribirJSON(lista, fileInscripciones);
+    }
+
 
     // ------------------- UTILS -------------------
 
@@ -150,6 +353,31 @@ public class GestorDePersistencia {
         List<Alumno> lista = new ArrayList<>();
         for (Usuario u : cargarUsuarios()) if (u instanceof Alumno) lista.add((Alumno) u);
         return lista;
+    }
+
+    public Curso cargarCurso(String idCurso) {
+        for (Curso c : cargarCursos()) if (c.getIdCurso().equals(idCurso)) return c;
+        return null;
+    }
+
+    public void actualizarEstadoInscripcion(String idInscripcion, EstadoInscripcion nuevoEstado) {
+        List<InscripcionDTO> lista = cargarInscripcionesDTO();
+        boolean encontrado = false;
+
+        for (InscripcionDTO dto : lista) {
+            if (dto.getIdInscripcion().equals(idInscripcion)) {
+                dto.setEstado(nuevoEstado.name());
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (encontrado) {
+            escribirJSON(lista, fileInscripciones);
+            System.out.println("✅ Estado de inscripción actualizado: " + idInscripcion + " → " + nuevoEstado);
+        } else {
+            System.out.println("❌ No se encontró la inscripción con id: " + idInscripcion);
+        }
     }
 
 }

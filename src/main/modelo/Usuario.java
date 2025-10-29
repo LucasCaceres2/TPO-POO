@@ -44,42 +44,4 @@ public abstract class Usuario {
     public abstract void cerrarSesion();
     public abstract void actualizarPerfil();
 
-    // Método registrarse con JSON
-    public void registrarse() {
-        String filePath = "src/main/resources/data/usuarios.json";
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonArray usuariosArray = new JsonArray();
-
-        File file = new File(filePath);
-        if (file.exists()) {
-            try (FileReader fr = new FileReader(file)) {
-                JsonElement root = JsonParser.parseReader(fr);
-                if (root != null && root.isJsonArray()) {
-                    usuariosArray = root.getAsJsonArray();
-                }
-            } catch (IOException e) {
-                System.out.println("Error al leer usuarios.json: " + e.getMessage());
-            }
-        } else {
-            // Crear carpeta si no existe
-            file.getParentFile().mkdirs();
-        }
-
-        // Convertir el objeto actual (Alumno o Docente) a JsonObject
-        JsonElement thisJsonElem = gson.toJsonTree(this);
-        JsonObject thisJsonObj = thisJsonElem.getAsJsonObject();
-
-        // Guardar el enum tipoUsuario como string
-        thisJsonObj.addProperty("tipoUsuario", tipoUsuario.toString());
-
-        // Agregar al array y escribir en disco
-        usuariosArray.add(thisJsonObj);
-
-        try (FileWriter fw = new FileWriter(filePath)) {
-            gson.toJson(usuariosArray, fw);
-            System.out.println("Usuario registrado correctamente: " + this.nombre);
-        } catch (IOException e) {
-            System.out.println("Error al guardar usuario: " + e.getMessage());
-        }
-    }
 }

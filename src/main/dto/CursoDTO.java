@@ -7,17 +7,19 @@ public class CursoDTO {
     private String titulo;
     private int cupoMax;
     private String idDocente;
-    private String idArea; // referencia al área del curso
+    private String nombreArea; // referencia al área del curso
+    private String contenido;
     private List<String> alumnosIds; // lista de IDs de alumnos inscriptos
 
     public CursoDTO() {}
 
-    public CursoDTO(String idCurso, String titulo, int cupoMax, String idDocente, String idArea, List<String> alumnosIds) {
+    public CursoDTO(String idCurso, String titulo, int cupoMax, String idDocente, String nombreArea, String contenido ,List<String> alumnosIds) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.idDocente = idDocente;
-        this.idArea = idArea;
+        this.nombreArea = nombreArea;
+        this.contenido = contenido;
         this.alumnosIds = alumnosIds;
     }
 
@@ -54,12 +56,12 @@ public class CursoDTO {
         this.idDocente = idDocente;
     }
 
-    public String getIdArea() {
-        return idArea;
+    public String getNombreArea() {
+        return nombreArea;
     }
 
-    public void setIdArea(String idArea) {
-        this.idArea = idArea;
+    public void setNombreArea(String nombreArea) {
+        this.nombreArea = nombreArea;
     }
 
     public List<String> getAlumnosIds() {
@@ -70,6 +72,14 @@ public class CursoDTO {
         this.alumnosIds = alumnosIds;
     }
 
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
     @Override
     public String toString() {
         return "CursoDTO{" +
@@ -77,7 +87,8 @@ public class CursoDTO {
                 ", titulo='" + titulo + '\'' +
                 ", cupoMax=" + cupoMax +
                 ", idDocente='" + idDocente + '\'' +
-                ", idArea='" + idArea + '\'' +
+                ", nombreArea='" + nombreArea + '\'' +
+                ", contenido='" + contenido + '\'' +
                 ", alumnosIds=" + alumnosIds +
                 '}';
     }

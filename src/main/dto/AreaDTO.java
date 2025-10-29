@@ -6,10 +6,10 @@ import java.util.List;
 public class AreaDTO {
     private String idArea;
     private String nombre;
-    private List<String> cursosIds; // lista de IDs de cursos o nombres
+    private List<String> nombreCursos; // lista de IDs de cursos o nombres
 
     public AreaDTO() {
-        this.cursosIds = new ArrayList<>();
+        this.nombreCursos = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -29,12 +29,12 @@ public class AreaDTO {
         this.nombre = nombre;
     }
 
-    public List<String> getCursosIds() {
-        return cursosIds;
+    public List<String> getNombreCursos() {
+        return nombreCursos;
     }
 
-    public void setCursosIds(List<String> cursosIds) {
-        this.cursosIds = cursosIds;
+    public void setNombreCursos(List<String> cursosIds) {
+        this.nombreCursos = cursosIds;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AreaDTO {
         return "AreaDTO{" +
                 "idArea='" + idArea + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", cursosIds=" + cursosIds +
+                ", Cursos=" + nombreCursos +
                 '}';
     }
 }

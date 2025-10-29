@@ -54,7 +54,7 @@ public class Main {
         }
 
         // ------------------- Cargar datos -------------------
-        List<Curso> cursosCargados = gestor.cargarCursos();
+        List<Curso>  cursosCargados = gestor.cargarCursos();
         System.out.println("Cursos cargados desde JSON:");
         for (Curso c : cursosCargados) {
             System.out.println(c.getIdCurso() + " - " + c.getTitulo() + " (Docente: " + c.getDocente().getNombre() + ")");
