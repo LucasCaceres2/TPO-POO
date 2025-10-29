@@ -38,10 +38,4 @@ public abstract class Usuario {
     public String getEmail() { return email; }
     public String getContrasena() { return contrasena; }
     public TipoUsuario getTipoUsuario() { return tipoUsuario; }
-
-    // Métodos abstractos
-    public abstract void iniciarSesion();
-    public abstract void cerrarSesion();
-    public abstract void actualizarPerfil();
-
 }

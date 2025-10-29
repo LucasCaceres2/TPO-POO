@@ -1,9 +1,11 @@
 package main.modelo;
 
+import main.interfaces.IUsuariosAcciones;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Alumno extends Usuario {
+public class Alumno extends Usuario implements IUsuariosAcciones {
     private String legajo;
     private transient List<Inscripcion> inscripciones;
 
@@ -50,17 +52,22 @@ public class Alumno extends Usuario {
     }
 
     @Override
-    public void iniciarSesion() {
-        System.out.println("Alumno " + nombre + " inició sesión.");
+    public void registrarse() {
+
+    }
+
+    @Override
+    public boolean iniciarSesion(String email, String contrasena) {
+        return false;
     }
 
     @Override
     public void cerrarSesion() {
-        System.out.println("Alumno " + nombre + " cerró sesión.");
+
     }
 
     @Override
-    public void actualizarPerfil() {
-        System.out.println("Perfil de alumno actualizado.");
+    public void actualizarPerfil(String nombre, String apellido, String email) {
+
     }
 }

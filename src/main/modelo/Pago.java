@@ -1,9 +1,8 @@
 package main.modelo;
 
-import main.interfaces.IPagable;
 import java.util.Date;
 
-public class Pago implements IPagable {
+public class Pago  {
     private String idPago;
     private Date fecha;
     private double monto;
@@ -16,19 +15,13 @@ public class Pago implements IPagable {
         this.alumno = alumno;
     }
 
-    @Override
-    public boolean validarPago() {
-        // Lógica simple de validación
-        return monto > 0;
+    public boolean pagar(double monto) {
+        if (monto <= 0) return false;
+        this.monto = monto;
+        this.fecha = new java.util.Date();
+        return true;
     }
 
-    @Override
-    public void generarComprobante() {
-        System.out.println("Comprobante generado:");
-        System.out.println("Alumno: " + alumno.getNombre());
-        System.out.println("Fecha: " + fecha);
-        System.out.println("Monto: $" + monto);
-    }
 
     // Getters
     public String getIdPago() { return idPago; }

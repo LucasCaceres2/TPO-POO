@@ -1,11 +1,12 @@
 package main.modelo;
 
+import main.interfaces.IUsuariosAcciones;
 import main.persistencia.GestorDePersistencia;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Docente extends Usuario {
+public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
@@ -32,20 +33,25 @@ public class Docente extends Usuario {
         curso.listarAlumnos();
     }
 
+    public String getMatricula() { return matricula; }
+
     @Override
-    public void iniciarSesion() {
-        System.out.println("Docente " + nombre + " inició sesión.");
+    public void registrarse() {
+
+    }
+
+    @Override
+    public boolean iniciarSesion(String email, String contrasena) {
+        return false;
     }
 
     @Override
     public void cerrarSesion() {
-        System.out.println("Docente " + nombre + " cerró sesión.");
+
     }
 
     @Override
-    public void actualizarPerfil() {
-        System.out.println("Perfil de docente actualizado.");
-    }
+    public void actualizarPerfil(String nombre, String apellido, String email) {
 
-    public String getMatricula() { return matricula; }
+    }
 }
