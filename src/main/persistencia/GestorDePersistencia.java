@@ -107,7 +107,7 @@ public class GestorDePersistencia {
 
         for (CursoDTO dto : cargarCursosDTO()) {
             Docente docente = (Docente) mapUsuarios.get(dto.getIdDocente());
-            Curso curso = new Curso(dto.getIdCurso(), dto.getTitulo(), dto.getCupoMax(), docente);
+            Curso curso = new Curso(dto.getIdCurso(), dto.getTitulo(), dto.getCupoMax(), docente, dto.getIdArea());
 
             if (dto.getAlumnosIds() != null) {
                 for (String idAlumno : dto.getAlumnosIds()) {
