@@ -15,7 +15,7 @@ public class Main {
         // ------------------- Crear usuarios -------------------
         Alumno alumno1 = new Alumno("a001", "Lucas", "Gomez", "lucas@gmail.com", "1234", "L001");
         Alumno alumno2 = new Alumno("a002", "María", "Lopez", "maria@gmail.com", "1234", "L002");
-        Docente docente1 = new Docente("d001", "Ana", "Pérez", "ana@uade.edu.ar", "1234", "M001");
+        Docente docente1 = new Docente("Ana", "Pérez", "ana@uade.edu.ar", "1234");
 
         // Guardar usuarios
         gestor.guardarUsuario(alumno1);

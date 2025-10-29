@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Docente extends Usuario {
-    private String matricula;
+    protected String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(String idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
-        super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
-        this.matricula = matricula;
+    public Docente(String nombre,
+                   String apellido,
+                   String email,
+                   String contrasena) {
+
+        super(nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
+        this.matricula = null; // se completa en registrarse()
         this.cursosDictados = new ArrayList<>();
     }
 
@@ -23,9 +27,14 @@ public class Docente extends Usuario {
         gestor.guardarCurso(curso);
     }
 
-    public void modificarContenido(Curso curso, Contenido contenido) {
+/*    public void modificarContenido(Curso curso, Contenido contenido) {
         curso.modificarContenido(contenido);
         System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
+    }*/
+
+    public void modificarContenido(Curso curso, String nuevoContenido) {
+        curso.setContenido(nuevoContenido);
+        System.out.println("Contenido actualizado en el curso: " + curso.getTitulo());
     }
 
     public void verAlumnos(Curso curso) {
