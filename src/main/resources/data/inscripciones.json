@@ -1,20 +1,20 @@
 [
   {
-    "idInscripcion": "INS-1761757217864",
-    "idAlumno": "A001",
-    "idCurso": "C001",
+    "idInscripcion": "INS-1761790280968",
+    "idAlumno": "USR-1761790280934-8185",
+    "idCurso": "CUR-1761790280963-2640",
     "estado": "CURSANDO",
     "pago": {
-      "idPago": "P001",
-      "fecha": "Oct 29, 2025, 2:00:17 PM",
+      "idPago": "PAG-1761790280987-6438",
+      "fecha": "Oct 29, 2025, 11:11:20 PM",
       "monto": 5000.0,
-      "idAlumno": "A001"
+      "idAlumno": "USR-1761790280934-8185"
     }
   },
   {
-    "idInscripcion": "INS-1761757217865",
-    "idAlumno": "A002",
-    "idCurso": "C002",
+    "idInscripcion": "INS-1761790280969",
+    "idAlumno": "USR-1761790280942-5152",
+    "idCurso": "CUR-1761790280963-7816",
     "estado": "PENDIENTE_PAGO"
   }
 ]

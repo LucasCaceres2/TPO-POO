@@ -13,9 +13,9 @@ public class MainPrueba {
 
         // ----------------- 1. CREAR USUARIOS -----------------
         System.out.println("📌 BLOQUE 1: Crear usuarios");
-        Alumno a1 = new Alumno("A001", "Lucas", "Cáceres", "lucas@mail.com", "pass", "L001");
-        Alumno a2 = new Alumno("A002", "Martina", "Gómez", "martina@mail.com", "pass", "L002");
-        Docente d1 = new Docente("D001", "Ana", "Pérez", "ana@mail.com", "pass", "M001");
+        Alumno a1 = new Alumno( "Lucas", "Cáceres", "lucas@mail.com", "pass");
+        Alumno a2 = new Alumno("Martina", "Gómez", "martina@mail.com", "pass");
+        Docente d1 = new Docente( "Ana", "Pérez", "ana@mail.com", "pass");
 
         gestor.guardarUsuario(a1);
         gestor.guardarUsuario(a2);
@@ -28,8 +28,8 @@ public class MainPrueba {
 
         // ----------------- 2. CREAR ÁREAS -----------------
         System.out.println("\n📌 BLOQUE 2: Crear áreas");
-        Area area1 = new Area("AR001", "Programación");
-        Area area2 = new Area("AR002", "Bases de Datos");
+        Area area1 = new Area("Programación");
+        Area area2 = new Area("Bases de Datos");
 
         gestor.guardarArea(area1);
         gestor.guardarArea(area2);
@@ -41,8 +41,8 @@ public class MainPrueba {
 
         // ----------------- 3. CREAR CURSOS -----------------
         System.out.println("\n📌 BLOQUE 3: Crear cursos");
-        Curso c1 = new Curso("C001", "Java", 20, d1, area1, "Contenido Java");
-        Curso c2 = new Curso("C002", "Base de Datos", 15, d1, area2, "Contenido BD");
+        Curso c1 = new Curso("Java", 20, d1, area1, "Contenido Java");
+        Curso c2 = new Curso("Base de Datos", 15, d1, area2, "Contenido BD");
 
         gestor.guardarCurso(c1);
         gestor.guardarCurso(c2);
@@ -71,7 +71,7 @@ public class MainPrueba {
 
         // ----------------- 5. REGISTRAR PAGOS -----------------
         System.out.println("\n📌 BLOQUE 5: Registrar pagos");
-        Pago p1 = new Pago("P001", new Date(), 5000, a1);
+        Pago p1 = new Pago( new Date(), 5000, a1);
         gestor.registrarPago(i1.getIdInscripcion(), p1);
 
         System.out.println("📘 Inscripciones después del pago:");

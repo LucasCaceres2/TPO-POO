@@ -1,19 +1,19 @@
 [
   {
-    "idCurso": "C001",
+    "idCurso": "CUR-1761790280963-2640",
     "titulo": "Java",
     "cupoMax": 20,
-    "idDocente": "D001",
-    "nombreArea": "AR001",
+    "idDocente": "USR-1761790280942-8321",
+    "nombreArea": "AR-1761790280959-5157",
     "contenido": "Contenido Java",
     "alumnosIds": []
   },
   {
-    "idCurso": "C002",
+    "idCurso": "CUR-1761790280963-7816",
     "titulo": "Base de Datos",
     "cupoMax": 15,
-    "idDocente": "D001",
-    "nombreArea": "AR002",
+    "idDocente": "USR-1761790280942-8321",
+    "nombreArea": "AR-1761790280959-5136",
     "contenido": "Contenido BD",
     "alumnosIds": []
   }

@@ -1,5 +1,7 @@
 package main.modelo;
 
+import main.util.IdGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,10 @@ public class Curso {
         this.area = area;
         this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
+    }
+
+    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+        this(IdGenerator.newCursoId(), titulo, cupoMax, docente, area, contenido);
     }
 
 

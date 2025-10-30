@@ -1,6 +1,7 @@
 package main.persistencia;
 
 import com.google.gson.*;
+import main.exception.UsuarioDuplicadoException;
 import main.modelo.*;
 import main.dto.*;
 
@@ -27,10 +28,29 @@ public class GestorDePersistencia {
     // ------------------- USUARIOS -------------------
 
     public void guardarUsuario(Usuario usuario) {
-        List<UsuarioDTO> lista = cargarUsuariosDTO();
-        lista.add(convertirAUsuarioDTO(usuario));
-        escribirJSON(lista, fileUsuarios);
-        System.out.println("✅ Usuario registrado correctamente: " + usuario.getNombre());
+        try {
+            // (Opcional) formato
+            if (usuario.getEmail() == null || !usuario.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+                throw new IllegalArgumentException("Formato de email inválido: " + usuario.getEmail());
+            }
+
+            // 1) Validación centralizada
+            validarEmailUnico(usuario.getEmail());
+
+            // 2) Persistencia
+            List<UsuarioDTO> lista = cargarUsuariosDTO();
+            lista.add(convertirAUsuarioDTO(usuario));
+            escribirJSON(lista, fileUsuarios);
+
+            System.out.println("✅ Usuario registrado correctamente: " + usuario.getNombre());
+
+        } catch (UsuarioDuplicadoException e) {
+            System.out.println("❌ " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("❌ " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error al guardar usuario: " + e.getMessage());
+        }
     }
 
     private UsuarioDTO convertirAUsuarioDTO(Usuario u) {
@@ -312,6 +332,13 @@ public class GestorDePersistencia {
         List<Docente> lista = new ArrayList<>();
         for (Usuario u : cargarUsuarios()) if (u instanceof Docente) lista.add((Docente) u);
         return lista;
+    }
+    private void validarEmailUnico(String email) throws UsuarioDuplicadoException {
+        for (Usuario u : cargarUsuarios()) {
+            if (u.getEmail() != null && u.getEmail().equalsIgnoreCase(email)) {
+                throw new UsuarioDuplicadoException("Ya existe un usuario con el email: " + email);
+            }
+        }
     }
 
 }

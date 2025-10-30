@@ -1,5 +1,7 @@
 package main.modelo;
 
+import main.util.IdGenerator;
+
 import java.util.Date;
 
 public class Pago  {
@@ -13,6 +15,10 @@ public class Pago  {
         this.fecha = fecha;
         this.monto = monto;
         this.alumno = alumno;
+    }
+
+    public Pago(Date fecha, double monto, Alumno alumno) {
+        this(IdGenerator.newPagoId(), fecha, monto, alumno);
     }
 
     public boolean pagar(double monto) {

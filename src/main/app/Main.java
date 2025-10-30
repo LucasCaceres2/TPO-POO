@@ -1,3 +1,4 @@
+/*
 package main.app;
 
 import main.persistencia.GestorDePersistencia;
@@ -50,3 +51,4 @@ public class Main {
         }
     }
 }
+*/

@@ -1,29 +1,29 @@
 [
   {
-    "idUsuario": "A001",
+    "idUsuario": "USR-1761790280934-8185",
     "nombre": "Lucas",
     "apellido": "Cáceres",
     "email": "lucas@mail.com",
     "contrasena": "pass",
     "tipoUsuario": "ALUMNO",
-    "legajo": "L001"
+    "legajo": "LEG-1761790280941-1719"
   },
   {
-    "idUsuario": "A002",
+    "idUsuario": "USR-1761790280942-5152",
     "nombre": "Martina",
     "apellido": "Gómez",
     "email": "martina@mail.com",
     "contrasena": "pass",
     "tipoUsuario": "ALUMNO",
-    "legajo": "L002"
+    "legajo": "LEG-1761790280942-4984"
   },
   {
-    "idUsuario": "D001",
+    "idUsuario": "USR-1761790280942-8321",
     "nombre": "Ana",
     "apellido": "Pérez",
     "email": "ana@mail.com",
     "contrasena": "pass",
     "tipoUsuario": "DOCENTE",
-    "matricula": "M001"
+    "matricula": "MAT-1761790280942-8729"
   }
 ]

@@ -1,6 +1,7 @@
 package main.modelo;
 
 import main.interfaces.IUsuariosAcciones;
+import main.util.IdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,11 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     private transient List<Inscripcion> inscripciones;
 
     //Constructor
+    public Alumno(String nombre, String apellido, String email, String contrasena) {
+        super(nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
+        this.legajo = IdGenerator.newLegajo();
+        this.inscripciones = new ArrayList<>();
+    }
     public Alumno(String idUsuario, String nombre, String apellido, String email, String contrasena, String legajo) {
         super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
         this.legajo = legajo;
@@ -43,13 +49,13 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
         }
     }
 
-    public void realizarPago(Pago pago) {
+/*    public void realizarPago(Pago pago) {
         if (pago.validarPago()) {
             System.out.println("Pago realizado correctamente por " + nombre);
         } else {
             System.out.println("Error al procesar el pago.");
         }
-    }
+    }*/
 
     @Override
     public void registrarse() {

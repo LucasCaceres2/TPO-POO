@@ -1,5 +1,7 @@
 package main.modelo;
 
+import main.util.IdGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,11 @@ public class Area {
         this.nombre = nombre;
         this.cursos = new ArrayList<>();
     }
+
+    public Area(String nombre) {
+        this(IdGenerator.newAreaId(), nombre);
+    }
+
 
     // Método para mantener la relación bidireccional con Curso
     public void agregarCurso(Curso curso) {

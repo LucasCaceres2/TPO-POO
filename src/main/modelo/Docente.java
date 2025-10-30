@@ -2,6 +2,7 @@ package main.modelo;
 
 import main.interfaces.IUsuariosAcciones;
 import main.persistencia.GestorDePersistencia;
+import main.util.IdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +11,18 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(String idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
-        super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
+    // NUEVO constructor sin idUsuario: genera automáticamente el ID
+    public Docente(String nombre, String apellido, String email, String contrasena) {
+        super(nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
+        this.matricula = IdGenerator.newMatricula();
+    }
+
+
+    // (opcional) Constructor con idUsuario para cuando cargás desde persistencia
+    public Docente(String idUsuario, String nombre, String apellido, String email,
+                   String contrasena, String matricula) {
+        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
         this.matricula = matricula;
-        this.cursosDictados = new ArrayList<>();
     }
 
     public void crearCurso(Curso curso, GestorDePersistencia gestor) {
