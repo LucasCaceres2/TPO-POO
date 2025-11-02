@@ -1,8 +1,6 @@
 package main.modelo;
 
 import main.interfaces.IUsuariosAcciones;
-import main.persistencia.GestorDePersistencia;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,25 +8,32 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(int idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
-        super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
+    public Docente(String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {
+        super(nombre, apellido, email, contrasena, tipoUsuario);
         this.matricula = matricula;
-        this.cursosDictados = new ArrayList<>();
+        private List<Curso> cursosDictados;
     }
 
-    public void crearCurso(Curso curso, GestorDePersistencia gestor) {
-        cursosDictados.add(curso);
-        curso.setDocente(this);
-        System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
+    /*
+        public Docente(int idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
+            super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
+            this.matricula = matricula;
+            this.cursosDictados = new ArrayList<>();
+        }
 
-        gestor.guardarCurso(curso);
-    }
-/*
-    public void modificarContenido(Curso curso, Contenido contenido) {
-        curso.modificarContenido(contenido);
-        System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
-    }
-*/
+        public void crearCurso(Curso curso, GestorDePersistencia gestor) {
+            cursosDictados.add(curso);
+            curso.setDocente(this);
+            System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
+
+            gestor.guardarCurso(curso);
+        }
+
+        public void modificarContenido(Curso curso, Contenido contenido) {
+            curso.modificarContenido(contenido);
+            System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
+        }
+    */
     public void verAlumnos(Curso curso) {
         curso.listarAlumnos();
     }

@@ -25,5 +25,32 @@
     "contrasena": "pass",
     "tipoUsuario": "DOCENTE",
     "matricula": "M001"
+  },
+  {
+    "idUsuario": "a001",
+    "nombre": "Lucas",
+    "apellido": "Gomez",
+    "email": "lucas@gmail.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L001"
+  },
+  {
+    "idUsuario": "a002",
+    "nombre": "María",
+    "apellido": "Lopez",
+    "email": "maria@gmail.com",
+    "contrasena": "1234",
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L002"
+  },
+  {
+    "idUsuario": "d001",
+    "nombre": "Ana",
+    "apellido": "Pérez",
+    "email": "ana@uade.edu.ar",
+    "contrasena": "1234",
+    "tipoUsuario": "DOCENTE",
+    "matricula": "M001"
   }
 ]

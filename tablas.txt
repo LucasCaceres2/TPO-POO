@@ -1,0 +1,77 @@
+Tablas:
+-Usuarios:
+    CREATE TABLE IF NOT EXISTS usuarios (
+        idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(50) NOT NULL,
+        apellido VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        contrasena VARCHAR(100) NOT NULL,
+        tipoUsuario ENUM('ALUMNO', 'DOCENTE') NOT NULL
+    );
+-Alumnos:
+    CREATE TABLE IF NOT EXISTS alumnos (
+        idAlumno INT AUTO_INCREMENT PRIMARY KEY,
+        idUsuario INT NOT NULL,
+        legajo VARCHAR(20) NOT NULL UNIQUE,
+        FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+-Docentes:
+    CREATE TABLE IF NOT EXISTS docentes (
+        idDocente INT AUTO_INCREMENT PRIMARY KEY,
+        idUsuario INT NOT NULL,
+        matricula VARCHAR(20) NOT NULL UNIQUE,
+        FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+-Areas:
+    CREATE TABLE IF NOT EXISTS areas (
+        idArea INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(50) NOT NULL
+    );
+-Cursos:
+    CREATE TABLE IF NOT EXISTS cursos (
+        idCurso INT AUTO_INCREMENT PRIMARY KEY,
+        titulo VARCHAR(100) NOT NULL,
+        cupoMax INT NOT NULL,
+        contenido TEXT,
+        idDocente INT NOT NULL,
+        idArea INT NOT NULL,
+        FOREIGN KEY (idDocente) REFERENCES docentes(idDocente)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        FOREIGN KEY (idArea) REFERENCES areas(idArea)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+-Pagos:
+    CREATE TABLE IF NOT EXISTS pagos (
+        idPago INT AUTO_INCREMENT PRIMARY KEY,
+        fecha DATE NOT NULL,
+        monto DOUBLE NOT NULL,
+        idAlumno INT NOT NULL,
+        FOREIGN KEY (idAlumno) REFERENCES alumnos(idAlumno)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+-Inscripciones:
+    CREATE TABLE IF NOT EXISTS inscripciones (
+        idInscripcion INT AUTO_INCREMENT PRIMARY KEY,
+        fecha DATE NOT NULL,
+        idAlumno INT NOT NULL,
+        idCurso INT NOT NULL,
+        idPago INT,
+        estadoPago ENUM('PENDIENTE', 'PAGADO', 'RECHAZADO') DEFAULT 'PENDIENTE',
+        estadoCurso ENUM('CURSANDO', 'APROBADO', 'DESAPROBADO') DEFAULT 'CURSANDO',
+        FOREIGN KEY (idAlumno) REFERENCES alumnos(idAlumno)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        FOREIGN KEY (idCurso) REFERENCES cursos(idCurso)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        FOREIGN KEY (idPago) REFERENCES pagos(idPago)
+            ON DELETE SET NULL
+            ON UPDATE CASCADE
+    );
