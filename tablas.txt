@@ -63,8 +63,8 @@ Tablas:
         idAlumno INT NOT NULL,
         idCurso INT NOT NULL,
         idPago INT,
-        estadoPago ENUM('PENDIENTE', 'PAGADO', 'RECHAZADO') DEFAULT 'PENDIENTE',
-        estadoCurso ENUM('CURSANDO', 'APROBADO', 'DESAPROBADO') DEFAULT 'CURSANDO',
+        estadoPago ENUM('PENDIENTE', 'PAGADO) DEFAULT 'PENDIENTE',
+        estadoCurso ENUM('CURSANDO', 'APROBADO', 'DESAPROBADO', 'DADO_DE_BAJA') DEFAULT 'CURSANDO',
         FOREIGN KEY (idAlumno) REFERENCES alumnos(idAlumno)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
