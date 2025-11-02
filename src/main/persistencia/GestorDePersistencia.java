@@ -1,4 +1,4 @@
-package main.persistencia;
+/*package main.persistencia;
 
 import com.google.gson.*;
 import main.modelo.*;
@@ -315,3 +315,4 @@ public class GestorDePersistencia {
     }
 
 }
+*/

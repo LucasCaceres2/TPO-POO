@@ -10,7 +10,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(String idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
+    public Docente(int idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
         super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
         this.matricula = matricula;
         this.cursosDictados = new ArrayList<>();

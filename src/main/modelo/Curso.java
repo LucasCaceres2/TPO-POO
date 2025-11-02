@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Curso {
-    private String idCurso;
+    private int idCurso;
     private String titulo;
     private int cupoMax;
     private Docente docente;
@@ -12,7 +12,7 @@ public class Curso {
     private String contenido;
     private transient List<Inscripcion> inscripciones;
 
-    public Curso(String idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
@@ -54,7 +54,7 @@ public class Curso {
     }
 
     // Getters y Setters
-    public String getIdCurso() { return idCurso; }
+    public int  getIdCurso() { return idCurso; }
     public String getTitulo() { return titulo; }
     public int getCupoMax() { return cupoMax; }
     public Docente getDocente() { return docente; }

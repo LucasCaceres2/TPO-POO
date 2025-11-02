@@ -3,61 +3,58 @@ package main.modelo;
 import java.util.Date;
 
 public class Inscripcion {
-    private String idInscripcion;
+    private int idInscripcion;
     private Date fecha;
     private Alumno alumno;
     private transient Curso curso; // evita ciclo infinito en JSON
     private Pago pago;
-    private EstadoInscripcion estado;
+    private EstadoInscripcion estadoPago;
+    private EstadoCurso estadoCurso;
 
+    // Constructor principal
     public Inscripcion(Alumno alumno, Curso curso, Pago pago) {
-        this.idInscripcion = "INS-" + System.currentTimeMillis();
         this.fecha = new Date();
         this.alumno = alumno;
         this.curso = curso;
         this.pago = pago;
-        this.estado = EstadoInscripcion.PENDIENTE_PAGO; // al crear la inscripción
-    }
-    public Inscripcion(Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estado) {
-        this(alumno, curso, pago);
-        this.estado = (estado != null) ? estado : EstadoInscripcion.PENDIENTE_PAGO;
+        this.estadoPago = EstadoInscripcion.PENDIENTE_PAGO;
+        this.estadoCurso = EstadoCurso.CURSANDO; // valor por defecto
     }
 
-    public Inscripcion(String idInscripcion, Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estado) {
+    public Inscripcion(int idInscripcion, Alumno alumno, Curso curso, Pago pago,
+                       EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
         this.idInscripcion = idInscripcion;
         this.alumno = alumno;
         this.curso = curso;
         this.pago = pago;
-        this.estado = estado;
-    }
-
-
-
-    public Inscripcion(Alumno alumno, Curso curso) {
-        this(alumno, curso, null); // Llama al constructor principal
-        this.estado = EstadoInscripcion.PENDIENTE_PAGO; // predeterminado
+        this.estadoPago = estadoPago;
+        this.estadoCurso = estadoCurso;
+        this.fecha = new Date();
     }
 
     // Getters y Setters
-    public String getIdInscripcion() { return idInscripcion; }
+    public int getIdInscripcion() { return idInscripcion; }
     public Date getFecha() { return fecha; }
     public Alumno getAlumno() { return alumno; }
     public Curso getCurso() { return curso; }
     public Pago getPago() { return pago; }
-    public EstadoInscripcion getEstado() { return estado; }
+    public EstadoInscripcion getEstadoPago() { return estadoPago; }
+    public EstadoCurso getEstadoCurso() { return estadoCurso; }
 
     public void setCurso(Curso curso) { this.curso = curso; }
     public void setPago(Pago pago) { this.pago = pago; }
-    public void setEstado(EstadoInscripcion estado) { this.estado = estado; }
+    public void setEstadoPago(EstadoInscripcion estado) { this.estadoPago = estado; }
+    public void setEstadoCurso(EstadoCurso estado) { this.estadoCurso = estado; }
 
     @Override
     public String toString() {
         return "Inscripcion{" +
-                "idInscripcion='" + idInscripcion + '\'' +
+                "idInscripcion=" + idInscripcion +
                 ", fecha=" + fecha +
                 ", alumno=" + alumno.getNombre() +
                 ", curso=" + (curso != null ? curso.getTitulo() : "N/A") +
-                ", estado=" + estado +
+                ", estadoPago=" + estadoPago +
+                ", estadoCurso=" + estadoCurso +
                 ", pago=" + (pago != null ? pago.getMonto() + " $" : "N/A") +
                 '}';
     }

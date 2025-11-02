@@ -10,8 +10,8 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     private transient List<Inscripcion> inscripciones;
 
     //Constructor
-    public Alumno(String idUsuario, String nombre, String apellido, String email, String contrasena, String legajo) {
-        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
+    public Alumno(String nombre, String apellido, String email, String contrasena, String legajo) {
+        super( nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
         this.legajo = legajo;
         this.inscripciones = new ArrayList<>();
     }
@@ -42,7 +42,7 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
             }
         }
     }
-
+/*
     public void realizarPago(Pago pago) {
         if (pago.validarPago()) {
             System.out.println("Pago realizado correctamente por " + nombre);
@@ -50,7 +50,7 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
             System.out.println("Error al procesar el pago.");
         }
     }
-
+*/
     @Override
     public void registrarse() {
 

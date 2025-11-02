@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Area {
-    private String idArea;
+    private int idArea;
     private String nombre;
     private List<Curso> cursos;
 
-    public Area(String idArea, String nombre) {
+    public Area(int idArea, String nombre) {
         this.idArea = idArea;
         this.nombre = nombre;
         this.cursos = new ArrayList<>();
@@ -35,12 +35,12 @@ public class Area {
     }
 
     // Getters
-    public String getIdArea() { return idArea; }
+    public int getIdArea() { return idArea; }
     public String getNombre() { return nombre; }
     public List<Curso> getCursos() { return cursos; }
 
     // Setters
-    public void setIdArea(String idArea) { this.idArea = idArea; }
+    public void setIdArea(int idArea) { this.idArea = idArea; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setCursos(List<Curso> cursos) { this.cursos = cursos; }
 }
