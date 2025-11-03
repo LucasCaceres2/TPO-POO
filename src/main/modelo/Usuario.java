@@ -21,8 +21,8 @@ public abstract class Usuario {
     protected String contrasena;
     protected TipoUsuario tipoUsuario; // enum para indicar ALUMNO o DOCENTE
 
-    // Constructor
-    public Usuario( String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {
+    // 🔹 Constructor para crear un usuario nuevo (antes de insertarlo en BD)
+    public Usuario(String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -30,7 +30,18 @@ public abstract class Usuario {
         this.tipoUsuario = tipoUsuario;
     }
 
-    //Getters
+    // 🔹 Constructor para instanciar un usuario que ya existe en BD
+    public Usuario(int idUsuario, String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {
+        this.idUsuario = idUsuario;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.contrasena = contrasena;
+        this.tipoUsuario = tipoUsuario;
+    }
+
+    // 🔹 Getters
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public int getIdUsuario() { return idUsuario; }
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }

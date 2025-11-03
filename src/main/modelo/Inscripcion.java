@@ -32,6 +32,10 @@ public class Inscripcion {
         this.fecha = new Date();
     }
 
+    public Inscripcion(Alumno alumno, Curso curso) {
+
+    }
+
     // Getters y Setters
     public int getIdInscripcion() { return idInscripcion; }
     public Date getFecha() { return fecha; }

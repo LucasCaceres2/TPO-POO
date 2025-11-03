@@ -12,7 +12,6 @@ public class ConexionDB {
     public static Connection conectar() {
         try {
             Connection conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Conectado a MySQL correctamente");
             return conexion;
         } catch (SQLException e) {
             System.out.println("Error al conectar con la base de datos");

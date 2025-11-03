@@ -10,7 +10,7 @@ Tablas:
     );
 -Alumnos:
     CREATE TABLE IF NOT EXISTS alumnos (
-        idAlumno INT AUTO_INCREMENT PRIMARY KEY,
+        idAlumno INT PRIMARY KEY,
         idUsuario INT NOT NULL,
         legajo VARCHAR(20) NOT NULL UNIQUE,
         FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
@@ -19,8 +19,7 @@ Tablas:
     );
 -Docentes:
     CREATE TABLE IF NOT EXISTS docentes (
-        idDocente INT AUTO_INCREMENT PRIMARY KEY,
-        idUsuario INT NOT NULL,
+        idUsuario INT AUTO_INCREMENT PRIMARY KEY,
         matricula VARCHAR(20) NOT NULL UNIQUE,
         FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
             ON DELETE CASCADE
@@ -63,7 +62,7 @@ Tablas:
         idAlumno INT NOT NULL,
         idCurso INT NOT NULL,
         idPago INT,
-        estadoPago ENUM('PENDIENTE', 'PAGADO) DEFAULT 'PENDIENTE',
+        estadoPago ENUM('PENDIENTE', 'PAGADO') DEFAULT 'PENDIENTE',
         estadoCurso ENUM('CURSANDO', 'APROBADO', 'DESAPROBADO', 'DADO_DE_BAJA') DEFAULT 'CURSANDO',
         FOREIGN KEY (idAlumno) REFERENCES alumnos(idAlumno)
             ON DELETE CASCADE

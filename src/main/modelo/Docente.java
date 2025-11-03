@@ -8,37 +8,24 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {
-        super(nombre, apellido, email, contrasena, tipoUsuario);
+    // 🔹 Constructor para crear un docente nuevo (antes de insertarlo en BD)
+    public Docente(String nombre, String apellido, String email, String contrasena, String matricula) {
+        super(nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
         this.matricula = matricula;
-        private List<Curso> cursosDictados;
+        this.cursosDictados = new ArrayList<>();
     }
 
-    /*
-        public Docente(int idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
-            super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
-            this.matricula = matricula;
-            this.cursosDictados = new ArrayList<>();
-        }
-
-        public void crearCurso(Curso curso, GestorDePersistencia gestor) {
-            cursosDictados.add(curso);
-            curso.setDocente(this);
-            System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
-
-            gestor.guardarCurso(curso);
-        }
-
-        public void modificarContenido(Curso curso, Contenido contenido) {
-            curso.modificarContenido(contenido);
-            System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
-        }
-    */
-    public void verAlumnos(Curso curso) {
-        curso.listarAlumnos();
+    // 🔹 Constructor para instanciar un docente que ya existe en BD
+    public Docente(int idUsuario, String nombre, String apellido, String email, String contrasena, String matricula) {
+        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
+        this.matricula = matricula;
+        this.cursosDictados = new ArrayList<>();
     }
 
     public String getMatricula() { return matricula; }
+    public void setMatricula(String matricula) { this.matricula = matricula; }
+    public List<Curso> getCursosDictados() { return cursosDictados; }
+    public void setCursosDictados(List<Curso> cursosDictados) { this.cursosDictados = cursosDictados; }
 
     @Override
     public void registrarse() {

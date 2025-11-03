@@ -8,6 +8,11 @@ public class Area {
     private String nombre;
     private List<Curso> cursos;
 
+    public Area(String nombre) {
+        this.nombre = nombre;
+        this.cursos = new ArrayList<>();
+    }
+
     public Area(int idArea, String nombre) {
         this.idArea = idArea;
         this.nombre = nombre;
@@ -43,4 +48,10 @@ public class Area {
     public void setIdArea(int idArea) { this.idArea = idArea; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setCursos(List<Curso> cursos) { this.cursos = cursos; }
+
+    @Override
+    public String toString() {
+        return "Area{" + idArea + " - " + nombre + "}";
+    }
+
 }

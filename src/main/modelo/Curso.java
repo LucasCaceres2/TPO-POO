@@ -12,6 +12,15 @@ public class Curso {
     private String contenido;
     private transient List<Inscripcion> inscripciones;
 
+    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+        this.titulo = titulo;
+        this.cupoMax = cupoMax;
+        this.docente = docente;
+        this.area = area;
+        this.contenido = contenido;
+        this.inscripciones = new ArrayList<>();
+    }
+
     public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
         this.idCurso = idCurso;
         this.titulo = titulo;
@@ -62,6 +71,7 @@ public class Curso {
     public String getContenido() { return contenido; }
     public List<Inscripcion> getInscripciones() { return inscripciones; }
 
+    public void setIdCurso(int idCurso) {this.idCurso = idCurso; }
     public void setDocente(Docente docente) { this.docente = docente; }
     public void setArea(Area area) { this.area = area; }
     public void setContenido(String contenido) { this.contenido = contenido; }

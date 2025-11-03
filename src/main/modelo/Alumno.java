@@ -8,38 +8,25 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     private String legajo;
     private transient List<Inscripcion> inscripciones; // transient → no se serializa
 
-    // 🔹 Constructor principal (para datos desde BD)
-    public Alumno(int idUsuario, String nombre, String apellido, String email,
-                  String contrasena, TipoUsuario tipoUsuario, String legajo) {
-        super(nombre, apellido, email, contrasena, tipoUsuario);
-        this.idUsuario = idUsuario;
-        this.legajo = legajo;
-        this.inscripciones = new ArrayList<>();
-    }
-
-    // 🔹 Constructor alternativo (para crear un alumno nuevo antes de insertarlo)
+    // 🔹 Constructor para crear un alumno nuevo (antes de insertarlo en BD)
     public Alumno(String nombre, String apellido, String email, String contrasena, String legajo) {
         super(nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
         this.legajo = legajo;
         this.inscripciones = new ArrayList<>();
     }
 
-    // 🔹 Getters y Setters
-    public String getLegajo() {
-        return legajo;
-    }
-
-    public void setLegajo(String legajo) {
+    // 🔹 Constructor para instanciar un alumno que ya existe en BD
+    public Alumno(int idUsuario, String nombre, String apellido, String email, String contrasena, String legajo) {
+        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.ALUMNO);
         this.legajo = legajo;
+        this.inscripciones = new ArrayList<>();
     }
 
-    public List<Inscripcion> getInscripciones() {
-        return inscripciones;
-    }
-
-    public void setInscripciones(List<Inscripcion> inscripciones) {
-        this.inscripciones = inscripciones;
-    }
+    // 🔹 Getters y Setters
+    public String getLegajo() { return legajo; }
+    public void setLegajo(String legajo) { this.legajo = legajo; }
+    public List<Inscripcion> getInscripciones() { return inscripciones; }
+    public void setInscripciones(List<Inscripcion> inscripciones) { this.inscripciones = inscripciones; }
 
     // 🔹 Lógica de negocio simple
     public void inscribirse(Curso curso) {

@@ -3,6 +3,7 @@ package main.dao;
 import main.database.ConexionDB;
 import main.modelo.Alumno;
 import main.modelo.TipoUsuario;
+import main.modelo.Usuario;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,23 +11,25 @@ import java.util.List;
 
 public class AlumnoDAO {
 
-    // 🔹 Crear (INSERT)
+    // 🔹 Crear alumno (primero crea usuario)
     public boolean agregarAlumno(Alumno alumno) {
         if (alumno == null || alumno.getLegajo() == null || alumno.getLegajo().isEmpty()) {
             System.out.println("⚠️ El alumno o su legajo no pueden ser nulos.");
             return false;
         }
 
-        if (alumno.getEmail() == null || !alumno.getEmail().contains("@")) {
-            System.out.println("⚠️ El email del alumno no es válido.");
-            return false;
-        }
+        // 1️⃣ Crear usuario base
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        int idUsuario = usuarioDAO.agregarUsuario(alumno); // devuelve idUsuario generado
+        if (idUsuario <= 0) return false;
+        alumno.setIdUsuario(idUsuario);
 
+        // 2️⃣ Evitar duplicados por legajo
         String checkSql = "SELECT 1 FROM alumnos WHERE legajo = ?";
-        String insertSql = "INSERT INTO alumnos (legajo, idUsuario) VALUES (?, ?)";
+        String insertSql = "INSERT INTO alumnos (idUsuario, legajo) VALUES (?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
-            // Evitar duplicados
+
             try (PreparedStatement check = conn.prepareStatement(checkSql)) {
                 check.setString(1, alumno.getLegajo());
                 ResultSet rs = check.executeQuery();
@@ -36,10 +39,10 @@ public class AlumnoDAO {
                 }
             }
 
-            // Insertar
+            // 3️⃣ Insertar alumno en la tabla
             try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
-                stmt.setString(1, alumno.getLegajo());
-                stmt.setInt(2, alumno.getIdUsuario());
+                stmt.setInt(1, alumno.getIdUsuario());
+                stmt.setString(2, alumno.getLegajo());
 
                 int filas = stmt.executeUpdate();
                 if (filas > 0) {
@@ -55,12 +58,9 @@ public class AlumnoDAO {
         return false;
     }
 
-    // 🔹 Leer (SELECT por legajo)
+    // 🔹 Obtener alumno por legajo
     public Alumno obtenerAlumnoPorLegajo(String legajo) {
-        if (legajo == null || legajo.isEmpty()) {
-            System.out.println("⚠️ El legajo no puede estar vacío.");
-            return null;
-        }
+        if (legajo == null || legajo.isEmpty()) return null;
 
         String sql = """
                 SELECT a.legajo, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
@@ -80,8 +80,7 @@ public class AlumnoDAO {
                             rs.getString("nombre"),
                             rs.getString("apellido"),
                             rs.getString("email"),
-                            null,
-                            TipoUsuario.valueOf(rs.getString("tipoUsuario")),
+                            (String) null, // contraseña no se devuelve
                             rs.getString("legajo")
                     );
                 }
@@ -95,7 +94,7 @@ public class AlumnoDAO {
         return null;
     }
 
-    // 🔹 Listar todos
+    // 🔹 Listar todos los alumnos
     public List<Alumno> listarAlumnos() {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = """
@@ -109,16 +108,14 @@ public class AlumnoDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Alumno alumno = new Alumno(
+                alumnos.add(new Alumno(
                         rs.getInt("idUsuario"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("email"),
-                        null,
-                        TipoUsuario.valueOf(rs.getString("tipoUsuario")),
+                        (String) null,
                         rs.getString("legajo")
-                );
-                alumnos.add(alumno);
+                ));
             }
 
             System.out.println("📘 Total alumnos cargados: " + alumnos.size());
@@ -130,14 +127,10 @@ public class AlumnoDAO {
         return alumnos;
     }
 
-    // 🔹 Actualizar campo específico del perfil
+    // 🔹 Actualizar dato de perfil
     public boolean actualizarDatoPerfil(String legajo, String campo, String nuevoValor) {
-        if (legajo == null || legajo.isEmpty() || campo == null || campo.isEmpty()) {
-            System.out.println("⚠️ Legajo y campo son obligatorios.");
-            return false;
-        }
+        if (legajo == null || campo == null || legajo.isEmpty() || campo.isEmpty()) return false;
 
-        // Validar campos permitidos
         List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
         if (!camposPermitidos.contains(campo)) {
             System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
@@ -161,23 +154,18 @@ public class AlumnoDAO {
             if (filas > 0) {
                 System.out.println("✅ Campo '" + campo + "' actualizado correctamente para legajo " + legajo);
                 return true;
-            } else {
-                System.out.println("⚠️ No se encontró alumno con legajo " + legajo);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar " + campo + ": " + e.getMessage());
+            System.out.println("❌ Error al actualizar: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Eliminar (DELETE)
+    // 🔹 Eliminar alumno
     public boolean eliminarAlumno(String legajo) {
-        if (legajo == null || legajo.isEmpty()) {
-            System.out.println("⚠️ El legajo no puede estar vacío.");
-            return false;
-        }
+        if (legajo == null || legajo.isEmpty()) return false;
 
         String sql = "DELETE FROM alumnos WHERE legajo = ?";
 
