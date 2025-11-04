@@ -1,14 +1,9 @@
 package main.app;
 
-import main.dao.AlumnoDAO;
-import main.dao.AreaDAO;
-import main.dao.CursoDAO;
-import main.dao.DocenteDAO;
-import main.modelo.Alumno;
-import main.modelo.Area;
-import main.modelo.Curso;
-import main.modelo.Docente;
+import main.dao.*;
+import main.modelo.*;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainTestDAO {
@@ -17,35 +12,32 @@ public class MainTestDAO {
         DocenteDAO docenteDAO = new DocenteDAO();
         AreaDAO areaDAO = new AreaDAO();
         CursoDAO cursoDAO = new CursoDAO();
+        InscripcionDAO inscripcionDAO = new InscripcionDAO();
+        PagoDAO pagoDAO = new PagoDAO(); // suponiendo que existe
 
-        System.out.println("===== INICIO DE PRUEBA =====");
+        System.out.println("===== INICIO DE PRUEBA DE INSCRIPCIONES Y PAGOS =====");
 
         // ==== DOCENTE ====
         System.out.println("\n--- Creando docente ---");
-        Docente nuevoDocente = new Docente("Mariana", "Suarez", "mariana.suarez@test.com", "pass567", "MAT025");
-
-        if (docenteDAO.agregarDocente(nuevoDocente)) {
+        Docente docente = new Docente("Luciana", "Perez", "luciana.perez@test.com", "pass123", "MAT050");
+        if (docenteDAO.agregarDocente(docente)) {
             System.out.println("✅ Docente creado con éxito");
         } else {
-            System.out.println("⚠️ El docente ya existe, se recupera de la BD");
-            nuevoDocente = docenteDAO.obtenerDocentePorMatricula(nuevoDocente.getMatricula());
-            if (nuevoDocente == null) {
-                System.out.println("❌ No se pudo recuperar el docente de la BD");
-                return; // sale del main para no seguir con null
-            }
+            docente = docenteDAO.obtenerDocentePorMatricula("MAT050");
+            System.out.println("⚠️ Docente ya existente, se recupera de la BD.");
         }
 
         // ==== ÁREA ====
         System.out.println("\n--- Creando área ---");
-        Area nuevaArea = new Area(0, "Inteligencia Artificial");
-        if (areaDAO.agregarArea(nuevaArea)) {
+        Area area = new Area(0, "Desarrollo Web Avanzado");
+        if (areaDAO.agregarArea(area)) {
             System.out.println("✅ Área creada con éxito");
         } else {
             System.out.println("⚠️ El área ya existe, se recupera de la BD");
             List<Area> areas = areaDAO.listarAreas();
             for (Area a : areas) {
-                if (a.getNombre().equalsIgnoreCase("Inteligencia Artificial")) {
-                    nuevaArea = a;
+                if (a.getNombre().equalsIgnoreCase("Desarrollo Web Avanzado")) {
+                    area = a;
                     break;
                 }
             }
@@ -53,50 +45,68 @@ public class MainTestDAO {
 
         // ==== CURSO ====
         System.out.println("\n--- Creando curso ---");
-        Curso nuevoCurso = new Curso(
+        Curso curso = new Curso(
                 0,
-                "Machine Learning Aplicado",
-                50,
-                nuevoDocente,
-                nuevaArea,
-                "Curso sobre aprendizaje supervisado, redes neuronales y técnicas de IA."
+                "Backend con Spring Boot",
+                40,
+                docente,
+                area,
+                "Curso práctico de desarrollo backend con Spring Boot, REST API y JPA."
         );
 
-        if (cursoDAO.agregarCurso(nuevoCurso)) {
+        if (cursoDAO.agregarCurso(curso)) {
             System.out.println("✅ Curso creado con éxito");
         } else {
-            System.out.println("⚠️ Error al crear el curso o ya existe en la BD");
+            System.out.println("⚠️ Curso ya existente o error al insertar");
+            // recuperar curso existente
+            for (Curso c : cursoDAO.listarCursos()) {
+                if (c.getTitulo().equalsIgnoreCase("Backend con Spring Boot")) {
+                    curso = c;
+                    break;
+                }
+            }
         }
 
         // ==== ALUMNO ====
         System.out.println("\n--- Creando alumno ---");
-        Alumno nuevoAlumno = new Alumno("Federico", "Gomez", "federico.gomez@test.com", "pass999", "LEG025");
-
-        if (alumnoDAO.agregarAlumno(nuevoAlumno)) {
+        Alumno alumno = new Alumno("Valentina", "Mendez", "valentina.mendez@test.com", "pass456", "LEG050");
+        if (alumnoDAO.agregarAlumno(alumno)) {
             System.out.println("✅ Alumno creado con éxito");
         } else {
-            System.out.println("⚠️ El alumno ya existe, no se insertó.");
+            System.out.println("⚠️ Alumno ya existente, se recupera de la BD");
+            alumno = alumnoDAO.obtenerAlumnoPorLegajo("LEG050");
         }
 
-        // ==== LISTADOS ====
-        System.out.println("\n--- Listado de docentes ---");
-        for (Docente d : docenteDAO.listarDocentes()) {
-            System.out.println(d.getIdUsuario() + " - " + d.getNombre() + " " + d.getApellido() + " (" + d.getMatricula() + ")");
+        // ==== INSCRIPCIÓN ====
+        System.out.println("\n--- Creando inscripción ---");
+        Inscripcion inscripcion = new Inscripcion(alumno, curso); // usa el constructor corto que te indiqué antes
+
+        if (inscripcionDAO.agregarInscripcion(inscripcion)) {
+            System.out.println("✅ Inscripción registrada correctamente (ID: " + inscripcion.getIdInscripcion() + ")");
+        } else {
+            System.out.println("⚠️ El alumno ya estaba inscripto o hubo un error.");
         }
 
-        System.out.println("\n--- Listado de áreas ---");
-        for (Area a : areaDAO.listarAreas()) {
-            System.out.println(a.getIdArea() + " - " + a.getNombre());
+        // ==== PAGO ====
+        System.out.println("\n--- Registrando pago ---");
+        Pago pago = new Pago(0, new Date(), 20000.0, alumno);
+        if (pagoDAO.agregarPago(pago)) {
+            System.out.println("✅ Pago registrado correctamente (ID: " + pago.getIdPago() + ")");
+            // actualizar inscripción con el pago
+            inscripcion.setPago(pago);
+            inscripcionDAO.actualizarEstadoPago(inscripcion.getIdInscripcion(), EstadoInscripcion.PAGADO);
+            System.out.println("💰 Estado de pago actualizado a PAGADO");
+        } else {
+            System.out.println("⚠️ No se pudo registrar el pago");
         }
 
-        System.out.println("\n--- Listado de cursos ---");
-        for (Curso c : cursoDAO.listarCursos()) {
-            System.out.println(c.getTitulo() + " | Docente: " + c.getDocente().getNombre() + " | Área: " + c.getArea().getNombre());
-        }
-
-        System.out.println("\n--- Listado de alumnos ---");
-        for (Alumno a : alumnoDAO.listarAlumnos()) {
-            System.out.println(a.getNombre() + " " + a.getApellido() + " - " + a.getLegajo());
+        // ==== CONSULTAS ====
+        System.out.println("\n--- Inscripciones del alumno ---");
+        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorAlumnoIdUsuario(alumno.getIdUsuario());
+        for (Inscripcion i : inscripciones) {
+            System.out.println("➡️ Curso: " + i.getCurso().getTitulo() +
+                    " | EstadoPago: " + i.getEstadoPago() +
+                    " | EstadoCurso: " + i.getEstadoCurso());
         }
 
         System.out.println("\n===== FIN DE PRUEBA =====");

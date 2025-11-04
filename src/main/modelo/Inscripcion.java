@@ -11,34 +11,40 @@ public class Inscripcion {
     private EstadoInscripcion estadoPago;
     private EstadoCurso estadoCurso;
 
-    // Constructor principal
-    public Inscripcion(Alumno alumno, Curso curso, Pago pago) {
+    public Inscripcion(Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
         this.fecha = new Date();
-        this.alumno = alumno;
-        this.curso = curso;
-        this.pago = pago;
-        this.estadoPago = EstadoInscripcion.PENDIENTE_PAGO;
-        this.estadoCurso = EstadoCurso.CURSANDO; // valor por defecto
-    }
-
-    public Inscripcion(int idInscripcion, Alumno alumno, Curso curso, Pago pago,
-                       EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
-        this.idInscripcion = idInscripcion;
         this.alumno = alumno;
         this.curso = curso;
         this.pago = pago;
         this.estadoPago = estadoPago;
         this.estadoCurso = estadoCurso;
-        this.fecha = new Date();
+    }
+
+    public Inscripcion(int idInscripcion, Date fecha, Alumno alumno, Curso curso, Pago pago, EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
+        this.idInscripcion = idInscripcion;
+        this.fecha = fecha;
+        this.alumno = alumno;
+        this.curso = curso;
+        this.pago = pago;
+        this.estadoPago = estadoPago;
+        this.estadoCurso = estadoCurso;
     }
 
     public Inscripcion(Alumno alumno, Curso curso) {
-
+        this.alumno = alumno;
+        this.curso = curso;
+        this.fecha = new Date(); // asigna fecha actual
+        this.estadoPago = EstadoInscripcion.PENDIENTE_PAGO;
+        this.estadoCurso = EstadoCurso.CURSANDO;
     }
 
     // Getters y Setters
     public int getIdInscripcion() { return idInscripcion; }
+    public void setIdInscripcion(int idInscripcion) { this.idInscripcion = idInscripcion; }
+
     public Date getFecha() { return fecha; }
+    public void setFecha(Date fecha) { this.fecha = fecha; }
+
     public Alumno getAlumno() { return alumno; }
     public Curso getCurso() { return curso; }
     public Pago getPago() { return pago; }
