@@ -89,12 +89,12 @@ public class MainTestDAO {
 
         // ==== PAGO ====
         System.out.println("\n--- Registrando pago ---");
-        Pago pago = new Pago(0, new Date(), 20000.0, alumno);
+        Pago pago = new Pago(0, new java.sql.Date(System.currentTimeMillis()), 20000.0, alumno);
         if (pagoDAO.agregarPago(pago)) {
             System.out.println("✅ Pago registrado correctamente (ID: " + pago.getIdPago() + ")");
             // actualizar inscripción con el pago
             inscripcion.setPago(pago);
-            inscripcionDAO.actualizarEstadoPago(inscripcion.getIdInscripcion(), EstadoInscripcion.PAGADO);
+            inscripcionDAO.actualizarEstadoPago(inscripcion.getIdInscripcion(), EstadoInscripcion.PAGO);
             System.out.println("💰 Estado de pago actualizado a PAGADO");
         } else {
             System.out.println("⚠️ No se pudo registrar el pago");

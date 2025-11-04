@@ -17,13 +17,7 @@ public class PagoDAO {
             return false;
         }
 
-        Integer idAlumno = obtenerIdAlumnoPorIdUsuario(pago.getAlumno().getIdUsuario());
-        if (idAlumno == null) {
-            System.out.println("⚠️ No se encontró registro de alumno en tabla 'alumnos' para el usuario: " + pago.getAlumno().getIdUsuario());
-            return false;
-        }
-
-        String sql = "INSERT INTO pagos (fecha, monto, idAlumno) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO pagos (fecha, monto, idUsuario) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -33,7 +27,7 @@ public class PagoDAO {
             );
             stmt.setDate(1, fechaSQL);
             stmt.setDouble(2, pago.getMonto());
-            stmt.setInt(3, idAlumno);
+            stmt.setInt(3, pago.getAlumno().getIdUsuario());
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
@@ -55,10 +49,10 @@ public class PagoDAO {
     // Obtener pago por idPago
     public Pago obtenerPagoPorId(int idPago) {
         String sql = """
-                SELECT p.idPago, p.fecha, p.monto, p.idAlumno,
-                       a.idUsuario, a.legajo, u.nombre, u.apellido, u.email
+                SELECT p.idPago, p.fecha, p.monto, p.idUsuario,
+                       a.legajo, u.nombre, u.apellido, u.email
                 FROM pagos p
-                JOIN alumnos a ON p.idAlumno = a.idAlumno
+                JOIN alumnos a ON p.idUsuario = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
                 WHERE p.idPago = ?
                 """;
@@ -89,22 +83,20 @@ public class PagoDAO {
     // Listar pagos de un alumno (recibe idUsuario)
     public List<Pago> listarPagosPorAlumnoIdUsuario(int idUsuario) {
         List<Pago> pagos = new ArrayList<>();
-        Integer idAlumno = obtenerIdAlumnoPorIdUsuario(idUsuario);
-        if (idAlumno == null) return pagos;
 
         String sql = """
-                SELECT p.idPago, p.fecha, p.monto, p.idAlumno,
-                       a.idUsuario, a.legajo, u.nombre, u.apellido, u.email
+                SELECT p.idPago, p.fecha, p.monto, p.idUsuario,
+                       a.legajo, u.nombre, u.apellido, u.email
                 FROM pagos p
-                JOIN alumnos a ON p.idAlumno = a.idAlumno
+                JOIN alumnos a ON p.idUsuario = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
-                WHERE p.idAlumno = ?
+                WHERE p.idUsuario = ?
                 """;
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, idAlumno);
+            stmt.setInt(1, idUsuario);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Alumno alumno = construirAlumnoDesdeResultSetAlumno(rs);
@@ -155,24 +147,6 @@ public class PagoDAO {
             System.out.println("❌ Error al eliminar pago: " + e.getMessage());
         }
         return false;
-    }
-
-    // -----------------------
-    // Helpers
-    // -----------------------
-    private Integer obtenerIdAlumnoPorIdUsuario(int idUsuario) {
-        String sql = "SELECT idAlumno FROM alumnos WHERE idUsuario = ? LIMIT 1";
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idUsuario);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getInt("idAlumno");
-            }
-        } catch (SQLException e) {
-            System.out.println("❌ Error al resolver idAlumno: " + e.getMessage());
-        }
-        return null;
     }
 
     private Alumno construirAlumnoDesdeResultSetAlumno(ResultSet rs) throws SQLException {

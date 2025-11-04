@@ -17,18 +17,13 @@ public class InscripcionDAO {
             return false;
         }
 
-        Integer idAlumno = obtenerIdAlumnoPorIdUsuario(inscripcion.getAlumno().getIdUsuario());
-        if (idAlumno == null) {
-            System.out.println("⚠️ No se encontró alumno en tabla 'alumnos' para idUsuario: " + inscripcion.getAlumno().getIdUsuario());
-            return false;
-        }
-
-        String checkSql = "SELECT 1 FROM inscripciones WHERE idAlumno = ? AND idCurso = ?";
-        String insertSql = "INSERT INTO inscripciones (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM inscripciones WHERE idUsuario = ? AND idCurso = ?";
+        String insertSql = "INSERT INTO inscripciones (fecha, idUsuario, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
+            // Verificar si ya está inscripto
             try (PreparedStatement check = conn.prepareStatement(checkSql)) {
-                check.setInt(1, idAlumno);
+                check.setInt(1, inscripcion.getAlumno().getIdUsuario());
                 check.setInt(2, inscripcion.getCurso().getIdCurso());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
@@ -37,14 +32,16 @@ public class InscripcionDAO {
                 }
             }
 
+            // Insertar inscripción
             try (PreparedStatement stmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                 java.sql.Date fechaSQL = new java.sql.Date(
                         (inscripcion.getFecha() != null ? inscripcion.getFecha() : new Date()).getTime()
                 );
 
                 stmt.setDate(1, fechaSQL);
-                stmt.setInt(2, idAlumno);
+                stmt.setInt(2, inscripcion.getAlumno().getIdUsuario());
                 stmt.setInt(3, inscripcion.getCurso().getIdCurso());
+
                 if (inscripcion.getPago() != null && inscripcion.getPago().getIdPago() > 0) {
                     stmt.setInt(4, inscripcion.getPago().getIdPago());
                 } else {
@@ -77,12 +74,12 @@ public class InscripcionDAO {
     public Inscripcion obtenerInscripcionPorId(int idInscripcion) {
         String sql = """
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
-                       a.idAlumno, a.idUsuario, a.legajo,
+                       a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
-                JOIN alumnos a ON i.idAlumno = a.idAlumno
+                JOIN alumnos a ON i.idUsuario = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
                 JOIN cursos c ON i.idCurso = c.idCurso
                 LEFT JOIN pagos p ON i.idPago = p.idPago
@@ -140,25 +137,23 @@ public class InscripcionDAO {
     // Listar inscripciones por alumno
     public List<Inscripcion> listarInscripcionesPorAlumnoIdUsuario(int idUsuario) {
         List<Inscripcion> lista = new ArrayList<>();
-        Integer idAlumno = obtenerIdAlumnoPorIdUsuario(idUsuario);
-        if (idAlumno == null) return lista;
 
         String sql = """
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
-                       a.idAlumno, a.idUsuario, a.legajo, u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
+                       a.idUsuario, a.legajo, u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
-                JOIN alumnos a ON i.idAlumno = a.idAlumno
+                JOIN alumnos a ON i.idUsuario = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
                 JOIN cursos c ON i.idCurso = c.idCurso
                 LEFT JOIN pagos p ON i.idPago = p.idPago
-                WHERE i.idAlumno = ?""";
+                WHERE i.idUsuario = ?""";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, idAlumno);
+            stmt.setInt(1, idUsuario);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Alumno alumno = new Alumno(
@@ -203,32 +198,25 @@ public class InscripcionDAO {
         return lista;
     }
 
+    // Actualizar estados
     public boolean actualizarEstadoPago(int idInscripcion, EstadoInscripcion nuevoEstado) {
-        String sql = "UPDATE inscripciones SET estadoPago = ? WHERE idInscripcion = ?";
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nuevoEstado.name());
-            stmt.setInt(2, idInscripcion);
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar estadoPago: " + e.getMessage());
-        }
-        return false;
+        return ejecutarUpdate("UPDATE inscripciones SET estadoPago = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
     }
 
     public boolean actualizarEstadoCurso(int idInscripcion, EstadoCurso nuevoEstado) {
-        String sql = "UPDATE inscripciones SET estadoCurso = ? WHERE idInscripcion = ?";
+        return ejecutarUpdate("UPDATE inscripciones SET estadoCurso = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
+    }
+
+    private boolean ejecutarUpdate(String sql, String estado, int id) {
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, nuevoEstado.name());
-            stmt.setInt(2, idInscripcion);
+            stmt.setString(1, estado);
+            stmt.setInt(2, id);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar estadoCurso: " + e.getMessage());
+            System.out.println("❌ Error al actualizar inscripción: " + e.getMessage());
         }
         return false;
     }
@@ -245,23 +233,5 @@ public class InscripcionDAO {
             System.out.println("❌ Error al eliminar inscripción: " + e.getMessage());
         }
         return false;
-    }
-
-    // -----------------------
-    // Helper privado
-    // -----------------------
-    private Integer obtenerIdAlumnoPorIdUsuario(int idUsuario) {
-        String sql = "SELECT idAlumno FROM alumnos WHERE idUsuario = ? LIMIT 1";
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idUsuario);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getInt("idAlumno");
-            }
-        } catch (SQLException e) {
-            System.out.println("❌ Error al resolver idAlumno: " + e.getMessage());
-        }
-        return null;
     }
 }
