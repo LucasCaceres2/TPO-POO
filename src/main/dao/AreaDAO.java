@@ -76,6 +76,28 @@ public class AreaDAO {
         return null;
     }
 
+    // --- OBTENER ÁREA POR NOMBRE ---
+    public Area obtenerAreaPorNombre(String nombre) {
+        String sql = "SELECT idArea, nombre FROM areas WHERE LOWER(nombre) = LOWER(?)";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nombre);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Area(
+                            rs.getInt("idArea"),
+                            rs.getString("nombre")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener área por nombre: " + e.getMessage());
+        }
+        return null;
+    }
+
     // 🔹 Listar todas las áreas
     public List<Area> listarAreas() {
         List<Area> areas = new ArrayList<>();

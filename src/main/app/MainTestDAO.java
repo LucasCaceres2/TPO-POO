@@ -3,7 +3,6 @@ package main.app;
 import main.dao.*;
 import main.modelo.*;
 
-import java.util.Date;
 import java.util.List;
 
 public class MainTestDAO {
@@ -19,24 +18,24 @@ public class MainTestDAO {
 
         // ==== DOCENTE ====
         System.out.println("\n--- Creando docente ---");
-        Docente docente = new Docente("Luciana", "Perez", "luciana.perez@test.com", "pass123", "MAT050");
+        Docente docente = new Docente("Martín", "Gómez", "martin.gomez@test.com", "doc789", "MAT120");
         if (docenteDAO.agregarDocente(docente)) {
             System.out.println("✅ Docente creado con éxito");
         } else {
-            docente = docenteDAO.obtenerDocentePorMatricula("MAT050");
+            docente = docenteDAO.obtenerDocentePorMatricula("MAT120");
             System.out.println("⚠️ Docente ya existente, se recupera de la BD.");
         }
 
         // ==== ÁREA ====
         System.out.println("\n--- Creando área ---");
-        Area area = new Area(0, "Desarrollo Web Avanzado");
+        Area area = new Area(0, "Inteligencia Artificial Aplicada");
         if (areaDAO.agregarArea(area)) {
             System.out.println("✅ Área creada con éxito");
         } else {
             System.out.println("⚠️ El área ya existe, se recupera de la BD");
             List<Area> areas = areaDAO.listarAreas();
             for (Area a : areas) {
-                if (a.getNombre().equalsIgnoreCase("Desarrollo Web Avanzado")) {
+                if (a.getNombre().equalsIgnoreCase("Inteligencia Artificial Aplicada")) {
                     area = a;
                     break;
                 }
@@ -47,11 +46,11 @@ public class MainTestDAO {
         System.out.println("\n--- Creando curso ---");
         Curso curso = new Curso(
                 0,
-                "Backend con Spring Boot",
-                40,
+                "Introducción al Machine Learning",
+                60,
                 docente,
                 area,
-                "Curso práctico de desarrollo backend con Spring Boot, REST API y JPA."
+                "Curso teórico-práctico sobre aprendizaje automático, modelos supervisados y no supervisados."
         );
 
         if (cursoDAO.agregarCurso(curso)) {
@@ -60,7 +59,7 @@ public class MainTestDAO {
             System.out.println("⚠️ Curso ya existente o error al insertar");
             // recuperar curso existente
             for (Curso c : cursoDAO.listarCursos()) {
-                if (c.getTitulo().equalsIgnoreCase("Backend con Spring Boot")) {
+                if (c.getTitulo().equalsIgnoreCase("Introducción al Machine Learning")) {
                     curso = c;
                     break;
                 }
@@ -69,17 +68,17 @@ public class MainTestDAO {
 
         // ==== ALUMNO ====
         System.out.println("\n--- Creando alumno ---");
-        Alumno alumno = new Alumno("Valentina", "Mendez", "valentina.mendez@test.com", "pass456", "LEG050");
+        Alumno alumno = new Alumno("Tomás", "Rivas", "tomas.rivas@test.com", "alu789", "LEG120");
         if (alumnoDAO.agregarAlumno(alumno)) {
             System.out.println("✅ Alumno creado con éxito");
         } else {
             System.out.println("⚠️ Alumno ya existente, se recupera de la BD");
-            alumno = alumnoDAO.obtenerAlumnoPorLegajo("LEG050");
+            alumno = alumnoDAO.obtenerAlumnoPorLegajo("LEG120");
         }
 
         // ==== INSCRIPCIÓN ====
         System.out.println("\n--- Creando inscripción ---");
-        Inscripcion inscripcion = new Inscripcion(alumno, curso); // usa el constructor corto que te indiqué antes
+        Inscripcion inscripcion = new Inscripcion(alumno, curso);
 
         if (inscripcionDAO.agregarInscripcion(inscripcion)) {
             System.out.println("✅ Inscripción registrada correctamente (ID: " + inscripcion.getIdInscripcion() + ")");
@@ -89,10 +88,9 @@ public class MainTestDAO {
 
         // ==== PAGO ====
         System.out.println("\n--- Registrando pago ---");
-        Pago pago = new Pago(0, new java.sql.Date(System.currentTimeMillis()), 20000.0, alumno);
+        Pago pago = new Pago(0, new java.sql.Date(System.currentTimeMillis()), 35000.0, alumno);
         if (pagoDAO.agregarPago(pago)) {
             System.out.println("✅ Pago registrado correctamente (ID: " + pago.getIdPago() + ")");
-            // actualizar inscripción con el pago
             inscripcion.setPago(pago);
             inscripcionDAO.actualizarEstadoPago(inscripcion.getIdInscripcion(), EstadoInscripcion.PAGO);
             System.out.println("💰 Estado de pago actualizado a PAGADO");
@@ -102,7 +100,7 @@ public class MainTestDAO {
 
         // ==== CONSULTAS ====
         System.out.println("\n--- Inscripciones del alumno ---");
-        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorAlumnoIdUsuario(alumno.getIdUsuario());
+        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
         for (Inscripcion i : inscripciones) {
             System.out.println("➡️ Curso: " + i.getCurso().getTitulo() +
                     " | EstadoPago: " + i.getEstadoPago() +

@@ -111,6 +111,53 @@ public class CursoDAO {
         return null;
     }
 
+    // --- OBTENER CURSO POR TÍTULO ---
+    public Curso obtenerCursoPorTitulo(String titulo) {
+        String sql = """
+            SELECT c.idCurso, c.titulo, c.cupoMax, c.contenido,
+                   d.idUsuario AS idDocente, d.matricula,
+                   u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
+                   a.idArea, a.nombre AS areaNombre
+            FROM cursos c
+            JOIN docentes d ON c.idDocente = d.idUsuario
+            JOIN usuarios u ON d.idUsuario = u.idUsuario
+            JOIN areas a ON c.idArea = a.idArea
+            WHERE LOWER(c.titulo) = LOWER(?)
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, titulo);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Docente docente = new Docente(
+                            rs.getInt("idDocente"),
+                            rs.getString("docenteNombre"),
+                            rs.getString("docenteApellido"),
+                            rs.getString("docenteEmail"),
+                            null,
+                            rs.getString("matricula")
+                    );
+
+                    Area area = new Area(rs.getInt("idArea"), rs.getString("areaNombre"));
+
+                    return new Curso(
+                            rs.getInt("idCurso"),
+                            rs.getString("titulo"),
+                            rs.getInt("cupoMax"),
+                            docente,
+                            area,
+                            rs.getString("contenido")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener curso por título: " + e.getMessage());
+        }
+        return null;
+    }
+
     // 🔹 Listar todos los cursos
     public List<Curso> listarCursos() {
         List<Curso> cursos = new ArrayList<>();
