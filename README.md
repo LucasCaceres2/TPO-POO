@@ -8,15 +8,14 @@
       Sin el DTO, se pueden generar **loops infinitos** porque los objetos referencian otros objetos que a su vez los referencian, lo que provoca errores al serializar a JSON o al manejar datos.
 - **app**: Contiene el `Main` para probar la lógica de la plataforma.
 - **persistencia (GestorDePersistencia)**: Maneja el guardado y la lectura de datos en archivos JSON.
-    - Actualmente existen dos archivos JSON: `usuarios.json` y `cursos.json`.
-    - Futuras extensiones podrían incluir `areas.json` y `pagos.json`.
+    - Actualmente existen cuatro archivos JSON: `usuarios.json`, `cursos.json`, `areas.json` y `pagos.json`.
+- **Interfaces**: IUsuariosAcciones tiene los metodos de usuarios
 
-## Clases pendientes de lógica o revisión
+## Clases o metodos pendientes de lógica o revisión
 
-- `Area`
-- `Inscripcion`
-- `Pago`
 - `Plataforma`
+- `Alumno`--> realizarPago(), verCursosInscriptos(), inscribirse()
+- `Docente`--> modificarContenido()
 
 ## Próximos pasos
 

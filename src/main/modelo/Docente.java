@@ -1,51 +1,49 @@
 package main.modelo;
 
-import main.persistencia.GestorDePersistencia;
-
+import main.interfaces.IUsuariosAcciones;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Docente extends Usuario {
+public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    public Docente(String idUsuario, String nombre, String apellido, String email, String contraseña, String matricula) {
-        super(idUsuario, nombre, apellido, email, contraseña, TipoUsuario.DOCENTE);
+    // 🔹 Constructor para crear un docente nuevo (antes de insertarlo en BD)
+    public Docente(String nombre, String apellido, String email, String contrasena, String matricula) {
+        super(nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
         this.matricula = matricula;
         this.cursosDictados = new ArrayList<>();
     }
 
-    public void crearCurso(Curso curso, GestorDePersistencia gestor) {
-        cursosDictados.add(curso);
-        curso.setDocente(this);
-        System.out.println("Curso creado por " + nombre + ": " + curso.getTitulo());
-
-        gestor.guardarCurso(curso);
+    // 🔹 Constructor para instanciar un docente que ya existe en BD
+    public Docente(int idUsuario, String nombre, String apellido, String email, String contrasena, String matricula) {
+        super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
+        this.matricula = matricula;
+        this.cursosDictados = new ArrayList<>();
     }
 
-    public void modificarContenido(Curso curso, Contenido contenido) {
-        curso.modificarContenido(contenido);
-        System.out.println("Contenido modificado en curso:"  + curso.getTitulo());
-    }
+    public String getMatricula() { return matricula; }
+    public void setMatricula(String matricula) { this.matricula = matricula; }
+    public List<Curso> getCursosDictados() { return cursosDictados; }
+    public void setCursosDictados(List<Curso> cursosDictados) { this.cursosDictados = cursosDictados; }
 
-    public void verAlumnos(Curso curso) {
-        curso.listarAlumnos();
+    @Override
+    public void registrarse() {
+
     }
 
     @Override
-    public void iniciarSesion() {
-        System.out.println("Docente " + nombre + " inició sesión.");
+    public boolean iniciarSesion(String email, String contrasena) {
+        return false;
     }
 
     @Override
     public void cerrarSesion() {
-        System.out.println("Docente " + nombre + " cerró sesión.");
+
     }
 
     @Override
-    public void actualizarPerfil() {
-        System.out.println("Perfil de docente actualizado.");
-    }
+    public void actualizarPerfil(String nombre, String apellido, String email) {
 
-    public String getMatricula() { return matricula; }
+    }
 }

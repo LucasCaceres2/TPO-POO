@@ -4,39 +4,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Curso {
-    private String idCurso;
+    private int idCurso;
     private String titulo;
     private int cupoMax;
     private Docente docente;
-    //private Area area;
-    private List<Contenido> contenidos;
-    private List<Inscripcion> inscripciones;
+    private Area area;
+    private String contenido;
+    private transient List<Inscripcion> inscripciones;
 
-    public Curso(String idCurso, String titulo, int cupoMax, Docente docente/*Area area*/) {
+    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+        this.titulo = titulo;
+        this.cupoMax = cupoMax;
+        this.docente = docente;
+        this.area = area;
+        this.contenido = contenido;
+        this.inscripciones = new ArrayList<>();
+    }
+
+    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
-        /*this.area = area;*/
-        this.contenidos = new ArrayList<>();
+        this.area = area;
+        this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
     }
 
-    // Métodos
-    public void modificarContenido(Contenido contenido) {
-        boolean encontrado = false;
-        for (int i = 0; i < contenidos.size(); i++) {
-            if (contenidos.get(i).getIdContenido().equals(contenido.getIdContenido())) {
-                contenidos.set(i, contenido);
-                System.out.println("Contenido actualizado: " + contenido.getDescripcion());
-                encontrado = true;
-                break;
-            }
-        }
-        if (!encontrado) {
-            contenidos.add(contenido);
-        }
-    }
+
 
     public void listarAlumnos() {
         System.out.println("Alumnos inscriptos en " + titulo + ":");
@@ -68,16 +63,18 @@ public class Curso {
     }
 
     // Getters y Setters
-    public String getIdCurso() { return idCurso; }
+    public int  getIdCurso() { return idCurso; }
     public String getTitulo() { return titulo; }
     public int getCupoMax() { return cupoMax; }
     public Docente getDocente() { return docente; }
-    /*public Area getArea() { return area; }*/
-    public List<Contenido> getContenidos() { return contenidos; }
+    public Area getArea() { return area; }
+    public String getContenido() { return contenido; }
     public List<Inscripcion> getInscripciones() { return inscripciones; }
 
+    public void setIdCurso(int idCurso) {this.idCurso = idCurso; }
     public void setDocente(Docente docente) { this.docente = docente; }
-    /*public void setArea(Area area) { this.area = area; }*/
+    public void setArea(Area area) { this.area = area; }
+    public void setContenido(String contenido) { this.contenido = contenido; }
 
     @Override
     public String toString() {

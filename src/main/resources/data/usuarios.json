@@ -1,5 +1,32 @@
 [
   {
+    "idUsuario": "A001",
+    "nombre": "Lucas",
+    "apellido": "Cáceres",
+    "email": "lucas@mail.com",
+    "contrasena": "pass",
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L001"
+  },
+  {
+    "idUsuario": "A002",
+    "nombre": "Martina",
+    "apellido": "Gómez",
+    "email": "martina@mail.com",
+    "contrasena": "pass",
+    "tipoUsuario": "ALUMNO",
+    "legajo": "L002"
+  },
+  {
+    "idUsuario": "D001",
+    "nombre": "Ana",
+    "apellido": "Pérez",
+    "email": "ana@mail.com",
+    "contrasena": "pass",
+    "tipoUsuario": "DOCENTE",
+    "matricula": "M001"
+  },
+  {
     "idUsuario": "a001",
     "nombre": "Lucas",
     "apellido": "Gomez",

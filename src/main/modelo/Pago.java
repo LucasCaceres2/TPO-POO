@@ -1,38 +1,52 @@
 package main.modelo;
 
-import main.interfaces.IPagable;
-import java.util.Date;
+import java.sql.Date;
 
-public class Pago implements IPagable {
-    private String idPago;
+public class Pago {
+    private int idPago;
     private Date fecha;
     private double monto;
     private Alumno alumno;
 
-    public Pago(String idPago, Date fecha, double monto, Alumno alumno) {
+    // Constructor para pagos ya existentes
+    public Pago(int idPago, Date fecha, double monto, Alumno alumno) {
         this.idPago = idPago;
         this.fecha = fecha;
         this.monto = monto;
         this.alumno = alumno;
     }
 
-    @Override
-    public boolean validarPago() {
-        // Lógica simple de validación
-        return monto > 0;
+    // Constructor para nuevos pagos
+    public Pago(double monto, Alumno alumno) {
+        this.fecha = new Date(System.currentTimeMillis());
+        this.monto = monto;
+        this.alumno = alumno;
     }
 
-    @Override
-    public void generarComprobante() {
-        System.out.println("Comprobante generado:");
-        System.out.println("Alumno: " + alumno.getNombre());
-        System.out.println("Fecha: " + fecha);
-        System.out.println("Monto: $" + monto);
+    public boolean pagar(double monto) {
+        if (monto <= 0) return false;
+        this.monto = monto;
+        this.fecha = new Date(System.currentTimeMillis());
+        return true;
     }
 
-    // Getters
-    public String getIdPago() { return idPago; }
+    // Getters y Setters
+    public int getIdPago() { return idPago; }
+    public void setIdPago(int idPago) { this.idPago = idPago; }
+
     public Date getFecha() { return fecha; }
+    public void setFecha(Date fecha) { this.fecha = fecha; }
+
     public double getMonto() { return monto; }
     public Alumno getAlumno() { return alumno; }
+
+    @Override
+    public String toString() {
+        return "Pago{" +
+                "idPago=" + idPago +
+                ", fecha=" + fecha +
+                ", monto=" + monto +
+                ", alumno=" + (alumno != null ? alumno.getNombre() : "N/A") +
+                '}';
+    }
 }
