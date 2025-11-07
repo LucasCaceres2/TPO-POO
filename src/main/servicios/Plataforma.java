@@ -14,23 +14,62 @@ public class Plataforma {
     private PagoDAO pagoDAO = new PagoDAO();
     private AreaDAO areaDAO = new AreaDAO();
 
-    // ===========================
-    //     MÉTODOS DE NEGOCIO
-    // ===========================
+    // ================== REGISTRO DE ALUMNO ==================
+    public boolean registrarAlumno(String nombre,
+                                   String apellido,
+                                   String email,
+                                   String contrasena,
+                                   String legajo) {
 
-    // --- Registrar nuevo alumno ---
-    public boolean registrarAlumno(String nombre, String apellido, String email, String password, String legajo) {
-        Alumno alumno = new Alumno(nombre, apellido, email, password, legajo);
-        return alumnoDAO.agregarAlumno(alumno);
+        try {
+            // Validaciones mínimas de negocio (además de las del ControladorRegistro)
+            if (nombre == null || nombre.isBlank()) return false;
+            if (apellido == null || apellido.isBlank()) return false;
+            if (email == null || !email.contains("@")) return false;
+            if (contrasena == null || contrasena.isBlank()) return false;
+            if (legajo == null || legajo.isBlank()) return false;
+
+            // Crear objeto de dominio
+            Alumno alumno = new Alumno(nombre, apellido, email, contrasena, legajo);
+
+            // Guardar en BD usando el DAO
+            return alumnoDAO.agregarAlumno(alumno);
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al registrar alumno en Plataforma: " + e.getMessage());
+            return false;
+        }
     }
 
-    // --- Registrar nuevo docente ---
-    public boolean registrarDocente(String nombre, String apellido, String email, String password, String matricula) {
-        Docente docente = new Docente(nombre, apellido, email, password, matricula);
-        return docenteDAO.agregarDocente(docente);
+    // ================== REGISTRO DE DOCENTE ==================
+    public boolean registrarDocente(String nombre,
+                                    String apellido,
+                                    String email,
+                                    String contrasena,
+                                    String matricula) {
+
+        try {
+            if (nombre == null || nombre.isBlank()) return false;
+            if (apellido == null || apellido.isBlank()) return false;
+            if (email == null || !email.contains("@")) return false;
+            if (contrasena == null || contrasena.isBlank()) return false;
+            if (matricula == null || matricula.isBlank()) return false;
+
+            Docente docente = new Docente(nombre, apellido, email, contrasena, matricula);
+
+            return docenteDAO.agregarDocente(docente);
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al registrar docente en Plataforma: " + e.getMessage());
+            return false;
+        }
     }
 
-    // --- Crear nueva área ---
+    // (dejá el resto de métodos que ya tenías para cursos, inscripciones, etc.)
+
+
+
+// --- Crear nueva área ---
     public boolean crearArea(String nombreArea) {
         Area area = new Area(0, nombreArea);
         return areaDAO.agregarArea(area);
@@ -89,4 +128,32 @@ public class Plataforma {
     public List<Curso> listarCursos() {
         return cursoDAO.listarCursos();
     }
+
+
+    // --- Alias: obtener cursos disponibles para el alumno (por ahora todos) ---
+    public List<Curso> obtenerCursosDisponibles() {
+        return cursoDAO.listarCursos(); // si después tenés estado, filtrás acá
+    }
+
+    // --- Inscribir alumno en curso usando email + idCurso (desde la tabla) ---
+    public boolean inscribirAlumnoEnCurso(String emailAlumno, int idCurso) {
+        // 1) Buscar alumno por email
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ No se encontró alumno con email: " + emailAlumno);
+            return false;
+        }
+
+        // 2) Buscar curso por id
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ No se encontró curso con id: " + idCurso);
+            return false;
+        }
+
+        // 3) Crear inscripción (evitá duplicados en el DAO si querés)
+        Inscripcion inscripcion = new Inscripcion(alumno, curso);
+        return inscripcionDAO.agregarInscripcion(inscripcion);
+    }
+
 }

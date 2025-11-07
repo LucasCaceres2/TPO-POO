@@ -19,4 +19,13 @@ public class ConexionDB {
             return null;
         }
     }
+
+    public static void main(String[] args) {
+        Connection conn = conectar();
+        if (conn != null) {
+            System.out.println("✅ Conexión OK a tp_poo");
+        } else {
+            System.out.println("❌ No se pudo conectar");
+        }
+    }
 }
