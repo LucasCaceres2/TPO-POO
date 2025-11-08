@@ -28,6 +28,19 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     public List<Inscripcion> getInscripciones() { return inscripciones; }
     public void setInscripciones(List<Inscripcion> inscripciones) { this.inscripciones = inscripciones; }
 
+    // 🔹 Setters adicionales para usar en Mi Perfil
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     // 🔹 Lógica de negocio simple
     public void inscribirse(Curso curso) {
         if (curso == null) {

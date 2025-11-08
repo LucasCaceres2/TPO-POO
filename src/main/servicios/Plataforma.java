@@ -156,4 +156,20 @@ public class Plataforma {
         return inscripcionDAO.agregarInscripcion(inscripcion);
     }
 
+    public List<Inscripcion> obtenerInscripcionesDeAlumnoPorEmail(String emailAlumno) {
+        if (emailAlumno == null || emailAlumno.isBlank()) {
+            return List.of();
+        }
+
+        // Necesitamos el alumno para conocer su legajo
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ No se encontró alumno con email: " + emailAlumno);
+            return List.of();
+        }
+
+        // Reusamos el método existente que trabaja con legajo
+        return inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
+    }
+
 }

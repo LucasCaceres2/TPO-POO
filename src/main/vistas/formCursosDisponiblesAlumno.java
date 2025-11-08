@@ -1,5 +1,6 @@
 package main.vistas;
 
+import main.dao.InscripcionDAO;
 import main.modelo.Curso;
 import main.servicios.Plataforma;
 
@@ -17,7 +18,10 @@ public class formCursosDisponiblesAlumno extends JFrame {
     private JButton cerrarButton;
 
     private final Plataforma plataforma = new Plataforma();
+    private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private final String emailAlumno; // viene del login
+
+    // =========== CONSTRUCTORES ===========
 
     public formCursosDisponiblesAlumno(String emailAlumno) {
         this.emailAlumno = emailAlumno;
@@ -30,27 +34,37 @@ public class formCursosDisponiblesAlumno extends JFrame {
         cargarCursos();
         initListeners();
 
-        // Calcula tamaños mínimos según el form
         pack();
-        // Y después fuerzo un tamaño razonable
-        setSize(900, 400);  // probá con este, podés ajustarlo
-        setLocationRelativeTo(null); // centrar
+        setSize(900, 400);
+        setLocationRelativeTo(null);
     }
 
-    // constructor vacío para el diseñador
+    // constructor vacío solo para el diseñador
     public formCursosDisponiblesAlumno() {
         this(null);
     }
 
+    // =========== CONFIG TABLA ===========
 
     private void configurarTabla() {
-        String[] columnas = {"ID", "Titulo", "Área", "Docente", "Cupo Max", "Contenido"};
+        // 👇 ACÁ agregamos la columna "Inscriptos"
+        String[] columnas = {
+                "ID",
+                "Titulo",
+                "Área",
+                "Docente",
+                "Cupo Max",
+                "Inscriptos",
+                "Contenido"
+        };
+
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+
         tablaCursos.setModel(model);
         tablaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
@@ -59,23 +73,28 @@ public class formCursosDisponiblesAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
         model.setRowCount(0);
 
-        // usamos tu propio método
-        List<Curso> cursos = plataforma.obtenerCursosDisponibles();
+        // usa tu método existente
+        List<Curso> cursos = plataforma.listarCursos();
 
         for (Curso c : cursos) {
+            int inscriptos = inscripcionDAO.contarInscriptosPorCurso(c.getIdCurso());
+
             Object[] fila = {
                     c.getIdCurso(),
-                    c.getTitulo(),  // según tu modelo
+                    c.getTitulo(),
                     c.getArea() != null ? c.getArea().getNombre() : "",
                     c.getDocente() != null
                             ? c.getDocente().getNombre() + " " + c.getDocente().getApellido()
                             : "",
                     c.getCupoMax(),
+                    inscriptos, // 👈 nueva columna
                     c.getContenido()
             };
             model.addRow(fila);
         }
     }
+
+    // =========== LISTENERS ===========
 
     private void initListeners() {
         cerrarButton.addActionListener(e -> dispose());
@@ -106,6 +125,8 @@ public class formCursosDisponiblesAlumno extends JFrame {
                         "Inscripción realizada con éxito.",
                         "OK",
                         JOptionPane.INFORMATION_MESSAGE);
+                // recargar tabla para ver inscriptos actualizados
+                cargarCursos();
             } else {
                 JOptionPane.showMessageDialog(this,
                         "No se pudo inscribirte. Verificá si ya estás inscripto o si hay algún problema.",
@@ -115,7 +136,8 @@ public class formCursosDisponiblesAlumno extends JFrame {
         });
     }
 
-    // test rápido
+    // =========== MAIN DE PRUEBA ===========
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
                 new formCursosDisponiblesAlumno("marcosezq@gmail.com").setVisible(true)
