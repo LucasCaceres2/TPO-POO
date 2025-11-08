@@ -67,6 +67,50 @@ public class PagoDAO {
         return false;
     }
 
+    /*public boolean agregarPago(Pago pago) {
+        if (pago == null || pago.getAlumno() == null) {
+            System.out.println("⚠️ Datos incompletos del pago.");
+            return false;
+        }
+
+        Integer idUsuario = obtenerIdUsuarioPorLegajo(pago.getAlumno().getLegajo());
+        if (idUsuario == null) {
+            System.out.println("⚠️ Alumno no encontrado por legajo.");
+            return false;
+        }
+
+        String sql = "INSERT INTO pagos (fecha, monto, idUsuario) VALUES (?, ?, ?)";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            java.util.Date fecha = pago.getFecha();
+            java.sql.Date fechaSQL = new java.sql.Date(
+                    (fecha != null ? fecha : new java.util.Date()).getTime()
+            );
+
+            stmt.setDate(1, fechaSQL);
+            stmt.setDouble(2, pago.getMonto());
+            stmt.setInt(3, idUsuario);
+
+            int filas = stmt.executeUpdate();
+            if (filas > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        pago.setIdPago(rs.getInt(1));  // reflejar ID generado en el modelo
+                    }
+                }
+                System.out.println("✅ Pago registrado correctamente.");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al agregar pago: " + e.getMessage());
+        }
+        return false;
+    }*/
+
+
     // --- LISTAR PAGOS POR LEGAJO ---
     public List<Pago> listarPagosPorLegajo(String legajo) {
         Integer idUsuario = obtenerIdUsuarioPorLegajo(legajo);

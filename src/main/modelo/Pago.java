@@ -1,44 +1,36 @@
 package main.modelo;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Pago {
-    private int idPago;
-    private Date fecha;
+    private int idPago;       // asignado por la BD
+    private Date fecha;       // momento en que se registra el pago
     private double monto;
     private Alumno alumno;
 
-    // Constructor para pagos ya existentes
+    // Para pagos leídos de BD
     public Pago(int idPago, Date fecha, double monto, Alumno alumno) {
+        if (alumno == null) throw new IllegalArgumentException("El pago debe tener un alumno asociado.");
+        if (monto <= 0) throw new IllegalArgumentException("El monto debe ser mayor a 0.");
         this.idPago = idPago;
-        this.fecha = fecha;
+        this.fecha = (fecha != null) ? fecha : new Date();
         this.monto = monto;
         this.alumno = alumno;
     }
 
-    // Constructor para nuevos pagos
+    // Para nuevos pagos
     public Pago(double monto, Alumno alumno) {
-        this.fecha = new Date(System.currentTimeMillis());
-        this.monto = monto;
-        this.alumno = alumno;
+        this(0, new Date(), monto, alumno);
     }
 
-    public boolean pagar(double monto) {
-        if (monto <= 0) return false;
-        this.monto = monto;
-        this.fecha = new Date(System.currentTimeMillis());
-        return true;
-    }
-
-    // Getters y Setters
+    // Getters
     public int getIdPago() { return idPago; }
-    public void setIdPago(int idPago) { this.idPago = idPago; }
-
     public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
-
     public double getMonto() { return monto; }
     public Alumno getAlumno() { return alumno; }
+
+    // Solo BD setea el id
+    public void setIdPago(int idPago) { this.idPago = idPago; }
 
     @Override
     public String toString() {

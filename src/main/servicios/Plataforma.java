@@ -80,6 +80,26 @@ public class Plataforma {
         return pagoDAO.agregarPago(pago);
     }
 
+/*    // --- Registrar pago ---
+    public boolean registrarPago(String legajoAlumno, double monto) {
+        if (monto <= 0) {
+            System.out.println("⚠️ El monto del pago debe ser mayor a 0.");
+            return false;
+        }
+
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado con legajo: " + legajoAlumno);
+            return false;
+        }
+
+        // Lógica de negocio: crear entidad consistente
+        Pago pago = new Pago(monto, alumno);
+
+        // Persistencia delegada al DAO
+        return pagoDAO.agregarPago(pago);
+    }*/
+
     // --- Listar inscripciones por legajo ---
     public List<Inscripcion> obtenerInscripcionesDeAlumno(String legajoAlumno) {
         return inscripcionDAO.listarInscripcionesPorLegajo(legajoAlumno);
