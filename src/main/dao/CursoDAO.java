@@ -206,6 +206,61 @@ public class CursoDAO {
         return cursos;
     }
 
+    // 🔹 Listar cursos por docente
+    public List<Curso> listarCursosPorDocente(int idDocente) {
+        List<Curso> cursos = new ArrayList<>();
+        String sql = """
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,
+                       d.matricula,
+                       u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
+                       a.nombre AS areaNombre
+                FROM cursos c
+                JOIN docentes d ON c.idDocente = d.idUsuario
+                JOIN usuarios u ON d.idUsuario = u.idUsuario
+                JOIN areas a ON c.idArea = a.idArea
+                WHERE c.idDocente = ?
+                """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idDocente);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Docente docente = new Docente(
+                            rs.getInt("idDocente"),
+                            rs.getString("docenteNombre"),
+                            rs.getString("docenteApellido"),
+                            rs.getString("docenteEmail"),
+                            null,
+                            rs.getString("matricula")
+                    );
+
+                    Area area = new Area(rs.getInt("idArea"), rs.getString("areaNombre"));
+
+                    Curso curso = new Curso(
+                            rs.getInt("idCurso"),
+                            rs.getString("titulo"),
+                            rs.getInt("cupoMax"),
+                            docente,
+                            area,
+                            rs.getString("contenido")
+                    );
+                    cursos.add(curso);
+                }
+            }
+
+            System.out.println("📘 Total cursos del docente: " + cursos.size());
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar cursos por docente: " + e.getMessage());
+        }
+
+        return cursos;
+    }
+
+
     // 🔹 Actualizar curso
     public boolean actualizarCurso(int idCurso, String campo, String nuevoValor) {
         if (campo == null || campo.isEmpty() || nuevoValor == null || nuevoValor.isEmpty()) return false;

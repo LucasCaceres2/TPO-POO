@@ -1,8 +1,10 @@
 package main.modelo;
 
 import main.interfaces.IUsuariosAcciones;
+import main.dao.InscripcionDAO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Alumno extends Usuario implements IUsuariosAcciones {
     private String legajo;
@@ -23,41 +25,64 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     }
 
     // 🔹 Getters y Setters
-    public String getLegajo() { return legajo; }
-    public void setLegajo(String legajo) { this.legajo = legajo; }
-    public List<Inscripcion> getInscripciones() { return inscripciones; }
-    public void setInscripciones(List<Inscripcion> inscripciones) { this.inscripciones = inscripciones; }
-
-    // 🔹 Lógica de negocio simple
-    public void inscribirse(Curso curso) {
-        if (curso == null) {
-            System.out.println("⚠️ El curso no puede ser nulo.");
-            return;
-        }
-
-        if (curso.tieneCupo()) {
-            Inscripcion inscripcion = new Inscripcion(this, curso);
-            curso.agregarInscripcion(inscripcion);
-            inscripciones.add(inscripcion);
-            System.out.println(nombre + " se inscribió al curso: " + curso.getTitulo());
-        } else {
-            System.out.println("❌ No hay cupo disponible para el curso: " + curso.getTitulo());
-        }
+    public String getLegajo() {
+        return legajo;
     }
 
-    public void verCursosInscritos() {
+    public void setLegajo(String legajo) {
+        this.legajo = legajo;
+    }
+
+    public List<Inscripcion> getInscripciones() {
+        return inscripciones;
+    }
+
+    public void setInscripciones(List<Inscripcion> inscripciones) {
+        this.inscripciones = inscripciones;
+    }
+
+    // 🔹 Cargar inscripciones desde BD
+    public void cargarInscripciones() {
+        if (this.legajo == null || this.legajo.isEmpty()) {
+            return;
+        }
+        InscripcionDAO inscripcionDAO = new InscripcionDAO();
+        this.inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(this.legajo);
+    }
+
+    // 🔹 Obtener títulos de cursos inscritos (sin imprimir)
+    public List<String> obtenerTitulosCursosInscritos() {
         if (inscripciones == null || inscripciones.isEmpty()) {
-            System.out.println(nombre + " no tiene cursos inscritos.");
-            return;
+            return new ArrayList<>();
         }
 
-        System.out.println("📘 Cursos de " + nombre + ":");
+        List<String> titulos = new ArrayList<>();
         for (Inscripcion i : inscripciones) {
-            System.out.println("- " + i.getCurso().getTitulo());
+            if (i.getCurso() != null) {
+                titulos.add(i.getCurso().getTitulo());
+            }
         }
+        return titulos;
     }
 
-    // 🔹 Métodos de la interfaz
+    // 🔹 Validación: ¿Puede inscribirse a este curso?
+    public boolean puedeInscribirseA(Curso curso) {
+        if (curso == null) return false;
+        if (!curso.tieneCupo()) return false;
+
+        // Verificar si ya está inscrito
+        if (inscripciones != null) {
+            for (Inscripcion i : inscripciones) {
+                if (i.getCurso() != null && i.getCurso().getIdCurso() == curso.getIdCurso()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // 🔹 Métodos de la interfaz (para futura GUI con Swing)
     @Override
     public void registrarse() {
         System.out.println("🟢 Registro exitoso del alumno " + nombre);
@@ -82,7 +107,33 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     public void actualizarPerfil(String nombre, String apellido, String email) {
         if (nombre != null && !nombre.isBlank()) this.nombre = nombre;
         if (apellido != null && !apellido.isBlank()) this.apellido = apellido;
-        if (email != null && email.contains("@")) this.email = email;
+        if (email != null && esEmailValido(email)) this.email = email;
         System.out.println("🔄 Perfil actualizado correctamente.");
+    }
+
+    // 🔹 Validación de email mejorada
+    private boolean esEmailValido(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    }
+
+    // 🔹 toString() para debugging
+    @Override
+    public String toString() {
+        return String.format("Alumno{legajo='%s', nombre='%s %s', email='%s'}",
+                legajo, nombre, apellido, email);
+    }
+
+    // 🔹 equals() y hashCode() basados en legajo
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Alumno)) return false;
+        Alumno alumno = (Alumno) o;
+        return Objects.equals(legajo, alumno.legajo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(legajo);
     }
 }

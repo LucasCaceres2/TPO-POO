@@ -99,6 +99,72 @@ public class InscripcionDAO {
         return listarInscripcionesPorAlumnoIdUsuario(idUsuario);
     }
 
+    // 🔹 Listar inscripciones por curso
+    public List<Inscripcion> listarInscripcionesPorCurso(int idCurso) {
+        List<Inscripcion> lista = new ArrayList<>();
+
+        String sql = """
+                SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
+                       a.idUsuario, a.legajo,
+                       u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido,
+                       p.idPago, p.monto, p.fecha AS fechaPago
+                FROM inscripciones i
+                JOIN alumnos a ON i.idUsuario = a.idUsuario
+                JOIN usuarios u ON a.idUsuario = u.idUsuario
+                JOIN cursos c ON i.idCurso = c.idCurso
+                LEFT JOIN pagos p ON i.idPago = p.idPago
+                WHERE i.idCurso = ?""";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Alumno alumno = new Alumno(
+                            rs.getInt("idUsuario"),
+                            rs.getString("alumnoNombre"),
+                            rs.getString("alumnoApellido"),
+                            rs.getString("alumnoEmail"),
+                            null,
+                            rs.getString("legajo")
+                    );
+
+                    Curso curso = new Curso(
+                            rs.getInt("idCurso"),
+                            rs.getString("cursoTitulo"),
+                            rs.getInt("cupoMax"),
+                            null,
+                            null,
+                            rs.getString("contenido")
+                    );
+
+                    Pago pago = null;
+                    int idPago = rs.getInt("idPago");
+                    if (!rs.wasNull()) {
+                        pago = new Pago(idPago, rs.getDate("fechaPago"), rs.getDouble("monto"), alumno);
+                    }
+
+                    lista.add(new Inscripcion(
+                            rs.getInt("idInscripcion"),
+                            rs.getDate("fecha"),
+                            alumno,
+                            curso,
+                            pago,
+                            EstadoInscripcion.valueOf(rs.getString("estadoPago")),
+                            EstadoCurso.valueOf(rs.getString("estadoCurso"))
+                    ));
+                }
+            }
+            System.out.println("📘 Total inscripciones del curso: " + lista.size());
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar inscripciones por curso: " + e.getMessage());
+        }
+        return lista;
+    }
+
     // --- ACTUALIZAR ESTADOS ---
     public boolean actualizarEstadoPago(int idInscripcion, EstadoInscripcion nuevoEstado) {
         return ejecutarUpdate("UPDATE inscripciones SET estadoPago = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
@@ -137,7 +203,7 @@ public class InscripcionDAO {
         return false;
     }
 
-    // --- MÉTODO PRIVADO QUE USA idUsuario ---
+    // --- METODO PRIVADO QUE USA idUsuario ---
     private List<Inscripcion> listarInscripcionesPorAlumnoIdUsuario(int idUsuario) {
         List<Inscripcion> lista = new ArrayList<>();
 

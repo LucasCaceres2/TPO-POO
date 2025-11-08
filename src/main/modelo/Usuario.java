@@ -19,7 +19,7 @@ public abstract class Usuario {
     protected String apellido;
     protected String email;
     protected String contrasena;
-    protected TipoUsuario tipoUsuario; // enum para indicar ALUMNO o DOCENTE
+    protected TipoUsuario tipoUsuario;
 
     // 🔹 Constructor para crear un usuario nuevo (antes de insertarlo en BD)
     public Usuario(String nombre, String apellido, String email, String contrasena, TipoUsuario tipoUsuario) {

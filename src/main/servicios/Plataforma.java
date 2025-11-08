@@ -89,4 +89,54 @@ public class Plataforma {
     public List<Curso> listarCursos() {
         return cursoDAO.listarCursos();
     }
+
+    // --- Mostrar cursos de un alumno (reemplaza a verCursosInscritos()) ---
+    public void mostrarCursosDeAlumno(String legajo) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajo);
+        if (alumno == null) {
+            System.out.println("❌ Alumno no encontrado.");
+            return;
+        }
+
+        alumno.cargarInscripciones();
+        List<String> cursos = alumno.obtenerTitulosCursosInscritos();
+
+        if (cursos.isEmpty()) {
+            System.out.println(alumno.getNombre() + " no tiene cursos inscritos.");
+        } else {
+            System.out.println("📘 Cursos de " + alumno.getNombre() + ":");
+            for (String titulo : cursos) {
+                System.out.println("  - " + titulo);
+            }
+        }
+    }
+
+    // --- Inscribir con validación previa  ---
+    public boolean inscribirAlumnoEnCursoConValidacion(String legajoAlumno, String tituloCurso) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        Curso curso = cursoDAO.obtenerCursoPorTitulo(tituloCurso);
+
+        if (alumno == null || curso == null) {
+            System.out.println("⚠️ No se encontró alumno o curso.");
+            return false;
+        }
+
+        // 🔹 Cargar inscripciones para validar
+        alumno.cargarInscripciones();
+
+        // 🔹 Validar antes de intentar inscribir
+        if (!alumno.puedeInscribirseA(curso)) {
+            System.out.println("❌ El alumno no puede inscribirse (sin cupo o ya inscrito).");
+            return false;
+        }
+
+        Inscripcion inscripcion = new Inscripcion(alumno, curso);
+        boolean exito = inscripcionDAO.agregarInscripcion(inscripcion);
+
+        if (exito) {
+            System.out.println("✅ " + alumno.getNombre() + " inscrito correctamente en: " + curso.getTitulo());
+        }
+
+        return exito;
+    }
 }
