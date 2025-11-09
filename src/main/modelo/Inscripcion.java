@@ -1,25 +1,18 @@
 package main.modelo;
 
-
-
 import java.util.Date;
 import java.util.Objects;
 
-/**
- * Clase que representa una inscripción de un alumno a un curso.
- * Contiene la lógica de negocio relacionada con estados de pago y curso.
- */
 public class Inscripcion {
     private int idInscripcion;
     private Date fecha;
     private Alumno alumno;
-    private transient Curso curso; // evita ciclo infinito en JSON
+    private transient Curso curso;
     private Pago pago;
     private EstadoInscripcion estadoPago;
     private EstadoCurso estadoCurso;
 
     // ==================== CONSTRUCTORES ====================
-
     /**
      * Constructor completo para crear una inscripción con todos los datos.
      * Se usa cuando se recupera desde la BD.
@@ -159,7 +152,7 @@ public class Inscripcion {
         if (!estaPagada()) {
             throw new IllegalStateException("❌ No se puede aprobar un curso sin haber pagado");
         }
-        if (this.estadoCurso == EstadoCurso.DADO_DE_BAJA) {
+        if (this.estadoCurso == EstadoCurso.APROBADO) {
             throw new IllegalStateException("❌ No se puede aprobar un curso cancelado");
         }
         this.estadoCurso = EstadoCurso.APROBADO;
@@ -173,7 +166,7 @@ public class Inscripcion {
         if (!estaPagada()) {
             throw new IllegalStateException("❌ No se puede desaprobar un curso sin haber pagado");
         }
-        if (this.estadoCurso == EstadoCurso.CANCELADO) {
+        if (this.estadoCurso == EstadoCurso.DESAPROBADO) {
             throw new IllegalStateException("❌ No se puede desaprobar un curso cancelado");
         }
         this.estadoCurso = EstadoCurso.DESAPROBADO;
@@ -185,21 +178,10 @@ public class Inscripcion {
      */
     public void cancelarInscripcion() {
         if (this.estadoCurso == EstadoCurso.APROBADO || 
-            this.estadoCurso == EstadoCurso.DESAPROBADO) {
+            this.estadoCurso == EstadoCurso.DADO_DE_BAJA) {
             throw new IllegalStateException("❌ No se puede cancelar un curso ya finalizado");
         }
-        this.estadoCurso = EstadoCurso.CANCELADO;
-    }
-
-    /**
-     * Reactiva una inscripción cancelada (vuelve a estado CURSANDO).
-     * @throws IllegalStateException si la inscripción no estaba cancelada
-     */
-    public void reactivarInscripcion() {
-        if (this.estadoCurso != EstadoCurso.CANCELADO) {
-            throw new IllegalStateException("⚠️ Solo se pueden reactivar inscripciones canceladas");
-        }
-        this.estadoCurso = EstadoCurso.CURSANDO;
+        this.estadoCurso = EstadoCurso.DADO_DE_BAJA;
     }
 
     /**
