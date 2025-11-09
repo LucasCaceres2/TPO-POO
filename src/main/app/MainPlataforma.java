@@ -23,7 +23,8 @@ public class MainPlataforma {
                 45,
                 "MAT120",
                 "Data Science",
-                "Curso inicial de aprendizaje automático con Python y scikit-learn."
+                "Curso inicial de aprendizaje automático con Python y scikit-learn.",
+                30
         );
 
         // ==== CREAR ALUMNO ====
