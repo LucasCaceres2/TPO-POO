@@ -188,4 +188,76 @@ public class AlumnoDAO {
 
         return false;
     }
+
+    public Alumno obtenerAlumnoPorEmail(String email) {
+        String sql = """
+            SELECT u.idUsuario,
+                   u.nombre,
+                   u.apellido,
+                   u.email,
+                   u.contrasena,
+                   a.legajo
+            FROM usuarios u
+            JOIN alumnos a ON u.idUsuario = a.idUsuario
+            WHERE u.email = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int idUsuario = rs.getInt("idUsuario");
+                    String nombre = rs.getString("nombre");
+                    String apellido = rs.getString("apellido");
+                    String emailDb = rs.getString("email");
+                    String contrasena = rs.getString("contrasena");
+                    String legajo = rs.getString("legajo");
+
+                    // usamos tu constructor existente
+                    return new Alumno(idUsuario, nombre, apellido, emailDb, contrasena, legajo);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener alumno por email: " + e.getMessage());
+        }
+        return null;
+    }
+
+
+    public boolean actualizarAlumno(Alumno alumno) {
+        if (alumno == null || alumno.getIdUsuario() <= 0) {
+            System.out.println("⚠️ Alumno inválido para actualización.");
+            return false;
+        }
+
+        String sql = """
+            UPDATE usuarios
+            SET nombre = ?, apellido = ?, email = ?
+            WHERE idUsuario = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, alumno.getNombre());
+            ps.setString(2, alumno.getApellido());
+            ps.setString(3, alumno.getEmail());
+            ps.setInt(4, alumno.getIdUsuario());
+
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println("✅ Perfil de alumno actualizado (idUsuario=" + alumno.getIdUsuario() + ")");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al actualizar alumno: " + e.getMessage());
+        }
+
+        return false;
+    }
 }

@@ -1,5 +1,7 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import main.dao.InscripcionDAO;
 import main.modelo.Curso;
 import main.modelo.EstadoInscripcion;
@@ -8,6 +10,7 @@ import main.servicios.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
 public class formMisPagosAlumno extends JFrame {
@@ -137,11 +140,11 @@ public class formMisPagosAlumno extends JFrame {
             }
 
             // Cambiamos el estado en BD usando el DAO
-            boolean ok = inscripcionDAO.actualizarEstadoPago(idInscripcion, EstadoInscripcion.PAGADO);
+            boolean ok = inscripcionDAO.actualizarEstadoPago(idInscripcion, EstadoInscripcion.PAGO);
 
             if (ok) {
                 // Actualizamos la tabla en pantalla
-                model.setValueAt(EstadoInscripcion.PAGADO, fila, 3);
+                model.setValueAt(EstadoInscripcion.PAGO, fila, 3);
 
                 JOptionPane.showMessageDialog(this,
                         "Pago registrado correctamente.",
@@ -162,4 +165,5 @@ public class formMisPagosAlumno extends JFrame {
                 new formMisPagosAlumno("marcosezq@gmail.com").setVisible(true)
         );
     }
+
 }

@@ -256,6 +256,41 @@ public class Plataforma {
         return (presentes * 100.0) / totalReferencia;
     }
 
+    public boolean inscribirAlumnoEnCurso(String emailAlumno, int idCurso) {
+        // Supongo que tenés este método; si no, se puede crear en AlumnoDAO
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado por email: " + emailAlumno);
+            return false;
+        }
+
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado con id: " + idCurso);
+            return false;
+        }
+
+        Inscripcion inscripcion = new Inscripcion(alumno, curso);
+        return inscripcionDAO.agregarInscripcion(inscripcion);
+    }
+
+    public List<Inscripcion> obtenerInscripcionesDeAlumnoPorEmail(String emailAlumno) {
+        if (emailAlumno == null || emailAlumno.isBlank()) {
+            return List.of();
+        }
+
+        // Necesitamos el alumno para conocer su legajo
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ No se encontró alumno con email: " + emailAlumno);
+            return List.of();
+        }
+
+        // Reusamos el método existente que trabaja con legajo
+        return inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
+    }
+
+
 
 
 

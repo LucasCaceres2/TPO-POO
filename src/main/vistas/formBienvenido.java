@@ -1,6 +1,10 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class formBienvenido extends JFrame {
 
@@ -36,4 +40,5 @@ public class formBienvenido extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new formBienvenido().setVisible(true));
     }
+
 }

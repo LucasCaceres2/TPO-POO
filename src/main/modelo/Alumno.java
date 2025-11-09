@@ -41,6 +41,22 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
         this.inscripciones = inscripciones;
     }
 
+    // 🔹 Setters adicionales para usar en Mi Perfil
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+
+
     // 🔹 Cargar inscripciones desde BD
     public void cargarInscripciones() {
         if (this.legajo == null || this.legajo.isEmpty()) {

@@ -1,8 +1,12 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import main.controlador.ControladorRegistro;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -88,7 +92,7 @@ public class formRegistro extends JFrame {
     private void mostrarMensaje(String msg, boolean esError) {
         if (lblMensaje != null) {
             lblMensaje.setText(msg);
-            lblMensaje.setForeground(esError ? java.awt.Color.RED : new java.awt.Color(0, 128, 0));
+            lblMensaje.setForeground(esError ? Color.RED : new Color(0, 128, 0));
         } else {
             // Por si todavía no agregaste el label en el diseñador
             JOptionPane.showMessageDialog(this, msg,
@@ -112,4 +116,5 @@ public class formRegistro extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new formRegistro().setVisible(true));
     }
+
 }

@@ -1,11 +1,14 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import main.dao.InscripcionDAO;
 import main.modelo.Curso;
 import main.servicios.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
 public class formCursosDisponiblesAlumno extends JFrame {
@@ -47,7 +50,6 @@ public class formCursosDisponiblesAlumno extends JFrame {
     // =========== CONFIG TABLA ===========
 
     private void configurarTabla() {
-        // 👇 ACÁ agregamos la columna "Inscriptos"
         String[] columnas = {
                 "ID",
                 "Titulo",
@@ -55,6 +57,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
                 "Docente",
                 "Cupo Max",
                 "Inscriptos",
+                "Clases",     // 👈 nueva columna
                 "Contenido"
         };
 
@@ -68,6 +71,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
         tablaCursos.setModel(model);
         tablaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
+
 
     private void cargarCursos() {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
@@ -87,7 +91,8 @@ public class formCursosDisponiblesAlumno extends JFrame {
                             ? c.getDocente().getNombre() + " " + c.getDocente().getApellido()
                             : "",
                     c.getCupoMax(),
-                    inscriptos, // 👈 nueva columna
+                    inscriptos,
+                    c.getCantidadClases(),
                     c.getContenido()
             };
             model.addRow(fila);
@@ -143,4 +148,6 @@ public class formCursosDisponiblesAlumno extends JFrame {
                 new formCursosDisponiblesAlumno("marcosezq@gmail.com").setVisible(true)
         );
     }
+
+
 }

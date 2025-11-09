@@ -1,9 +1,12 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import main.dao.AlumnoDAO;
 import main.modelo.Alumno;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class formMiPerfilAlumno extends JFrame {
 
@@ -127,4 +130,5 @@ public class formMiPerfilAlumno extends JFrame {
                 new formMiPerfilAlumno("marcosezq@gmail.com").setVisible(true)
         );
     }
+
 }

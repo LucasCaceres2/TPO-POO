@@ -1,11 +1,14 @@
 package main.vistas;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import main.modelo.Inscripcion;
 import main.modelo.Curso;
 import main.servicios.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
 public class formMisCursosAlumno extends JFrame {
@@ -114,4 +117,5 @@ public class formMisCursosAlumno extends JFrame {
                 new formMisCursosAlumno("marcosezq@gmail.com").setVisible(true)
         );
     }
+
 }

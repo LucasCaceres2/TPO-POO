@@ -40,8 +40,8 @@ public class InscripcionDAO {
             return false;
         }
 
-        String checkSql = "SELECT 1 FROM inscripciones WHERE idUsuario = ? AND idCurso = ?";
-        String insertSql = "INSERT INTO inscripciones (fecha, idUsuario, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM inscripciones WHERE idAlumno = ? AND idCurso = ?";
+        String insertSql = "INSERT INTO inscripciones (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -61,7 +61,7 @@ public class InscripcionDAO {
                 );
 
                 stmt.setDate(1, fechaSQL);
-                stmt.setInt(2, idUsuario);
+                stmt.setInt(2, idUsuario); // idUsuario del alumno = idAlumno en la tabla
                 stmt.setInt(3, inscripcion.getCurso().getIdCurso());
 
                 if (inscripcion.getPago() != null && inscripcion.getPago().getIdPago() > 0) {
@@ -110,7 +110,7 @@ public class InscripcionDAO {
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
-                JOIN alumnos a ON i.idUsuario = a.idUsuario
+                JOIN alumnos a ON i.idAlumno = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
                 JOIN cursos c ON i.idCurso = c.idCurso
                 LEFT JOIN pagos p ON i.idPago = p.idPago
@@ -216,11 +216,11 @@ public class InscripcionDAO {
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
-                JOIN alumnos a ON i.idUsuario = a.idUsuario
+                JOIN alumnos a ON i.idAlumno = a.idUsuario
                 JOIN usuarios u ON a.idUsuario = u.idUsuario
                 JOIN cursos c ON i.idCurso = c.idCurso
                 LEFT JOIN pagos p ON i.idPago = p.idPago
-                WHERE i.idUsuario = ?""";
+                WHERE i.idAlumno = ?""";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -289,11 +289,11 @@ public class InscripcionDAO {
                    c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripciones i
-            JOIN alumnos a ON i.idUsuario = a.idUsuario
+            JOIN alumnos a ON i.idAlumno = a.idUsuario
             JOIN usuarios u ON a.idUsuario = u.idUsuario
             JOIN cursos c ON i.idCurso = c.idCurso
             LEFT JOIN pagos p ON i.idPago = p.idPago
-            WHERE i.idUsuario = ? AND i.idCurso = ?
+            WHERE i.idAlumno = ? AND i.idCurso = ?
             """;
 
         try (Connection conn = ConexionDB.conectar();
@@ -355,5 +355,22 @@ public class InscripcionDAO {
         }
 
         return null;
+    }
+
+    public int contarInscriptosPorCurso(int idCurso) {
+        String sql = "SELECT COUNT(*) AS cant FROM inscripciones WHERE idCurso = ?";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idCurso);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("cant");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error al contar inscriptos: " + e.getMessage());
+        }
+        return 0;
     }
 }
