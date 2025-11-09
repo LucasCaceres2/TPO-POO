@@ -13,6 +13,9 @@ public class Plataforma {
     private InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private PagoDAO pagoDAO = new PagoDAO();
     private AreaDAO areaDAO = new AreaDAO();
+    // Campos en Plataforma:
+    private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
+    private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
     // ===========================
     //     MÉTODOS DE NEGOCIO
@@ -37,7 +40,7 @@ public class Plataforma {
     }
 
     // --- Crear curso nuevo ---
-    public boolean crearCurso(String titulo, int duracionHoras, String matriculaDocente, String nombreArea, String descripcion) {
+    public boolean crearCurso(String titulo, int cupoMax, String matriculaDocente, String nombreArea, String descripcion, int cantidadClases) {
         Docente docente = docenteDAO.obtenerDocentePorMatricula(matriculaDocente);
         if (docente == null) {
             System.out.println("⚠️ No se encontró el docente con matrícula: " + matriculaDocente);
@@ -50,7 +53,7 @@ public class Plataforma {
             return false;
         }
 
-        Curso curso = new Curso(0, titulo, duracionHoras, docente, area, descripcion);
+        Curso curso = new Curso(0, titulo, cupoMax, docente, area, descripcion, cantidadClases);
         return cursoDAO.agregarCurso(curso);
     }
 
@@ -70,18 +73,6 @@ public class Plataforma {
 
     // --- Registrar pago ---
     public boolean registrarPago(String legajoAlumno, double monto) {
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ Alumno no encontrado.");
-            return false;
-        }
-
-        Pago pago = new Pago(0, new java.sql.Date(System.currentTimeMillis()), monto, alumno);
-        return pagoDAO.agregarPago(pago);
-    }
-
-/*    // --- Registrar pago ---
-    public boolean registrarPago(String legajoAlumno, double monto) {
         if (monto <= 0) {
             System.out.println("⚠️ El monto del pago debe ser mayor a 0.");
             return false;
@@ -98,7 +89,7 @@ public class Plataforma {
 
         // Persistencia delegada al DAO
         return pagoDAO.agregarPago(pago);
-    }*/
+    }
 
     // --- Listar inscripciones por legajo ---
     public List<Inscripcion> obtenerInscripcionesDeAlumno(String legajoAlumno) {
@@ -159,4 +150,114 @@ public class Plataforma {
 
         return exito;
     }
+
+    public boolean tomarAsistencia(String legajoAlumno, int idCurso, java.util.Date fecha, boolean presente) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado.");
+            return false;
+        }
+
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado.");
+            return false;
+        }
+
+        Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
+        if (inscripcion == null) {
+            System.out.println("⚠️ El alumno no está inscripto en este curso.");
+            return false;
+        }
+
+        Asistencia asistencia = new Asistencia(
+                inscripcion,
+                (fecha != null) ? fecha : new java.util.Date(),
+                presente
+        );
+
+        return asistenciaDAO.agregarAsistencia(asistencia);
+    }
+
+    public boolean registrarCalificacion(String legajoAlumno, int idCurso, String tipo, double nota) {
+        if (nota < 0 || nota > 10) {
+            System.out.println("⚠️ La nota debe estar entre 0 y 10.");
+            return false;
+        }
+
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado.");
+            return false;
+        }
+
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado.");
+            return false;
+        }
+
+        Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
+        if (inscripcion == null) {
+            System.out.println("⚠️ El alumno no está inscripto en este curso.");
+            return false;
+        }
+
+        Calificacion calificacion = new Calificacion(inscripcion, tipo, nota);
+
+        return calificacionDAO.agregarCalificacion(calificacion);
+    }
+    public double calcularPorcentajeAsistencia(String legajoAlumno, int idCurso) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado.");
+            return 0.0;
+        }
+
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado.");
+            return 0.0;
+        }
+
+        Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
+        if (inscripcion == null) {
+            System.out.println("⚠️ El alumno no está inscripto en este curso.");
+            return 0.0;
+        }
+
+        List<Asistencia> asistencias = asistenciaDAO.obtenerAsistenciasPorInscripcion(inscripcion);
+        if (asistencias == null || asistencias.isEmpty()) {
+            return 0.0;
+        }
+
+        int presentes = 0;
+        for (int i = 0; i < asistencias.size(); i++) {
+            Asistencia a = asistencias.get(i);
+            if (a.isPresente()) {
+                presentes++;
+            }
+        }
+
+        int totalReferencia;
+
+        if (curso.getCantidadClases() > 0) {
+            // Usamos la cantidad planificada del curso
+            totalReferencia = curso.getCantidadClases();
+        } else {
+            // Si no está seteado, usamos la cantidad de asistencias registradas
+            totalReferencia = asistencias.size();
+        }
+
+        if (totalReferencia == 0) {
+            return 0.0;
+        }
+
+        return (presentes * 100.0) / totalReferencia;
+    }
+
+
+
+
+
 }

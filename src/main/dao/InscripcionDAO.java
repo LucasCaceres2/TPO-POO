@@ -107,7 +107,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
                 JOIN alumnos a ON i.idUsuario = a.idUsuario
@@ -138,7 +138,9 @@ public class InscripcionDAO {
                             rs.getInt("cupoMax"),
                             null,
                             null,
-                            rs.getString("contenido")
+                            rs.getString("contenido"),
+                            rs.getInt("cantidadClases")
+
                     );
 
                     Pago pago = null;
@@ -211,7 +213,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripciones i
                 JOIN alumnos a ON i.idUsuario = a.idUsuario
@@ -242,7 +244,8 @@ public class InscripcionDAO {
                             rs.getInt("cupoMax"),
                             null,
                             null,
-                            rs.getString("contenido")
+                            rs.getString("contenido"),
+                            rs.getInt("cantidadClases")
                     );
 
                     Pago pago = null;
@@ -267,5 +270,90 @@ public class InscripcionDAO {
             System.out.println("❌ Error al listar inscripciones: " + e.getMessage());
         }
         return lista;
+    }
+    public Inscripcion obtenerInscripcion(Alumno alumno, Curso curso) {
+        if (alumno == null || curso == null) {
+            return null;
+        }
+
+        // Usamos tu helper existente
+        Integer idUsuario = obtenerIdUsuarioPorLegajo(alumno.getLegajo());
+        if (idUsuario == null) {
+            return null;
+        }
+
+        String sql = """
+            SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
+                   a.idUsuario, a.legajo,
+                   u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   p.idPago, p.monto, p.fecha AS fechaPago
+            FROM inscripciones i
+            JOIN alumnos a ON i.idUsuario = a.idUsuario
+            JOIN usuarios u ON a.idUsuario = u.idUsuario
+            JOIN cursos c ON i.idCurso = c.idCurso
+            LEFT JOIN pagos p ON i.idPago = p.idPago
+            WHERE i.idUsuario = ? AND i.idCurso = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUsuario);
+            stmt.setInt(2, curso.getIdCurso());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Reconstruimos Alumno (igual que en tus otros métodos)
+                    Alumno alu = new Alumno(
+                            rs.getInt("idUsuario"),
+                            rs.getString("alumnoNombre"),
+                            rs.getString("alumnoApellido"),
+                            rs.getString("alumnoEmail"),
+                            null,
+                            rs.getString("legajo")
+                    );
+
+                    // Reconstruimos Curso manteniendo tus nombres y constructor
+                    Curso cur = new Curso(
+                            rs.getInt("idCurso"),
+                            rs.getString("cursoTitulo"),
+                            rs.getInt("cupoMax"),
+                            null,
+                            null,
+                            rs.getString("contenido"),
+                            rs.getInt("cantidadClases")
+                    );
+
+                    // Reconstruimos Pago si existe
+                    Pago pago = null;
+                    int idPago = rs.getInt("idPago");
+                    if (!rs.wasNull()) {
+                        pago = new Pago(
+                                idPago,
+                                rs.getDate("fechaPago"),
+                                rs.getDouble("monto"),
+                                alu
+                        );
+                    }
+
+                    // Devolvemos Inscripcion
+                    return new Inscripcion(
+                            rs.getInt("idInscripcion"),
+                            rs.getDate("fecha"),
+                            alu,
+                            cur,
+                            pago,
+                            EstadoInscripcion.valueOf(rs.getString("estadoPago")),
+                            EstadoCurso.valueOf(rs.getString("estadoCurso"))
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener inscripción: " + e.getMessage());
+        }
+
+        return null;
     }
 }

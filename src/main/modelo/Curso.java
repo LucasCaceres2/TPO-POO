@@ -13,19 +13,21 @@ public class Curso {
     private Area area;
     private String contenido;
     private transient List<Inscripcion> inscripciones;
+    private int cantidadClases;
 
     // 🔹 Constructor para crear curso nuevo (antes de BD)
-    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido,int cantidadClases) {
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
         this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
+        this.cantidadClases = cantidadClases;
     }
 
     // 🔹 Constructor para instanciar desde BD
-    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido) {
+    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido,int cantidadClases) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
@@ -33,6 +35,7 @@ public class Curso {
         this.area = area;
         this.contenido = contenido;
         this.inscripciones = new ArrayList<>();
+        this.cantidadClases = cantidadClases;
     }
 
     // 🔹 Cargar inscripciones desde BD
@@ -124,6 +127,17 @@ public class Curso {
         this.inscripciones = inscripciones;
     }
 
+    public int getCantidadClases() {
+        return cantidadClases;
+    }
+
+    public void setCantidadClases(int cantidadClases) {
+        if (cantidadClases < 0) {
+            throw new IllegalArgumentException("La cantidad de clases no puede ser negativa.");
+        }
+        this.cantidadClases = cantidadClases;
+    }
+
     // 🔹 equals() y hashCode() basados en idCurso
     @Override
     public boolean equals(Object o) {
@@ -141,8 +155,10 @@ public class Curso {
     // 🔹 toString() mejorado
     @Override
     public String toString() {
-        return String.format("Curso{id=%d, titulo='%s', cupo=%d/%d, docente=%s}", 
-            idCurso, titulo, getCantidadInscriptos(), cupoMax, 
-            (docente != null ? docente.getNombre() : "N/A"));
+        return String.format(
+                "Curso{id=%d, titulo='%s', cupo=%d/%d, clases=%d, docente=%s}",
+                idCurso, titulo, getCantidadInscriptos(), cupoMax, cantidadClases,
+                (docente != null ? docente.getNombre() : "N/A")
+        );
     }
 }

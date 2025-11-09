@@ -50,7 +50,8 @@ public class MainTestDAO {
                 60,
                 docente,
                 area,
-                "Curso teórico-práctico sobre aprendizaje automático, modelos supervisados y no supervisados."
+                "Curso teórico-práctico sobre aprendizaje automático, modelos supervisados y no supervisados.",
+                20
         );
 
         if (cursoDAO.agregarCurso(curso)) {

@@ -173,7 +173,7 @@ public class Inscripcion {
         if (!estaPagada()) {
             throw new IllegalStateException("❌ No se puede desaprobar un curso sin haber pagado");
         }
-        if (this.estadoCurso == EstadoCurso.CANCELADO) {
+        if (this.estadoCurso == EstadoCurso.DADO_DE_BAJA) {
             throw new IllegalStateException("❌ No se puede desaprobar un curso cancelado");
         }
         this.estadoCurso = EstadoCurso.DESAPROBADO;
@@ -188,7 +188,7 @@ public class Inscripcion {
             this.estadoCurso == EstadoCurso.DESAPROBADO) {
             throw new IllegalStateException("❌ No se puede cancelar un curso ya finalizado");
         }
-        this.estadoCurso = EstadoCurso.CANCELADO;
+        this.estadoCurso = EstadoCurso.DADO_DE_BAJA;
     }
 
     /**
@@ -196,7 +196,7 @@ public class Inscripcion {
      * @throws IllegalStateException si la inscripción no estaba cancelada
      */
     public void reactivarInscripcion() {
-        if (this.estadoCurso != EstadoCurso.CANCELADO) {
+        if (this.estadoCurso != EstadoCurso.DADO_DE_BAJA) {
             throw new IllegalStateException("⚠️ Solo se pueden reactivar inscripciones canceladas");
         }
         this.estadoCurso = EstadoCurso.CURSANDO;
