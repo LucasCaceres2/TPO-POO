@@ -16,6 +16,7 @@ public class formBienvenido extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
 
         // Botón CREAR CUENTA -> abre formulario de registro
         crearCuentaButton.addActionListener(e -> {

@@ -2,7 +2,8 @@ package main.vistas.menuPrincipal;
 
 import main.controlador.ControladorLogin;
 import main.vistas.menuAlumno.formMenuAlumno;
-import main.vistas.menuDocente.formMenuDocente;   // 👈 IMPORTANTE
+import main.vistas.menuDocente.formMenuDocente;
+import main.vistas.menuAdministrador.formMenuAdmin;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,7 @@ public class formLogin extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
 
         iniciarSesionButton.addActionListener(new ActionListener() {
             @Override
@@ -58,7 +60,18 @@ public class formLogin extends JFrame {
                         "Login",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                new formMenuDocente(email).setVisible(true); // 👈 abre menú docente
+                new formMenuDocente(email).setVisible(true);
+                dispose();
+                break;
+            }
+
+            case "ADMIN": {
+                JOptionPane.showMessageDialog(this,
+                        "Inicio de sesión correcto (ADMINISTRADOR).",
+                        "Login",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                new formMenuAdmin(email).setVisible(true);
                 dispose();
                 break;
             }

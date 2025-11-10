@@ -373,4 +373,71 @@ public class InscripcionDAO {
         }
         return 0;
     }
+
+    // --- LISTAR TODAS LAS INSCRIPCIONES (para Admin) ---
+    public List<Inscripcion> listarTodasInscripciones() {
+        List<Inscripcion> lista = new ArrayList<>();
+
+        String sql = """
+            SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
+                   a.idUsuario, a.legajo,
+                   u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   p.idPago, p.monto, p.fecha AS fechaPago
+            FROM inscripciones i
+            JOIN alumnos a ON i.idUsuario = a.idUsuario
+            JOIN usuarios u ON a.idUsuario = u.idUsuario
+            JOIN cursos c ON i.idCurso = c.idCurso
+            LEFT JOIN pagos p ON i.idPago = p.idPago
+            ORDER BY i.idInscripcion DESC
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Alumno alumno = new Alumno(
+                        rs.getInt("idUsuario"),
+                        rs.getString("alumnoNombre"),
+                        rs.getString("alumnoApellido"),
+                        rs.getString("alumnoEmail"),
+                        null,
+                        rs.getString("legajo")
+                );
+
+                Curso curso = new Curso(
+                        rs.getInt("idCurso"),
+                        rs.getString("cursoTitulo"),
+                        rs.getInt("cupoMax"),
+                        null,
+                        null,
+                        rs.getString("contenido"),
+                        rs.getInt("cantidadClases")
+                );
+
+                Pago pago = null;
+                int idPago = rs.getInt("idPago");
+                if (!rs.wasNull()) {
+                    pago = new Pago(idPago, rs.getDate("fechaPago"), rs.getDouble("monto"), alumno);
+                }
+
+                lista.add(new Inscripcion(
+                        rs.getInt("idInscripcion"),
+                        rs.getDate("fecha"),
+                        alumno,
+                        curso,
+                        pago,
+                        EstadoInscripcion.valueOf(rs.getString("estadoPago")),
+                        EstadoCurso.valueOf(rs.getString("estadoCurso"))
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar todas las inscripciones: " + e.getMessage());
+        }
+
+        return lista;
+    }
+
 }

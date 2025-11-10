@@ -30,6 +30,11 @@ public class formMenuDocente extends JFrame {
         pack();
 
         initListeners();
+
+        setSize(600, 500);
+
+// centrar en pantalla
+        setLocationRelativeTo(null);
     }
 
     // SOLO para el diseñador de IntelliJ
