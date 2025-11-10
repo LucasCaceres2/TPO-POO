@@ -1,7 +1,6 @@
 package main.app;
 
-import main.vistas.formBienvenido;
-import main.vistas.formLogin;
+import main.vistas.menuPrincipal.formBienvenido;
 
 import javax.swing.*;
 

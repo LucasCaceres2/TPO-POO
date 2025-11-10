@@ -1,12 +1,10 @@
-package main.vistas;
+package main.vistas.menuPrincipal;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import main.controlador.ControladorLogin;
+import main.vistas.menuAlumno.formMenuAlumno;
+import main.vistas.menuDocente.formMenuDocente;   // 👈 IMPORTANTE
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,7 +14,7 @@ public class formLogin extends JFrame {
     private JPanel pnlTitulo;
     private JPanel pnlDatos;
     private JTextField textField1;   // Email
-    private JTextField textField2;   // Contraseña (en tu .form es JTextField)
+    private JTextField textField2;   // Contraseña
     private JButton iniciarSesionButton;
 
     private final ControladorLogin controlador = new ControladorLogin();
@@ -38,22 +36,18 @@ public class formLogin extends JFrame {
 
     private void onLogin() {
         String email = textField1.getText();
-        String contrasena = textField2.getText(); // como es JTextField común
+        String contrasena = textField2.getText();
 
         String resultado = controlador.login(email, contrasena);
 
         switch (resultado) {
             case "ALUMNO": {
-                String emailAlumno = email;
-
                 JOptionPane.showMessageDialog(this,
                         "Inicio de sesión correcto (ALUMNO).",
                         "Login",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                formMenuAlumno menuAlumno = new formMenuAlumno(emailAlumno);
-                menuAlumno.setVisible(true);
-
+                new formMenuAlumno(email).setVisible(true);
                 dispose();
                 break;
             }
@@ -64,11 +58,8 @@ public class formLogin extends JFrame {
                         "Login",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                // cuando tengas el menú de docente:
-                // formMenuDocente menuDocente = new formMenuDocente(email);
-                // menuDocente.setVisible(true);
-                // dispose();
-
+                new formMenuDocente(email).setVisible(true); // 👈 abre menú docente
+                dispose();
                 break;
             }
 
@@ -96,9 +87,7 @@ public class formLogin extends JFrame {
         }
     }
 
-    // para probar solo el login:
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new formLogin().setVisible(true));
     }
-
 }

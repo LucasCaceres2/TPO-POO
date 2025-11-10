@@ -48,4 +48,26 @@ public abstract class Usuario {
     public String getEmail() { return email; }
     public String getContrasena() { return contrasena; }
     public TipoUsuario getTipoUsuario() { return tipoUsuario; }
+
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
 }

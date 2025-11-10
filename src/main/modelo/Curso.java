@@ -153,12 +153,10 @@ public class Curso {
     }
 
     // 🔹 toString() mejorado
+
+
     @Override
     public String toString() {
-        return String.format(
-                "Curso{id=%d, titulo='%s', cupo=%d/%d, clases=%d, docente=%s}",
-                idCurso, titulo, getCantidadInscriptos(), cupoMax, cantidadClases,
-                (docente != null ? docente.getNombre() : "N/A")
-        );
+        return (titulo != null) ? titulo : ("Curso " + idCurso);
     }
 }

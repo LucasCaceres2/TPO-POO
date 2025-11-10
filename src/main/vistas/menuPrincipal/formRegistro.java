@@ -1,8 +1,5 @@
-package main.vistas;
+package main.vistas.menuPrincipal;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import main.controlador.ControladorRegistro;
 
 import javax.swing.*;

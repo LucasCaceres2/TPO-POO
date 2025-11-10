@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="main.vistas.formMiPerfilAlumno">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="main.vistas.menuDocente.formMiPerfilDocente">
   <grid id="27dc6" binding="pnlPrincipal" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="c15e6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="eec38" binding="pnlTitulo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -16,17 +16,17 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="9218" class="javax.swing.JLabel">
+          <component id="1ac66" class="javax.swing.JLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Mi Perfil"/>
+              <text value="Mi perfil"/>
             </properties>
           </component>
         </children>
       </grid>
-      <grid id="742fc" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="1f655" binding="pnlDatos" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -34,7 +34,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="a27d2" class="javax.swing.JTextField" binding="txtNombre">
+          <component id="417db" class="javax.swing.JTextField" binding="txtNombre">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -42,7 +42,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="a9e26" class="javax.swing.JTextField" binding="txtApellido">
+          <component id="a55c0" class="javax.swing.JTextField" binding="txtApellido">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -50,7 +50,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="8158a" class="javax.swing.JTextField" binding="txtEmail">
+          <component id="2a9bd" class="javax.swing.JTextField" binding="txtEmail">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -58,7 +58,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="f42b3" class="javax.swing.JTextField" binding="txtLegajo">
+          <component id="f283d" class="javax.swing.JTextField" binding="txtMatricula">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -68,7 +68,7 @@
           </component>
         </children>
       </grid>
-      <component id="bd60d" class="javax.swing.JButton" binding="guardarButton" default-binding="true">
+      <component id="4a107" class="javax.swing.JButton" binding="guardarButton" default-binding="true">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -76,7 +76,7 @@
           <text value="Guardar"/>
         </properties>
       </component>
-      <component id="aa1c4" class="javax.swing.JButton" binding="cerrarButton" default-binding="true">
+      <component id="9750c" class="javax.swing.JButton" binding="cerrarButton" default-binding="true">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>

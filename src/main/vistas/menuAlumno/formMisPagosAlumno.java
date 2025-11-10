@@ -1,7 +1,5 @@
-package main.vistas;
+package main.vistas.menuAlumno;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import main.dao.InscripcionDAO;
 import main.modelo.Curso;
 import main.modelo.EstadoInscripcion;
@@ -10,7 +8,6 @@ import main.servicios.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.List;
 
 public class formMisPagosAlumno extends JFrame {

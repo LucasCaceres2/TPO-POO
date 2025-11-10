@@ -1,4 +1,6 @@
-package main.vistas;
+package main.vistas.menuAlumno;
+
+import main.vistas.menuPrincipal.formLogin;
 
 import javax.swing.*;
 
