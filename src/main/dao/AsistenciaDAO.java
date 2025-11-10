@@ -36,6 +36,21 @@ public class AsistenciaDAO {
         return false;
     }
 
+    public boolean actualizarAsistencia(int idAsistencia, boolean presente) {
+        String sql = "UPDATE asistencia SET presente = ? WHERE idAsistencia = ?";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, presente);
+            stmt.setInt(2, idAsistencia);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al actualizar asistencia: " + e.getMessage());
+        }
+        return false;
+    }
+
     public List<Asistencia> obtenerAsistenciasPorInscripcion(Inscripcion inscripcion) {
         List<Asistencia> lista = new ArrayList<>();
         String sql = "SELECT idAsistencia, fecha, presente FROM asistencias WHERE idInscripcion = ?";

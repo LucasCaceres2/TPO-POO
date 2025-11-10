@@ -6,7 +6,7 @@ Tablas:
         apellido VARCHAR(50) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
         contrasena VARCHAR(100) NOT NULL,
-        tipoUsuario ENUM('ALUMNO', 'DOCENTE') NOT NULL
+        tipoUsuario ENUM('ALUMNO', 'DOCENTE', 'ADMIN') NOT NULL
     );
 -Alumnos:
     CREATE TABLE IF NOT EXISTS alumnos (
@@ -38,6 +38,8 @@ Tablas:
         contenido TEXT,
         idDocente INT NOT NULL,
         idArea INT NOT NULL,
+        cantidadClases INT NOT NULL,
+        inscriptos INT NOT NULL,
         FOREIGN KEY (idDocente) REFERENCES docentes(idDocente)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
@@ -73,4 +75,32 @@ Tablas:
         FOREIGN KEY (idPago) REFERENCES pagos(idPago)
             ON DELETE SET NULL
             ON UPDATE CASCADE
+    );
+-Asistencia:
+    CREATE TABLE asistencia (
+      idAsistencia INT AUTO_INCREMENT PRIMARY KEY,
+      idInscripcion INT NOT NULL,
+      fecha DATE NOT NULL DEFAULT (CURRENT_DATE),
+      presente TINYINT(1) NOT NULL,
+
+      CONSTRAINT FK_Asistencia_Inscripcion
+        FOREIGN KEY (idInscripcion) REFERENCES inscripciones(idInscripcion)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+      -- evitar duplicados (una asistencia por inscripción+fecha)
+      UNIQUE KEY UQ_Asistencia_Inscripcion_Fecha (idInscripcion, fecha)
+    );
+-Calificacion:
+    CREATE TABLE calificacion (
+      idCalificacion INT AUTO_INCREMENT PRIMARY KEY,
+      idInscripcion INT NOT NULL,
+      tipoEvaluacion ENUM('PARCIAL','FINAL','TRABAJO_PRACTICO') NOT NULL,
+      nota DECIMAL(4,2) NOT NULL CHECK (nota >= 0 AND nota <= 10),
+      fecha DATE NOT NULL DEFAULT (CURRENT_DATE),
+
+      CONSTRAINT FK_Calificacion_Inscripcion
+        FOREIGN KEY (idInscripcion) REFERENCES inscripciones(idInscripcion)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
     );

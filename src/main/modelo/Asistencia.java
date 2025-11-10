@@ -25,6 +25,8 @@ public class Asistencia {
     public int getIdAsistencia() { return idAsistencia; }
     public void setIdAsistencia(int idAsistencia) { this.idAsistencia = idAsistencia; }
 
+    public void setPresente(boolean presente) { this.presente = presente; }
+    public String getEstado() { return presente ? "Presente" : "Ausente"; }
     public Inscripcion getInscripcion() { return inscripcion; }
     public Date getFecha() { return fecha; }
     public boolean isPresente() { return presente; }

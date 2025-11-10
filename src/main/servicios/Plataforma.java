@@ -13,9 +13,8 @@ public class Plataforma {
     private InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private PagoDAO pagoDAO = new PagoDAO();
     private AreaDAO areaDAO = new AreaDAO();
-    // Campos en Plataforma:
-    private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
-    private final CalificacionDAO calificacionDAO = new CalificacionDAO();
+    private AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
+    private CalificacionDAO calificacionDAO = new CalificacionDAO();
 
     // ===========================
     //     MÉTODOS DE NEGOCIO
@@ -179,7 +178,7 @@ public class Plataforma {
         return asistenciaDAO.agregarAsistencia(asistencia);
     }
 
-    public boolean registrarCalificacion(String legajoAlumno, int idCurso, String tipo, double nota) {
+    public boolean registrarCalificacion(String legajoAlumno, int idCurso, TipoEvaluacion tipo, double nota) {
         if (nota < 0 || nota > 10) {
             System.out.println("⚠️ La nota debe estar entre 0 y 10.");
             return false;
@@ -231,29 +230,24 @@ public class Plataforma {
             return 0.0;
         }
 
+        java.util.Date hoy = new java.util.Date();
         int presentes = 0;
-        for (int i = 0; i < asistencias.size(); i++) {
-            Asistencia a = asistencias.get(i);
-            if (a.isPresente()) {
-                presentes++;
+        int clasesHastaHoy = 0;
+
+        for (Asistencia a : asistencias) {
+            if (!a.getFecha().after(hoy)) { // solo contamos clases hasta hoy
+                clasesHastaHoy++;
+                if (a.isPresente()) {
+                    presentes++;
+                }
             }
         }
 
-        int totalReferencia;
-
-        if (curso.getCantidadClases() > 0) {
-            // Usamos la cantidad planificada del curso
-            totalReferencia = curso.getCantidadClases();
-        } else {
-            // Si no está seteado, usamos la cantidad de asistencias registradas
-            totalReferencia = asistencias.size();
-        }
-
-        if (totalReferencia == 0) {
+        if (clasesHastaHoy == 0) {
             return 0.0;
         }
 
-        return (presentes * 100.0) / totalReferencia;
+        return (presentes * 100.0) / clasesHastaHoy;
     }
 
 
