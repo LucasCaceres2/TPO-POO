@@ -191,4 +191,32 @@ public class DocenteDAO {
 
         return false;
     }
+
+    public String obtenerMatriculaPorEmail(String email) {
+        if (email == null || email.isEmpty()) return null;
+
+        String sql = """
+            SELECT d.matricula
+            FROM docentes d
+            JOIN usuarios u ON d.idUsuario = u.idUsuario
+            WHERE u.email = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("matricula");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener matrícula por email: " + e.getMessage());
+        }
+
+        return null;
+    }
+
 }

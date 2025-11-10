@@ -356,4 +356,19 @@ public class InscripcionDAO {
 
         return null;
     }
+
+    public boolean darseDeBaja(String legajo, int idCurso) {
+        Integer idUsuario = obtenerIdUsuarioPorLegajo(legajo);
+        if (idUsuario == null) return false;
+
+        // Buscar la inscripción del alumno en ese curso
+        List<Inscripcion> inscripciones = listarInscripcionesPorAlumnoIdUsuario(idUsuario);
+        for (Inscripcion insc : inscripciones) {
+            if (insc.getCurso().getIdCurso() == idCurso) {
+                return eliminarInscripcion(insc.getIdInscripcion());
+            }
+        }
+        return false;
+    }
+
 }

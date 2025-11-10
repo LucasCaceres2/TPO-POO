@@ -3,10 +3,12 @@ package main.servicios;
 import main.dao.*;
 import main.modelo.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Plataforma {
-
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private AlumnoDAO alumnoDAO = new AlumnoDAO();
     private DocenteDAO docenteDAO = new DocenteDAO();
     private CursoDAO cursoDAO = new CursoDAO();
@@ -16,19 +18,15 @@ public class Plataforma {
     private AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
     private CalificacionDAO calificacionDAO = new CalificacionDAO();
 
-    // ===========================
-    //     MÉTODOS DE NEGOCIO
-    // ===========================
-
-    // --- Registrar nuevo alumno ---
-    public boolean registrarAlumno(String nombre, String apellido, String email, String password, String legajo) {
-        Alumno alumno = new Alumno(nombre, apellido, email, password, legajo);
+    // --- Registro de nuevo alumno ---
+    public boolean registrarAlumno(String nombre, String apellido, String email, String contrasena) {
+        Alumno alumno = new Alumno(0, nombre, apellido, email, contrasena, null); // legajo se genera en DAO
         return alumnoDAO.agregarAlumno(alumno);
     }
 
     // --- Registrar nuevo docente ---
-    public boolean registrarDocente(String nombre, String apellido, String email, String password, String matricula) {
-        Docente docente = new Docente(nombre, apellido, email, password, matricula);
+    public boolean registrarDocente(String nombre, String apellido, String email, String contrasena, String matricula) {
+        Docente docente = new Docente(nombre, apellido, email, contrasena, matricula);
         return docenteDAO.agregarDocente(docente);
     }
 
@@ -250,8 +248,229 @@ public class Plataforma {
         return (presentes * 100.0) / clasesHastaHoy;
     }
 
+    public List<Alumno> listarAlumnos() {
+        return alumnoDAO.listarAlumnos();
+    }
 
+    public boolean actualizarAlumno(String legajo, String campo, String nuevoValor) {
+        if (legajo == null || legajo.isEmpty() || campo == null || campo.isEmpty()) return false;
 
+        List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
+        if (!camposPermitidos.contains(campo)) {
+            System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
+            return false;
+        }
 
+        return alumnoDAO.actualizarAlumno(legajo, campo, nuevoValor);
+    }
+
+    public boolean eliminarAlumno(String legajo) {
+        Alumno a = alumnoDAO.obtenerAlumnoPorLegajo(legajo);
+        if (a == null) return false;
+        return alumnoDAO.eliminarAlumno(a.getLegajo());
+    }
+
+    // --- DOCENTES ---
+    public List<Docente> listarDocentes() {
+        return docenteDAO.listarDocentes();
+    }
+
+    public boolean actualizarDocente(String matricula, String campo, String nuevoValor) {
+        if (matricula == null || matricula.isEmpty() || campo == null || campo.isEmpty()) return false;
+
+        List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
+        if (!camposPermitidos.contains(campo)) {
+            System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
+            return false;
+        }
+
+        return docenteDAO.actualizarDocente(matricula, campo, nuevoValor);
+    }
+
+    public boolean eliminarDocente(String matricula) {
+        Docente d = docenteDAO.obtenerDocentePorMatricula(matricula);
+        if (d == null) return false;
+        return docenteDAO.eliminarDocente(d.getMatricula());
+    }
+
+    public boolean actualizarCurso(int idCurso, String campo, String nuevoValor) {
+        if (idCurso <= 0 || campo == null || campo.isEmpty()) return false;
+
+        List<String> camposPermitidos = List.of("titulo", "cupoMax", "descripcion", "cantidadClases");
+        if (!camposPermitidos.contains(campo)) {
+            System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
+            return false;
+        }
+
+        return cursoDAO.actualizarCurso(idCurso, campo, nuevoValor);
+    }
+
+    public boolean eliminarCurso(int idCurso) {
+        Curso c = cursoDAO.obtenerCursoPorId(idCurso);
+        if (c == null) return false;
+        return cursoDAO.eliminarCurso(idCurso);
+    }
+
+    // --- ÁREAS ---
+    public List<Area> listarAreas() {
+        return areaDAO.listarAreas();
+    }
+
+    public boolean actualizarArea(int idArea, String nuevoNombre) {
+        if (idArea <= 0 || nuevoNombre == null || nuevoNombre.isEmpty()) return false;
+        return areaDAO.actualizarArea(idArea, nuevoNombre);
+    }
+
+    public boolean eliminarArea(int idArea) {
+        Area a = areaDAO.obtenerAreaPorId(idArea);
+        if (a == null) return false;
+        return areaDAO.eliminarArea(idArea);
+    }
+
+    public List<Curso> listarCursosPorDocente(String matricula) {
+        Docente docente = docenteDAO.obtenerDocentePorMatricula(matricula);
+        if (docente == null) return new ArrayList<>();
+        return cursoDAO.listarCursosPorDocente(docente.getIdUsuario());
+    }
+
+    public List<Alumno> listarAlumnosInscritos(int idCurso) {
+        return cursoDAO.listarAlumnosInscritos(idCurso); // ya devuelve List<Alumno>
+    }
+
+    // 🔹 Obtener docente por matrícula desde Plataforma
+    public Docente obtenerDocentePorMatricula(String matricula) {
+        return docenteDAO.obtenerDocentePorMatricula(matricula);
+    }
+
+    public boolean darseDeBaja(String legajo, int idCurso) {
+        return inscripcionDAO.darseDeBaja(legajo, idCurso);
+    }
+
+    public void mostrarAsistencias(String legajo) {
+        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
+        System.out.println("\n📊 Asistencias:");
+        for (Inscripcion i : inscripciones) {
+            Double asistencia = i.getPorcentajeAsistencia();
+            System.out.println("- " + i.getCurso().getTitulo() + " : " +
+                    (asistencia != null ? String.format("%.2f%%", asistencia) : "N/A"));
+        }
+    }
+
+    public void mostrarCalificaciones(String legajo) {
+        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
+        System.out.println("\n📝 Calificaciones:");
+        for (Inscripcion i : inscripciones) {
+            System.out.print("- " + i.getCurso().getTitulo() + " : ");
+            for (TipoEvaluacion t : TipoEvaluacion.values()) {
+                Double nota = i.getCalificacion(t);
+                if (nota != null) {
+                    System.out.print(t + "=" + nota + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public void mostrarRendimiento(String legajo) {
+        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
+        System.out.println("\n📈 Rendimiento:");
+        for (Inscripcion i : inscripciones) {
+            System.out.println("- " + i.resumenRendimiento());
+        }
+    }
+
+    public boolean darseDeBajaCurso(String legajo, String tituloCurso) {
+        Curso curso = cursoDAO.obtenerCursoPorTitulo(tituloCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado.");
+            return false;
+        }
+        Inscripcion insc = inscripcionDAO.obtenerInscripcion(
+                alumnoDAO.obtenerAlumnoPorLegajo(legajo), curso);
+        if (insc == null || !insc.puedeDarseDeBaja()) {
+            System.out.println("⚠️ No se puede dar de baja de este curso.");
+            return false;
+        }
+        insc.darseDeBaja();
+        return inscripcionDAO.actualizarEstadoCurso(insc.getIdInscripcion(), insc.getEstadoCurso());
+    }
+
+    // Devuelve true si la inscripción fue exitosa
+    public boolean inscribirAlumnoPorArea(String legajoAlumno) {
+        // 1️⃣ Mostrar áreas disponibles
+        List<String> areas = cursoDAO.listarAreas(); // metodo que devuelve áreas únicas
+        if (areas.isEmpty()) {
+            System.out.println("⚠️ No hay áreas disponibles.");
+            return false;
+        }
+
+        System.out.println("\nÁreas disponibles:");
+        for (int i = 0; i < areas.size(); i++) {
+            System.out.println((i + 1) + ". " + areas.get(i));
+        }
+
+        System.out.print("Elegí un área (número): ");
+        int idxArea = new Scanner(System.in).nextInt() - 1;
+        if (idxArea < 0 || idxArea >= areas.size()) {
+            System.out.println("⚠️ Área inválida.");
+            return false;
+        }
+        String areaElegida = areas.get(idxArea);
+
+        // 2️⃣ Mostrar cursos del área seleccionada
+        List<String> cursos = cursoDAO.listarCursosPorArea(areaElegida); // devuelve títulos de cursos
+        if (cursos.isEmpty()) {
+            System.out.println("⚠️ No hay cursos en esta área.");
+            return false;
+        }
+
+        System.out.println("\nCursos disponibles en " + areaElegida + ":");
+        for (int i = 0; i < cursos.size(); i++) {
+            System.out.println((i + 1) + ". " + cursos.get(i));
+        }
+
+        System.out.print("Elegí un curso (número): ");
+        int idxCurso = new Scanner(System.in).nextInt() - 1;
+        if (idxCurso < 0 || idxCurso >= cursos.size()) {
+            System.out.println("⚠️ Curso inválido.");
+            return false;
+        }
+
+        String cursoElegido = cursos.get(idxCurso);
+
+        // 3️⃣ Inscribir alumno al curso
+        return inscribirAlumnoEnCurso(legajoAlumno, cursoElegido);
+    }
+
+    public String validarLogin(String email, String contrasena) {
+        if (email == null || contrasena == null) {
+            System.out.println("⚠️ Email y contraseña no pueden ser nulos.");
+            return null;
+        }
+
+        Usuario usuario = usuarioDAO.obtenerUsuarioPorEmail(email);
+
+        if (usuario == null) {
+            System.out.println("⚠️ No existe un usuario con ese email.");
+            return null;
+        }
+
+        if (!usuario.getContrasena().equals(contrasena)) {
+            System.out.println("❌ Contraseña incorrecta.");
+            return null;
+        }
+
+        System.out.println("✅ Login exitoso como " + usuario.getTipoUsuario());
+        return usuario.getTipoUsuario().toString();
+    }
+
+    public String obtenerLegajoPorEmail(String email) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(email);
+        return alumno != null ? alumno.getLegajo() : null;
+    }
+
+    public String obtenerMatriculaPorEmail(String email) {
+        return docenteDAO.obtenerMatriculaPorEmail(email);
+    }
 
 }

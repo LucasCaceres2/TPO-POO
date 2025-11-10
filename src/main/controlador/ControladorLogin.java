@@ -9,16 +9,6 @@ import java.sql.SQLException;
 
 public class ControladorLogin {
 
-    /**
-     * Intenta iniciar sesión con email y contraseña.
-     *
-     * @return
-     *  - "ALUMNO"  si las credenciales son correctas y es alumno
-     *  - "DOCENTE" si las credenciales son correctas y es docente
-     *  - "ERROR_VACIO" si falta email o contraseña
-     *  - "ERROR_CREDENCIALES" si no coincide nada en la BD
-     *  - "ERROR_BD" si hubo un problema con la conexión/consulta
-     */
     public String login(String email, String contrasena) {
         if (email == null || email.trim().isEmpty()
                 || contrasena == null || contrasena.trim().isEmpty()) {
@@ -35,7 +25,6 @@ public class ControladorLogin {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // tipoUsuario: 'ALUMNO' o 'DOCENTE'
                     return rs.getString("tipoUsuario");
                 } else {
                     return "ERROR_CREDENCIALES";

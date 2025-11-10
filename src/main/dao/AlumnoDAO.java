@@ -11,10 +11,10 @@ import java.util.List;
 
 public class AlumnoDAO {
 
-    // 🔹 Crear alumno (primero crea usuario)
+    // 🔹 Crear alumno (genera legajo automáticamente)
     public boolean agregarAlumno(Alumno alumno) {
-        if (alumno == null || alumno.getLegajo() == null || alumno.getLegajo().isEmpty()) {
-            System.out.println("⚠️ El alumno o su legajo no pueden ser nulos.");
+        if (alumno == null) {
+            System.out.println("⚠️ El alumno no puede ser nulo.");
             return false;
         }
 
@@ -24,31 +24,23 @@ public class AlumnoDAO {
         if (idUsuario <= 0) return false;
         alumno.setIdUsuario(idUsuario);
 
-        // 2️⃣ Evitar duplicados por legajo
-        String checkSql = "SELECT 1 FROM alumnos WHERE legajo = ?";
+        // 2️⃣ Generar legajo automáticamente
+        alumno.setLegajo(generarLegajo());
+
+        // 3️⃣ Insertar alumno en la tabla
         String insertSql = "INSERT INTO alumnos (idUsuario, legajo) VALUES (?, ?)";
 
-        try (Connection conn = ConexionDB.conectar()) {
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(insertSql)) {
 
-            try (PreparedStatement check = conn.prepareStatement(checkSql)) {
-                check.setString(1, alumno.getLegajo());
-                ResultSet rs = check.executeQuery();
-                if (rs.next()) {
-                    System.out.println("⚠️ Ya existe un alumno con el legajo " + alumno.getLegajo());
-                    return false;
-                }
-            }
+            stmt.setInt(1, alumno.getIdUsuario());
+            stmt.setString(2, alumno.getLegajo());
 
-            // 3️⃣ Insertar alumno en la tabla
-            try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
-                stmt.setInt(1, alumno.getIdUsuario());
-                stmt.setString(2, alumno.getLegajo());
-
-                int filas = stmt.executeUpdate();
-                if (filas > 0) {
-                    System.out.println("✅ Alumno agregado correctamente: " + alumno.getNombre());
-                    return true;
-                }
+            int filas = stmt.executeUpdate();
+            if (filas > 0) {
+                System.out.println("✅ Alumno agregado correctamente: " + alumno.getNombre()
+                        + " (Legajo: " + alumno.getLegajo() + ")");
+                return true;
             }
 
         } catch (SQLException e) {
@@ -128,7 +120,7 @@ public class AlumnoDAO {
     }
 
     // 🔹 Actualizar dato de perfil
-    public boolean actualizarDatoPerfil(String legajo, String campo, String nuevoValor) {
+    public boolean actualizarAlumno(String legajo, String campo, String nuevoValor) {
         if (legajo == null || campo == null || legajo.isEmpty() || campo.isEmpty()) return false;
 
         List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
@@ -188,4 +180,99 @@ public class AlumnoDAO {
 
         return false;
     }
+
+    private String generarLegajo() {
+        String sql = "SELECT MAX(legajo) FROM alumnos WHERE legajo LIKE 'A%'";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next() && rs.getString(1) != null) {
+                String ultimoLegajo = rs.getString(1);
+                int numero = Integer.parseInt(ultimoLegajo.substring(1)) + 1;
+                return "A" + String.format("%04d", numero);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al generar legajo: " + e.getMessage());
+        }
+
+        // Si no hay ninguno todavía
+        return "A0001";
+    }
+
+    private int contarAlumnos() {
+        String sql = "SELECT COUNT(*) FROM alumnos";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error al contar alumnos: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public String obtenerLegajoPorEmail(String email) {
+        if (email == null || email.isEmpty()) return null;
+
+        String sql = """
+            SELECT a.legajo
+            FROM alumnos a
+            JOIN usuarios u ON a.idUsuario = u.idUsuario
+            WHERE u.email = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("legajo");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al obtener legajo por email: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    // AlumnoDAO
+    public Alumno obtenerAlumnoPorEmail(String email) {
+        if (email == null || email.isEmpty()) return null;
+
+        String sql = """
+        SELECT a.legajo, u.idUsuario, u.nombre, u.apellido, u.email
+        FROM alumnos a
+        JOIN usuarios u ON a.idUsuario = u.idUsuario
+        WHERE u.email = ?
+        """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Alumno(
+                            rs.getInt("idUsuario"),
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getString("email"),
+                            null,
+                            rs.getString("legajo")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

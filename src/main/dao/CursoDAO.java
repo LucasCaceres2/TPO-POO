@@ -1,6 +1,7 @@
 package main.dao;
 
 import main.database.ConexionDB;
+import main.modelo.Alumno;
 import main.modelo.Curso;
 import main.modelo.Docente;
 import main.modelo.Area;
@@ -267,6 +268,42 @@ public class CursoDAO {
         return cursos;
     }
 
+    // 🔹 Listar alumnos inscritos a un curso
+    public List<Alumno> listarAlumnosInscritos(int idCurso) {
+        List<Alumno> alumnos = new ArrayList<>();
+        String sql = """
+            SELECT a.idUsuario, a.legajo, u.nombre, u.apellido, u.email
+            FROM alumnos a
+            JOIN usuarios u ON a.idUsuario = u.idUsuario
+            JOIN inscripciones i ON i.idAlumno = a.idUsuario
+            WHERE i.idCurso = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Alumno alumno = new Alumno(
+                            rs.getInt("idUsuario"),
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getString("email"),
+                            null, // password no lo necesitamos acá
+                            rs.getString("legajo")
+                    );
+                    alumnos.add(alumno);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar alumnos inscritos: " + e.getMessage());
+        }
+
+        System.out.println("📘 Total alumnos inscritos en curso " + idCurso + ": " + alumnos.size());
+        return alumnos;
+    }
 
     // 🔹 Actualizar curso
     public boolean actualizarCurso(int idCurso, String campo, String nuevoValor) {
@@ -322,4 +359,43 @@ public class CursoDAO {
 
         return false;
     }
+
+    // Listar áreas únicas de los cursos
+    public List<String> listarAreas() {
+        List<String> areas = new ArrayList<>();
+        String sql = "SELECT DISTINCT area FROM cursos";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                areas.add(rs.getString("area"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar áreas: " + e.getMessage());
+        }
+        return areas;
+    }
+
+    // Listar títulos de cursos por área
+    public List<String> listarCursosPorArea(String area) {
+        List<String> cursos = new ArrayList<>();
+        String sql = "SELECT titulo FROM cursos WHERE area = ?";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, area);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    cursos.add(rs.getString("titulo"));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al listar cursos por área: " + e.getMessage());
+        }
+        return cursos;
+    }
+
 }
