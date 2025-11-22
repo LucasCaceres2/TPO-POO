@@ -90,7 +90,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
                     c.getCupoMax(),
                     inscriptos,
                     c.getCantidadClases(),
-                    c.getContenido()
+                    c.getDescripcion()
             };
             model.addRow(fila);
         }

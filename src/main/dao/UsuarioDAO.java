@@ -15,8 +15,8 @@ public class UsuarioDAO {
             return -1;
         }
 
-        String checkSql = "SELECT 1 FROM usuarios WHERE email = ?";
-        String insertSql = "INSERT INTO usuarios (nombre, apellido, email, contrasena, tipoUsuario) VALUES (?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM usuario WHERE email = ?";
+        String insertSql = "INSERT INTO usuario (nombre, apellido, email, contrasena, tipoUsuario) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
             // Evitar duplicados por email
@@ -58,7 +58,7 @@ public class UsuarioDAO {
 
     // 🔹 Leer usuario por id
     public Usuario obtenerUsuarioPorId(int idUsuario) {
-        String sql = "SELECT * FROM usuarios WHERE idUsuario = ?";
+        String sql = "SELECT * FROM usuario WHERE idUsuario = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -92,7 +92,7 @@ public class UsuarioDAO {
     public Usuario obtenerUsuarioPorEmail(String email) {
         if (email == null || email.isEmpty()) return null;
 
-        String sql = "SELECT * FROM usuarios WHERE email = ?";
+        String sql = "SELECT * FROM usuario WHERE email = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -131,7 +131,7 @@ public class UsuarioDAO {
             return false;
         }
 
-        String sql = "UPDATE usuarios SET " + campo + " = ? WHERE idUsuario = ?";
+        String sql = "UPDATE usuario SET " + campo + " = ? WHERE idUsuario = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -156,7 +156,7 @@ public class UsuarioDAO {
     public boolean eliminarUsuario(int idUsuario) {
         if (idUsuario <= 0) return false;
 
-        String sql = "DELETE FROM usuarios WHERE idUsuario = ?";
+        String sql = "DELETE FROM usuario WHERE idUsuario = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -18,8 +18,8 @@ public class CursoDAO {
             return false;
         }
 
-        String checkSql = "SELECT 1 FROM cursos WHERE titulo = ? AND idDocente = ? AND idArea = ?";
-        String insertSql = "INSERT INTO cursos (titulo, cupoMax, idDocente, idArea, contenido, cantidadClases) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM curso WHERE titulo = ? AND idDocente = ? AND idArea = ?";
+        String insertSql = "INSERT INTO curso (titulo, cupoMax, idDocente, idArea, descripcion, cantidadClases) VALUES (?, ?, ?, ?, ?, ?)";
 
 
         try (Connection conn = ConexionDB.conectar()) {
@@ -41,7 +41,7 @@ public class CursoDAO {
                 stmt.setInt(2, curso.getCupoMax());
                 stmt.setInt(3, curso.getDocente().getIdUsuario());
                 stmt.setInt(4, curso.getArea().getIdArea());
-                stmt.setString(5, curso.getContenido());
+                stmt.setString(5, curso.getDescripcion());
                 stmt.setInt(6, curso.getCantidadClases());
 
 
@@ -68,13 +68,13 @@ public class CursoDAO {
     // 🔹 Obtener curso por ID
     public Curso obtenerCursoPorId(int idCurso) {
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,c.cantidadClases,
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.desccripcion,c.cantidadClases,
                        u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                        a.nombre AS areaNombre
-                FROM cursos c
-                JOIN docentes d ON c.idDocente = d.idUsuario
-                JOIN usuarios u ON d.idUsuario = u.idUsuario
-                JOIN areas a ON c.idArea = a.idArea
+                FROM curso c
+                JOIN docente d ON c.idDocente = d.idUsuario
+                JOIN usuario u ON d.idUsuario = u.idUsuario
+                JOIN area a ON c.idArea = a.idArea
                 WHERE c.idCurso = ?
                 """;
 
@@ -91,7 +91,7 @@ public class CursoDAO {
                             rs.getString("docenteApellido"),
                             rs.getString("docenteEmail"),
                             null,
-                            "MATRICULA" // Opcional, si necesitas matricula, tendrías que sumarlo al SELECT
+                            "MATRICULA"
                     );
                     Area area = new Area(rs.getInt("idArea"), rs.getString("areaNombre"));
 
@@ -101,7 +101,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
                 }
@@ -118,14 +118,14 @@ public class CursoDAO {
     // --- OBTENER CURSO POR TÍTULO ---
     public Curso obtenerCursoPorTitulo(String titulo) {
         String sql = """
-            SELECT c.idCurso, c.titulo, c.cupoMax, c.contenido,c.cantidadClases,
+            SELECT c.idCurso, c.titulo, c.cupoMax, c.descripcion,c.cantidadClases,
                    d.idUsuario AS idDocente, d.matricula,
                    u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                    a.idArea, a.nombre AS areaNombre
-            FROM cursos c
-            JOIN docentes d ON c.idDocente = d.idUsuario
-            JOIN usuarios u ON d.idUsuario = u.idUsuario
-            JOIN areas a ON c.idArea = a.idArea
+            FROM curso c
+            JOIN docente d ON c.idDocente = d.idUsuario
+            JOIN usuario u ON d.idUsuario = u.idUsuario
+            JOIN area a ON c.idArea = a.idArea
             WHERE LOWER(c.titulo) = LOWER(?)
             """;
 
@@ -152,7 +152,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
                 }
@@ -167,13 +167,13 @@ public class CursoDAO {
     public List<Curso> listarCursos() {
         List<Curso> cursos = new ArrayList<>();
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,c.cantidadClases,
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.descripcion,c.cantidadClases,
                        u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                        a.nombre AS areaNombre
-                FROM cursos c
-                JOIN docentes d ON c.idDocente = d.idUsuario
-                JOIN usuarios u ON d.idUsuario = u.idUsuario
-                JOIN areas a ON c.idArea = a.idArea
+                FROM curso c
+                JOIN docente d ON c.idDocente = d.idUsuario
+                JOIN usuario u ON d.idUsuario = u.idUsuario
+                JOIN area a ON c.idArea = a.idArea
                 """;
 
         try (Connection conn = ConexionDB.conectar();
@@ -197,7 +197,7 @@ public class CursoDAO {
                         rs.getInt("cupoMax"),
                         docente,
                         area,
-                        rs.getString("contenido"),
+                        rs.getString("descripcion"),
                         rs.getInt("cantidadClases")
                 );
                 cursos.add(curso);
@@ -216,14 +216,14 @@ public class CursoDAO {
     public List<Curso> listarCursosPorDocente(int idDocente) {
         List<Curso> cursos = new ArrayList<>();
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,c.cantidadClases,
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.descripcion,c.cantidadClases,
                        d.matricula,
                        u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                        a.nombre AS areaNombre
-                FROM cursos c
-                JOIN docentes d ON c.idDocente = d.idUsuario
-                JOIN usuarios u ON d.idUsuario = u.idUsuario
-                JOIN areas a ON c.idArea = a.idArea
+                FROM curso c
+                JOIN docente d ON c.idDocente = d.idUsuario
+                JOIN usuario u ON d.idUsuario = u.idUsuario
+                JOIN area a ON c.idArea = a.idArea
                 WHERE c.idDocente = ?
                 """;
 
@@ -251,7 +251,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
                     cursos.add(curso);
@@ -278,7 +278,7 @@ public class CursoDAO {
             return false;
         }
 
-        String sql = String.format("UPDATE cursos SET %s = ? WHERE idCurso = ?", campo);
+        String sql = String.format("UPDATE curso SET %s = ? WHERE idCurso = ?", campo);
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -301,7 +301,7 @@ public class CursoDAO {
 
     // 🔹 Eliminar curso
     public boolean eliminarCurso(int idCurso) {
-        String sql = "DELETE FROM cursos WHERE idCurso = ?";
+        String sql = "DELETE FROM curso WHERE idCurso = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

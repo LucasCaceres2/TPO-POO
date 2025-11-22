@@ -16,8 +16,8 @@ public class AreaDAO {
             return false;
         }
 
-        String checkSql = "SELECT 1 FROM areas WHERE nombre = ?";
-        String insertSql = "INSERT INTO areas (nombre) VALUES (?)";
+        String checkSql = "SELECT 1 FROM area WHERE nombre = ?";
+        String insertSql = "INSERT INTO area (nombre) VALUES (?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -56,7 +56,7 @@ public class AreaDAO {
 
     // 🔹 Obtener área por ID
     public Area obtenerAreaPorId(int idArea) {
-        String sql = "SELECT idArea, nombre FROM areas WHERE idArea = ?";
+        String sql = "SELECT idArea, nombre FROM area WHERE idArea = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,7 +78,7 @@ public class AreaDAO {
 
     // --- OBTENER ÁREA POR NOMBRE ---
     public Area obtenerAreaPorNombre(String nombre) {
-        String sql = "SELECT idArea, nombre FROM areas WHERE LOWER(nombre) = LOWER(?)";
+        String sql = "SELECT idArea, nombre FROM area WHERE LOWER(nombre) = LOWER(?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -101,7 +101,7 @@ public class AreaDAO {
     // 🔹 Listar todas las áreas
     public List<Area> listarAreas() {
         List<Area> areas = new ArrayList<>();
-        String sql = "SELECT idArea, nombre FROM areas";
+        String sql = "SELECT idArea, nombre FROM area";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -124,7 +124,7 @@ public class AreaDAO {
     public boolean actualizarArea(int idArea, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.isEmpty()) return false;
 
-        String sql = "UPDATE areas SET nombre = ? WHERE idArea = ?";
+        String sql = "UPDATE area SET nombre = ? WHERE idArea = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -147,7 +147,7 @@ public class AreaDAO {
 
     // 🔹 Eliminar área
     public boolean eliminarArea(int idArea) {
-        String sql = "DELETE FROM areas WHERE idArea = ?";
+        String sql = "DELETE FROM area WHERE idArea = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

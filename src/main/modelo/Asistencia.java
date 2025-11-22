@@ -1,32 +1,30 @@
 package main.modelo;
 
-import java.util.Date;
-
 public class Asistencia {
     private int idAsistencia;
     private Inscripcion inscripcion;
-    private Date fecha;
+    private Clase clase;
     private boolean presente;
 
     // Para registros desde BD
-    public Asistencia(int idAsistencia, Inscripcion inscripcion, Date fecha, boolean presente) {
+    public Asistencia(int idAsistencia, Inscripcion inscripcion, Clase clase, boolean presente) {
         if (inscripcion == null) throw new IllegalArgumentException("La asistencia debe estar asociada a una inscripción.");
         this.idAsistencia = idAsistencia;
         this.inscripcion = inscripcion;
-        this.fecha = (fecha != null) ? fecha : new Date();
+        this.clase = clase;
         this.presente = presente;
     }
 
     // Para nuevas asistencias
-    public Asistencia(Inscripcion inscripcion, Date fecha, boolean presente) {
-        this(0, inscripcion, fecha, presente);
+    public Asistencia(Inscripcion inscripcion, Clase clase, boolean presente) {
+        this(0, inscripcion, clase, presente);
     }
 
     public int getIdAsistencia() { return idAsistencia; }
     public void setIdAsistencia(int idAsistencia) { this.idAsistencia = idAsistencia; }
 
     public Inscripcion getInscripcion() { return inscripcion; }
-    public Date getFecha() { return fecha; }
+    public Clase getClase() { return clase; }
     public boolean isPresente() { return presente; }
 
     @Override
@@ -34,7 +32,7 @@ public class Asistencia {
         return "Asistencia{" +
                 "idAsistencia=" + idAsistencia +
                 ", inscripcion=" + inscripcion.getIdInscripcion() +
-                ", fecha=" + fecha +
+                ", clase=" + clase +
                 ", presente=" + presente +
                 '}';
     }

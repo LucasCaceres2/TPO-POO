@@ -24,8 +24,8 @@ public class DocenteDAO {
         if (idUsuario <= 0) return false;
         docente.setIdUsuario(idUsuario);
 
-        String checkSql = "SELECT 1 FROM docentes WHERE matricula = ?";
-        String insertSql = "INSERT INTO docentes (idUsuario, matricula) VALUES (?, ?)";
+        String checkSql = "SELECT 1 FROM docente WHERE matricula = ?";
+        String insertSql = "INSERT INTO docente (idUsuario, matricula) VALUES (?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -65,8 +65,8 @@ public class DocenteDAO {
 
         String sql = """
                 SELECT d.idUsuario, d.matricula, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
-                FROM docentes d
-                JOIN usuarios u ON d.idUsuario = u.idUsuario
+                FROM docente d
+                JOIN usuario u ON d.idUsuario = u.idUsuario
                 WHERE d.matricula = ?
                 """;
 
@@ -100,8 +100,8 @@ public class DocenteDAO {
         List<Docente> docentes = new ArrayList<>();
         String sql = """
                 SELECT d.idUsuario, d.matricula, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
-                FROM docentes d
-                JOIN usuarios u ON d.idUsuario = u.idUsuario
+                FROM docente d
+                JOIN usuario u ON d.idUsuario = u.idUsuario
                 """;
 
         try (Connection conn = ConexionDB.conectar();
@@ -141,8 +141,8 @@ public class DocenteDAO {
         }
 
         String sql = String.format("""
-                UPDATE usuarios u
-                JOIN docentes d ON u.idUsuario = d.idUsuario
+                UPDATE usuario u
+                JOIN docente d ON u.idUsuario = d.idUsuario
                 SET u.%s = ?
                 WHERE d.matricula = ?
                 """, campo);
@@ -170,7 +170,7 @@ public class DocenteDAO {
     public boolean eliminarDocente(String matricula) {
         if (matricula == null || matricula.isEmpty()) return false;
 
-        String sql = "DELETE FROM docentes WHERE matricula = ?";
+        String sql = "DELETE FROM docente WHERE matricula = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -202,8 +202,8 @@ public class DocenteDAO {
                    u.nombre,
                    u.apellido,
                    u.email
-            FROM docentes d
-            JOIN usuarios u ON d.idUsuario = u.idUsuario
+            FROM docente d
+            JOIN usuario u ON d.idUsuario = u.idUsuario
             WHERE u.email = ?
             """;
 

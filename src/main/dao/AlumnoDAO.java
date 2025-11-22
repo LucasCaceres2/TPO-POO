@@ -25,8 +25,8 @@ public class AlumnoDAO {
         alumno.setIdUsuario(idUsuario);
 
         // 2️⃣ Evitar duplicados por legajo
-        String checkSql = "SELECT 1 FROM alumnos WHERE legajo = ?";
-        String insertSql = "INSERT INTO alumnos (idUsuario, legajo) VALUES (?, ?)";
+        String checkSql = "SELECT 1 FROM alumno WHERE legajo = ?";
+        String insertSql = "INSERT INTO alumno (idUsuario, legajo) VALUES (?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -64,8 +64,8 @@ public class AlumnoDAO {
 
         String sql = """
                 SELECT a.legajo, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
-                FROM alumnos a
-                JOIN usuarios u ON a.idUsuario = u.idUsuario
+                FROM alumno a
+                JOIN usuario u ON a.idUsuario = u.idUsuario
                 WHERE a.legajo = ?
                 """;
 
@@ -99,8 +99,8 @@ public class AlumnoDAO {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = """
                 SELECT a.legajo, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
-                FROM alumnos a
-                JOIN usuarios u ON a.idUsuario = u.idUsuario
+                FROM alumno a
+                JOIN usuario u ON a.idUsuario = u.idUsuario
                 """;
 
         try (Connection conn = ConexionDB.conectar();
@@ -138,8 +138,8 @@ public class AlumnoDAO {
         }
 
         String sql = String.format("""
-                UPDATE usuarios u
-                JOIN alumnos a ON u.idUsuario = a.idUsuario
+                UPDATE usuario u
+                JOIN alumno a ON u.idUsuario = a.idUsuario
                 SET u.%s = ?
                 WHERE a.legajo = ?
                 """, campo);
@@ -167,7 +167,7 @@ public class AlumnoDAO {
     public boolean eliminarAlumno(String legajo) {
         if (legajo == null || legajo.isEmpty()) return false;
 
-        String sql = "DELETE FROM alumnos WHERE legajo = ?";
+        String sql = "DELETE FROM alumno WHERE legajo = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -197,8 +197,8 @@ public class AlumnoDAO {
                    u.email,
                    u.contrasena,
                    a.legajo
-            FROM usuarios u
-            JOIN alumnos a ON u.idUsuario = a.idUsuario
+            FROM usuario u
+            JOIN alumno a ON u.idUsuario = a.idUsuario
             WHERE u.email = ?
             """;
 
@@ -235,7 +235,7 @@ public class AlumnoDAO {
         }
 
         String sql = """
-            UPDATE usuarios
+            UPDATE usuario
             SET nombre = ?, apellido = ?, email = ?
             WHERE idUsuario = ?
             """;

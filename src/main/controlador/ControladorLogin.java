@@ -15,7 +15,7 @@ public class ControladorLogin {
             return "ERROR_VACIO";
         }
 
-        String sql = "SELECT tipoUsuario FROM usuarios WHERE email = ? AND contrasena = ?";
+        String sql = "SELECT tipoUsuario FROM usuario WHERE email = ? AND contrasena = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {

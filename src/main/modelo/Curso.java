@@ -11,29 +11,30 @@ public class Curso {
     private int cupoMax;
     private Docente docente;
     private Area area;
-    private String contenido;
+    private String descripcion; //  texto general del curso
+    private transient List<Clase> clases;
     private transient List<Inscripcion> inscripciones;
     private int cantidadClases;
 
     // 🔹 Constructor para crear curso nuevo (antes de BD)
-    public Curso(String titulo, int cupoMax, Docente docente, Area area, String contenido,int cantidadClases) {
+    public Curso(String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
-        this.contenido = contenido;
+        this.descripcion = descripcion;
         this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
     }
 
     // 🔹 Constructor para instanciar desde BD
-    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String contenido,int cantidadClases) {
+    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
-        this.contenido = contenido;
+        this.descripcion = descripcion;
         this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
     }
@@ -111,12 +112,12 @@ public class Curso {
         this.area = area; 
     }
     
-    public String getContenido() { 
-        return contenido; 
+    public String getDescripcion() {
+        return descripcion;
     }
     
-    public void setContenido(String contenido) { 
-        this.contenido = contenido; 
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
     
     public List<Inscripcion> getInscripciones() { 

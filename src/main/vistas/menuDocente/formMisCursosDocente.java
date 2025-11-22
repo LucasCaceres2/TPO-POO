@@ -105,7 +105,7 @@ public class formMisCursosDocente extends JFrame {
                     c.getCupoMax(),
                     inscriptos,
                     c.getCantidadClases(),
-                    c.getContenido()
+                    c.getDescripcion()
             });
         }
     }

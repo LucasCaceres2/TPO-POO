@@ -12,7 +12,7 @@ public class InscripcionDAO {
 
     //  METODO AUXILIAR: obtener idUsuario por legajo
     private Integer obtenerIdUsuarioPorLegajo(String legajo) {
-        String sql = "SELECT idUsuario FROM alumnos WHERE legajo = ?";
+        String sql = "SELECT idUsuario FROM alumno WHERE legajo = ?";
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -40,8 +40,8 @@ public class InscripcionDAO {
             return false;
         }
 
-        String checkSql = "SELECT 1 FROM inscripciones WHERE idAlumno = ? AND idCurso = ?";
-        String insertSql = "INSERT INTO inscripciones (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM inscripcion WHERE idAlumno = ? AND idCurso = ?";
+        String insertSql = "INSERT INTO inscripcion (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -109,11 +109,11 @@ public class InscripcionDAO {
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
-                FROM inscripciones i
-                JOIN alumnos a ON i.idAlumno = a.idUsuario
-                JOIN usuarios u ON a.idUsuario = u.idUsuario
-                JOIN cursos c ON i.idCurso = c.idCurso
-                LEFT JOIN pagos p ON i.idPago = p.idPago
+                FROM inscripcion i
+                JOIN alumno a ON i.idAlumno = a.idUsuario
+                JOIN usuario u ON a.idUsuario = u.idUsuario
+                JOIN curso c ON i.idCurso = c.idCurso
+                LEFT JOIN pago p ON i.idPago = p.idPago
                 WHERE i.idCurso = ?""";
 
         try (Connection conn = ConexionDB.conectar();
@@ -169,11 +169,11 @@ public class InscripcionDAO {
 
     // --- ACTUALIZAR ESTADOS ---
     public boolean actualizarEstadoPago(int idInscripcion, EstadoInscripcion nuevoEstado) {
-        return ejecutarUpdate("UPDATE inscripciones SET estadoPago = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
+        return ejecutarUpdate("UPDATE inscripcion SET estadoPago = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
     }
 
     public boolean actualizarEstadoCurso(int idInscripcion, EstadoCurso nuevoEstado) {
-        return ejecutarUpdate("UPDATE inscripciones SET estadoCurso = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
+        return ejecutarUpdate("UPDATE inscripcion SET estadoCurso = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
     }
 
     private boolean ejecutarUpdate(String sql, String estado, int id) {
@@ -192,7 +192,7 @@ public class InscripcionDAO {
 
     // --- ELIMINAR INSCRIPCIÓN ---
     public boolean eliminarInscripcion(int idInscripcion) {
-        String sql = "DELETE FROM inscripciones WHERE idInscripcion = ?";
+        String sql = "DELETE FROM inscripcion WHERE idInscripcion = ?";
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -215,11 +215,11 @@ public class InscripcionDAO {
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
-                FROM inscripciones i
-                JOIN alumnos a ON i.idAlumno = a.idUsuario
-                JOIN usuarios u ON a.idUsuario = u.idUsuario
-                JOIN cursos c ON i.idCurso = c.idCurso
-                LEFT JOIN pagos p ON i.idPago = p.idPago
+                FROM inscripcion i
+                JOIN alumno a ON i.idAlumno = a.idUsuario
+                JOIN usuario u ON a.idUsuario = u.idUsuario
+                JOIN curso c ON i.idCurso = c.idCurso
+                LEFT JOIN pago p ON i.idPago = p.idPago
                 WHERE i.idAlumno = ?""";
 
         try (Connection conn = ConexionDB.conectar();
@@ -288,11 +288,11 @@ public class InscripcionDAO {
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                    c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
-            FROM inscripciones i
-            JOIN alumnos a ON i.idAlumno = a.idUsuario
-            JOIN usuarios u ON a.idUsuario = u.idUsuario
-            JOIN cursos c ON i.idCurso = c.idCurso
-            LEFT JOIN pagos p ON i.idPago = p.idPago
+            FROM inscripcion i
+            JOIN alumno a ON i.idAlumno = a.idUsuario
+            JOIN usuario u ON a.idUsuario = u.idUsuario
+            JOIN curso c ON i.idCurso = c.idCurso
+            LEFT JOIN pago p ON i.idPago = p.idPago
             WHERE i.idAlumno = ? AND i.idCurso = ?
             """;
 
@@ -358,7 +358,7 @@ public class InscripcionDAO {
     }
 
     public int contarInscriptosPorCurso(int idCurso) {
-        String sql = "SELECT COUNT(*) AS cant FROM inscripciones WHERE idCurso = ?";
+        String sql = "SELECT COUNT(*) AS cant FROM inscripcion WHERE idCurso = ?";
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -384,11 +384,11 @@ public class InscripcionDAO {
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
                    c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
-            FROM inscripciones i
-            JOIN alumnos a ON i.idUsuario = a.idUsuario
-            JOIN usuarios u ON a.idUsuario = u.idUsuario
-            JOIN cursos c ON i.idCurso = c.idCurso
-            LEFT JOIN pagos p ON i.idPago = p.idPago
+            FROM inscripcion i
+            JOIN alumno a ON i.idUsuario = a.idUsuario
+            JOIN usuario u ON a.idUsuario = u.idUsuario
+            JOIN curso c ON i.idCurso = c.idCurso
+            LEFT JOIN pago p ON i.idPago = p.idPago
             ORDER BY i.idInscripcion DESC
             """;
 

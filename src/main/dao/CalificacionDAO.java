@@ -12,7 +12,7 @@ import java.util.List;
 public class CalificacionDAO {
 
     public boolean agregarCalificacion(Calificacion calificacion) {
-        String sql = "INSERT INTO calificaciones (idInscripcion, tipoEvaluacion, nota, fecha) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO calificacion (idInscripcion, tipoEvaluacion, nota, fecha) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -40,7 +40,7 @@ public class CalificacionDAO {
 
     public List<Calificacion> obtenerCalificacionesPorInscripcion(Inscripcion inscripcion) {
         List<Calificacion> lista = new ArrayList<>();
-        String sql = "SELECT idCalificacion, tipoEvaluacion, nota, fecha FROM calificaciones WHERE idInscripcion = ?";
+        String sql = "SELECT idCalificacion, tipoEvaluacion, nota, fecha FROM calificacion WHERE idInscripcion = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

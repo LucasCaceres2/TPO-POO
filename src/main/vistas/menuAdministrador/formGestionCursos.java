@@ -9,7 +9,6 @@ import main.modelo.Docente;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.List;
 
 public class formGestionCursos extends JFrame {
@@ -107,7 +106,7 @@ public class formGestionCursos extends JFrame {
                     c.getArea() != null ? c.getArea().getNombre() : "",
                     c.getCupoMax(),
                     c.getCantidadClases(),
-                    c.getContenido()
+                    c.getDescripcion()
             });
         }
     }

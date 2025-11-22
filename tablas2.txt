@@ -84,13 +84,18 @@ asistencia:
     CREATE TABLE asistencia (
         idAsistencia INT AUTO_INCREMENT PRIMARY KEY,
         idInscripcion INT NOT NULL,
-        fecha DATETIME NOT NULL,
-        presente BOOLEAN NOT NULL,
+        idClase INT NOT NULL,
+        presente BOOLEAN NOT NULL DEFAULT FALSE,
 
         FOREIGN KEY (idInscripcion) REFERENCES inscripcion(idInscripcion)
-            ON DELETE CASCADE
-            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+
+        FOREIGN KEY (idClase) REFERENCES clase(idClase)
+            ON DELETE CASCADE,
+
+        UNIQUE (idInscripcion, idClase)
     );
+
 calificacion:
     CREATE TABLE calificacion (
         idCalificacion INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,16 +117,6 @@ clase:
         contenido TEXT NOT NULL,
 
         FOREIGN KEY (idCurso) REFERENCES curso(idCurso)
-            ON DELETE CASCADE
-            ON UPDATE CASCADE
-    );
-contenido:
-    CREATE TABLE contenido (
-        idContenido INT AUTO_INCREMENT PRIMARY KEY,
-        idClase INT NOT NULL,
-        texto TEXT NOT NULL,
-        tipo VARCHAR(50),
-        FOREIGN KEY (idClase) REFERENCES clase(idClase)
             ON DELETE CASCADE
             ON UPDATE CASCADE
     );
