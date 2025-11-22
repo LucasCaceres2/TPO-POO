@@ -1,4 +1,4 @@
-package main.servicios;
+package main.controlador;
 
 import main.dao.*;
 import main.modelo.*;
@@ -13,13 +13,8 @@ public class Plataforma {
     private InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private PagoDAO pagoDAO = new PagoDAO();
     private AreaDAO areaDAO = new AreaDAO();
-    // Campos en Plataforma:
     private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
-
-    // ===========================
-    //     MÉTODOS DE NEGOCIO
-    // ===========================
 
     // --- Registrar nuevo alumno ---
     public boolean registrarAlumno(String nombre, String apellido, String email, String password, String legajo) {
@@ -179,7 +174,7 @@ public class Plataforma {
         return asistenciaDAO.agregarAsistencia(asistencia);
     }
 
-    public boolean registrarCalificacion(String legajoAlumno, int idCurso, String tipo, double nota) {
+    public boolean registrarCalificacion(String legajoAlumno, int idCurso, TipoEvaluacion tipo, double nota) {
         if (nota < 0 || nota > 10) {
             System.out.println("⚠️ La nota debe estar entre 0 y 10.");
             return false;

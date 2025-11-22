@@ -2,7 +2,7 @@ package main.vistas.menuAlumno;
 
 import main.dao.InscripcionDAO;
 import main.modelo.Curso;
-import main.servicios.Plataforma;
+import main.controlador.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

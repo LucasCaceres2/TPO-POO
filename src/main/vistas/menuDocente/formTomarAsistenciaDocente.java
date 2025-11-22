@@ -5,7 +5,7 @@ import main.modelo.Curso;
 import main.modelo.Docente;
 import main.modelo.Inscripcion;
 import main.modelo.Alumno;
-import main.servicios.Plataforma;
+import main.controlador.Plataforma;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

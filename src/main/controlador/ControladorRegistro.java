@@ -1,7 +1,5 @@
 package main.controlador;
 
-import main.servicios.Plataforma;
-
 public class ControladorRegistro {
 
     private final Plataforma plataforma = new Plataforma();

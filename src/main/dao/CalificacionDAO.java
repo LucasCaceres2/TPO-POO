@@ -3,6 +3,7 @@ package main.dao;
 import main.database.ConexionDB;
 import main.modelo.Calificacion;
 import main.modelo.Inscripcion;
+import main.modelo.TipoEvaluacion;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,13 +12,13 @@ import java.util.List;
 public class CalificacionDAO {
 
     public boolean agregarCalificacion(Calificacion calificacion) {
-        String sql = "INSERT INTO calificaciones (idInscripcion, tipo, nota, fecha) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO calificaciones (idInscripcion, tipoEvaluacion, nota, fecha) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, calificacion.getInscripcion().getIdInscripcion());
-            stmt.setString(2, calificacion.getTipo());
+            stmt.setString(2, calificacion.getTipoEvaluacion().name());
             stmt.setDouble(3, calificacion.getNota());
             stmt.setDate(4, new java.sql.Date(calificacion.getFecha().getTime()));
 
@@ -39,7 +40,7 @@ public class CalificacionDAO {
 
     public List<Calificacion> obtenerCalificacionesPorInscripcion(Inscripcion inscripcion) {
         List<Calificacion> lista = new ArrayList<>();
-        String sql = "SELECT idCalificacion, tipo, nota, fecha FROM calificaciones WHERE idInscripcion = ?";
+        String sql = "SELECT idCalificacion, tipoEvaluacion, nota, fecha FROM calificaciones WHERE idInscripcion = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -48,7 +49,7 @@ public class CalificacionDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     int id = rs.getInt("idCalificacion");
-                    String tipo = rs.getString("tipo");
+                    TipoEvaluacion tipo = TipoEvaluacion.valueOf(rs.getString("tipoEvaluacion"));
                     double nota = rs.getDouble("nota");
                     java.util.Date fecha = rs.getDate("fecha");
                     lista.add(new Calificacion(id, inscripcion, tipo, nota, fecha));
