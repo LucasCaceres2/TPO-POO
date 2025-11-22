@@ -1,0 +1,127 @@
+usuario:
+    CREATE TABLE usuario (
+        idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        apellido VARCHAR(100) NOT NULL,
+        email VARCHAR(150) NOT NULL UNIQUE,
+        contrasena VARCHAR(255) NOT NULL,
+        tipoUsuario ENUM('ADMIN', 'ALUMNO', 'DOCENTE') NOT NULL
+    );
+alumno:
+    CREATE TABLE alumno (
+        idAlumno INT PRIMARY KEY,
+        legajo VARCHAR(50) NOT NULL UNIQUE,
+        FOREIGN KEY (idAlumno) REFERENCES usuario(idUsuario)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+docente:
+    CREATE TABLE docente (
+        idDocente INT PRIMARY KEY,
+        matricula VARCHAR(50) NOT NULL UNIQUE,
+        FOREIGN KEY (idDocente) REFERENCES usuario(idUsuario)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+inscripcion:
+    CREATE TABLE inscripcion (
+        idInscripcion INT AUTO_INCREMENT PRIMARY KEY,
+        fecha DATETIME NOT NULL,
+        idAlumno INT NOT NULL,
+        idCurso INT NOT NULL,
+        idPago INT NULL,
+
+        estadoPago ENUM('PENDIENTE_PAGO','PAGO') NOT NULL,
+        estadoCurso ENUM('CURSANDO','DADO_DE_BAJA','APROBADO','DESAPROBADO') NOT NULL,
+
+        FOREIGN KEY (idAlumno) REFERENCES alumno(idAlumno)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+
+        FOREIGN KEY (idCurso) REFERENCES curso(idCurso)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+
+        FOREIGN KEY (idPago) REFERENCES pago(idPago)
+            ON DELETE SET NULL
+            ON UPDATE CASCADE
+    );
+curso:
+    CREATE TABLE curso (
+        idCurso INT AUTO_INCREMENT PRIMARY KEY,
+        titulo VARCHAR(150) NOT NULL,
+        cupoMax INT NOT NULL CHECK (cupoMax > 0),
+        idDocente INT NOT NULL,
+        idArea INT NOT NULL,
+        contenido TEXT,
+        cantidadClases INT NOT NULL CHECK (cantidadClases > 0),
+
+        FOREIGN KEY (idDocente) REFERENCES docente(idDocente)
+            ON DELETE RESTRICT
+            ON UPDATE CASCADE,
+
+        FOREIGN KEY (idArea) REFERENCES area(idArea)
+            ON DELETE RESTRICT
+            ON UPDATE CASCADE
+    );
+pago:
+    CREATE TABLE pago (
+        idPago INT AUTO_INCREMENT PRIMARY KEY,
+        fecha DATETIME NOT NULL,
+        monto DECIMAL(10,2) NOT NULL CHECK (monto > 0),
+        idAlumno INT NOT NULL,
+
+        FOREIGN KEY (idAlumno) REFERENCES alumno(idAlumno)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+area:
+    CREATE TABLE area (
+        idArea INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL UNIQUE
+    );
+asistencia:
+    CREATE TABLE asistencia (
+        idAsistencia INT AUTO_INCREMENT PRIMARY KEY,
+        idInscripcion INT NOT NULL,
+        fecha DATETIME NOT NULL,
+        presente BOOLEAN NOT NULL,
+
+        FOREIGN KEY (idInscripcion) REFERENCES inscripcion(idInscripcion)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+calificacion:
+    CREATE TABLE calificacion (
+        idCalificacion INT AUTO_INCREMENT PRIMARY KEY,
+        idInscripcion INT NOT NULL,
+        tipo ENUM('PARCIAL','FINAL','TRABAJO_PRACTICO','RECUPERATORIO','ACTIVIDAD_EN_CLASE') NOT NULL,
+        nota DECIMAL(4,2) NOT NULL CHECK (nota >= 0 AND nota <= 10),
+        fecha DATETIME NOT NULL,
+
+        FOREIGN KEY (idInscripcion) REFERENCES inscripcion(idInscripcion)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+clase:
+    CREATE TABLE clase (
+        idClase INT AUTO_INCREMENT PRIMARY KEY,
+        idCurso INT NOT NULL,
+        fecha DATETIME NOT NULL,
+        titulo VARCHAR(150) NOT NULL,
+        contenido TEXT NOT NULL,
+
+        FOREIGN KEY (idCurso) REFERENCES curso(idCurso)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );
+contenido:
+    CREATE TABLE contenido (
+        idContenido INT AUTO_INCREMENT PRIMARY KEY,
+        idClase INT NOT NULL,
+        texto TEXT NOT NULL,
+        tipo VARCHAR(50),
+        FOREIGN KEY (idClase) REFERENCES clase(idClase)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+    );

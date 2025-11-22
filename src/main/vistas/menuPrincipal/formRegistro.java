@@ -66,14 +66,11 @@ public class formRegistro extends JFrame {
         boolean esAlumno = alumnoCheckBox.isSelected();
         boolean esDocente = docenteCheckBox.isSelected();
 
-        String resultado = controlador.registrarUsuario(
+        String resultado = controlador.registrarAlumno(
                 nombre,
                 apellido,
                 email,
-                contrasena,
-                legajoOMatricula,
-                esAlumno,
-                esDocente
+                contrasena
         );
 
         if ("REGISTRO_OK".equals(resultado)) {

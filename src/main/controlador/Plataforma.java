@@ -17,8 +17,8 @@ public class Plataforma {
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
     // --- Registrar nuevo alumno ---
-    public boolean registrarAlumno(String nombre, String apellido, String email, String password, String legajo) {
-        Alumno alumno = new Alumno(nombre, apellido, email, password, legajo);
+    public boolean registrarAlumno(String nombre, String apellido, String email, String password) {
+        Alumno alumno = new Alumno(nombre, apellido, email, password, null);
         return alumnoDAO.agregarAlumno(alumno);
     }
 

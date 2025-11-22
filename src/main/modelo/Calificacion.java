@@ -12,7 +12,7 @@ public class Calificacion {
     // Desde BD
     public Calificacion(int idCalificacion, Inscripcion inscripcion, TipoEvaluacion tipo, double nota, Date fecha) {
         if (inscripcion == null) throw new IllegalArgumentException("La calificación debe estar asociada a una inscripción.");
-        if (tipo == null || tipo.trim().isEmpty()) throw new IllegalArgumentException("El tipo de calificación es obligatorio.");
+        if (tipo == null) throw new IllegalArgumentException("El tipo de calificación es obligatorio.");
         if (nota < 0 || nota > 10) throw new IllegalArgumentException("La nota debe estar entre 0 y 10.");
         this.idCalificacion = idCalificacion;
         this.inscripcion = inscripcion;

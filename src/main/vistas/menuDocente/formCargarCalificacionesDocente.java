@@ -4,10 +4,7 @@ import main.dao.CalificacionDAO;
 import main.dao.CursoDAO;
 import main.dao.DocenteDAO;
 import main.dao.InscripcionDAO;
-import main.modelo.Calificacion;
-import main.modelo.Curso;
-import main.modelo.Docente;
-import main.modelo.Inscripcion;
+import main.modelo.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -129,7 +126,7 @@ public class formCargarCalificacionesDocente extends JFrame {
             String nombreCompleto = ins.getAlumno().getNombre() + " " + ins.getAlumno().getApellido();
 
             // Tipo default sugerido, el docente puede editar
-            String tipoDefault = "PARCIAL 1";
+            String tipoDefault = "PARCIAL";
 
             model.addRow(new Object[]{
                     legajo,
@@ -167,7 +164,7 @@ public class formCargarCalificacionesDocente extends JFrame {
         for (int i = 0; i < filas; i++) {
             Inscripcion ins = inscripcionesActuales.get(i);
 
-            String tipo = String.valueOf(model.getValueAt(i, 2)).trim();
+            TipoEvaluacion tipo = (TipoEvaluacion) model.getValueAt(i, 2);
             String notaStr = String.valueOf(model.getValueAt(i, 3)).trim();
 
             // Si no completó nota, saltamos esa fila
@@ -195,7 +192,7 @@ public class formCargarCalificacionesDocente extends JFrame {
             }
 
             if (tipo.isEmpty()) {
-                tipo = "EXAMEN"; // fallback simple
+                tipo = TipoEvaluacion.valueOf("PARCIAL"); // fallback simple
             }
 
             Calificacion calificacion = new Calificacion(ins, tipo, nota);

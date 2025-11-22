@@ -1,14 +1,8 @@
 package main.modelo;
 
-
-
 import java.util.Date;
 import java.util.Objects;
 
-/**
- * Clase que representa una inscripción de un alumno a un curso.
- * Contiene la lógica de negocio relacionada con estados de pago y curso.
- */
 public class Inscripcion {
     private int idInscripcion;
     private Date fecha;
@@ -18,12 +12,9 @@ public class Inscripcion {
     private EstadoInscripcion estadoPago;
     private EstadoCurso estadoCurso;
 
-    // ==================== CONSTRUCTORES ====================
 
-    /**
-     * Constructor completo para crear una inscripción con todos los datos.
-     * Se usa cuando se recupera desde la BD.
-     */
+    // Se usa cuando se recupera desde la BD.
+
     public Inscripcion(int idInscripcion, Date fecha, Alumno alumno, Curso curso, 
                       Pago pago, EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
         validarDatosBasicos(alumno, curso);
@@ -36,10 +27,8 @@ public class Inscripcion {
         this.estadoCurso = estadoCurso != null ? estadoCurso : EstadoCurso.CURSANDO;
     }
 
-    /**
-     * Constructor con estados de pago y curso personalizados.
-     * Se usa para crear una inscripción nueva con valores específicos.
-     */
+    // Se usa para crear una inscripción nueva con valores específicos.
+
     public Inscripcion(Alumno alumno, Curso curso, Pago pago, 
                       EstadoInscripcion estadoPago, EstadoCurso estadoCurso) {
         validarDatosBasicos(alumno, curso);
