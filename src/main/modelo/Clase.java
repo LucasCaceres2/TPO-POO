@@ -15,12 +15,15 @@ public class Clase {
         this.titulo = titulo;
         this.contenido = contenido;
     }
-    public Clase(int idClase, Date fecha, String titulo, String contenido) {
+    public Clase(int idClase, Curso curso, Date fecha, String titulo, String contenido) {
         this.idClase = idClase;
+        this.curso = curso;
         this.fecha = fecha;
         this.titulo = titulo;
         this.contenido = contenido;
     }
+
+    public Clase() { }
 
     public Curso getCurso() { return curso; }
     public void setCurso(Curso curso) { this.curso = curso; }

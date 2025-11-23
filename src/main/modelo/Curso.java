@@ -14,7 +14,7 @@ public class Curso {
     private String descripcion; //  texto general del curso
     private transient List<Clase> clases;
     private transient List<Inscripcion> inscripciones;
-    private int cantidadClases;
+    private int cantidadClases = 12;
 
     // 🔹 Constructor para crear curso nuevo (antes de BD)
     public Curso(String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
@@ -132,12 +132,11 @@ public class Curso {
         return cantidadClases;
     }
 
-    public void setCantidadClases(int cantidadClases) {
-        if (cantidadClases < 0) {
-            throw new IllegalArgumentException("La cantidad de clases no puede ser negativa.");
-        }
-        this.cantidadClases = cantidadClases;
-    }
+    public void setCantidadClases(int cantidadClases) { this.cantidadClases = cantidadClases; }
+
+    public List<Clase> getClases() { return clases; }
+
+    public void setClases(List<Clase> clases) { this.clases = clases; }
 
     // 🔹 equals() y hashCode() basados en idCurso
     @Override

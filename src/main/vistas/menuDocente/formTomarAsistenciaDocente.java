@@ -1,10 +1,7 @@
 package main.vistas.menuDocente;
 
 import main.dao.*;
-import main.modelo.Curso;
-import main.modelo.Docente;
-import main.modelo.Inscripcion;
-import main.modelo.Alumno;
+import main.modelo.*;
 import main.controlador.Plataforma;
 
 import javax.swing.*;
@@ -23,9 +20,11 @@ public class formTomarAsistenciaDocente extends JFrame {
     private JTextField txtFecha;
     private JButton guardarButton;
     private JButton cerrarButton;
+    private JComboBox comboClases;
 
     private final String emailDocente;
     private final DocenteDAO docenteDAO = new DocenteDAO();
+    private final AlumnoDAO alumnoDAO = new AlumnoDAO();
     private final CursoDAO cursoDAO = new CursoDAO();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private final Plataforma plataforma = new Plataforma();
@@ -144,23 +143,13 @@ public class formTomarAsistenciaDocente extends JFrame {
             return;
         }
 
-        String fechaTexto = txtFecha.getText().trim();
-        if (fechaTexto.isEmpty()) {
+        // 🔹 Ahora NO se usa fecha: se selecciona la Clase
+        Clase claseSeleccionada = (Clase) comboClases.getSelectedItem();
+        if (claseSeleccionada == null) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresá una fecha (yyyy-MM-dd).",
+                    "Seleccioná una clase.",
                     "Aviso",
                     JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Date fecha;
-        try {
-            fecha = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaTexto);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Usá yyyy-MM-dd.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -182,7 +171,13 @@ public class formTomarAsistenciaDocente extends JFrame {
             Boolean presente = (Boolean) model.getValueAt(i, 2);
             if (presente == null) presente = false;
 
-            boolean ok = plataforma.tomarAsistencia(legajo, idCurso, fecha, presente);
+            boolean ok = plataforma.tomarAsistencia(
+                    legajo,
+                    idCurso,
+                    claseSeleccionada,   // 🔹 ahora mandamos la Clase
+                    presente
+            );
+
             if (ok) algunoOk = true;
         }
 
@@ -198,6 +193,7 @@ public class formTomarAsistenciaDocente extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     // ================= LISTENERS =================
     private void initListeners() {

@@ -12,7 +12,7 @@ import java.util.List;
 public class AsistenciaDAO {
 
     public boolean agregarAsistencia(Asistencia asistencia) {
-        String sql = "INSERT INTO asistencia (idInscripcion, fecha, presente) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO asistencia (idInscripcion, idClase, presente) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -37,33 +37,28 @@ public class AsistenciaDAO {
         return false;
     }
 
-    public List<Asistencia> obtenerAsistenciasPorInscripcion(Inscripcion inscripcion) {
-        List<Asistencia> lista = new ArrayList<>();
-        String sql = "SELECT idAsistencia, idClase, presente FROM asistencia WHERE idInscripcion = ?";
+    public Asistencia obtenerAsistencia(Inscripcion inscripcion, Clase clase) {
+        String sql = "SELECT idAsistencia, presente FROM asistencia WHERE idInscripcion = ? AND idClase = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, inscripcion.getIdInscripcion());
+            stmt.setInt(2, clase.getIdClase());
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-
+                if (rs.next()) {
                     int idAsistencia = rs.getInt("idAsistencia");
-                    int idClase = rs.getInt("idClase");
                     boolean presente = rs.getBoolean("presente");
 
-                    // Necesitamos una clase mínima con solo idClase
-                    Clase clase = new Clase(idClase, null, null, null);
-
-                    lista.add(new Asistencia(idAsistencia, inscripcion, clase, presente));
+                    return new Asistencia(idAsistencia, inscripcion, clase, presente);
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar asistencias: " + e.getMessage());
+            System.out.println("❌ Error al obtener asistencia: " + e.getMessage());
         }
 
-        return lista;
+        return null; // si no hay asistencia registrada
     }
 }

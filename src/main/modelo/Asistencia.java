@@ -15,9 +15,10 @@ public class Asistencia {
         this.presente = presente;
     }
 
-    // Para nuevas asistencias
     public Asistencia(Inscripcion inscripcion, Clase clase, boolean presente) {
-        this(0, inscripcion, clase, presente);
+        this.inscripcion = inscripcion;
+        this.clase = clase;
+        this.presente = presente;
     }
 
     public int getIdAsistencia() { return idAsistencia; }

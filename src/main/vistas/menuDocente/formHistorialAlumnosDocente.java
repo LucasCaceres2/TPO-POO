@@ -25,6 +25,7 @@ public class formHistorialAlumnosDocente extends JFrame {
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
+    private final ClaseDAO claseDAO = new ClaseDAO();
 
     // Para mapear filas con inscripciones (si después querés ver detalle)
     private List<Inscripcion> inscripcionesActuales = new ArrayList<>();
@@ -153,23 +154,23 @@ public class formHistorialAlumnosDocente extends JFrame {
     // Porcentaje de asistencia según asistencias del alumno en ese curso
     private double calcularPorcentajeAsistencia(Inscripcion inscripcion, Curso curso) {
         try {
-            var asistencias = asistenciaDAO.obtenerAsistenciasPorInscripcion(inscripcion);
-            if (asistencias == null || asistencias.isEmpty()) return 0.0;
+            // 🔹 Obtenemos todas las clases del curso
+            List<Clase> clases = claseDAO.obtenerClasesPorCurso(curso);
+            if (clases.isEmpty()) return 0.0;
 
             int presentes = 0;
-            for (var a : asistencias) {
-                if (a.isPresente()) presentes++;
+            int total = clases.size(); // total de clases planificadas
+
+            for (Clase clase : clases) {
+                // 🔹 Obtenemos la asistencia del alumno para esta clase
+                Asistencia asistencia = asistenciaDAO.obtenerAsistencia(inscripcion, clase);
+                if (asistencia != null && asistencia.isPresente()) {
+                    presentes++;
+                }
             }
 
-            int totalReferencia;
-            if (curso.getCantidadClases() > 0) {
-                totalReferencia = curso.getCantidadClases();
-            } else {
-                totalReferencia = asistencias.size();
-            }
-
-            if (totalReferencia == 0) return 0.0;
-            return presentes * 100.0 / totalReferencia;
+            if (total == 0) return 0.0;
+            return (presentes * 100.0) / total;
 
         } catch (Exception e) {
             System.out.println("❌ Error al calcular asistencia: " + e.getMessage());

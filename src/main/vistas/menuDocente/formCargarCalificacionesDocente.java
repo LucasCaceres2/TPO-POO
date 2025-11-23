@@ -191,10 +191,6 @@ public class formCargarCalificacionesDocente extends JFrame {
                 return;
             }
 
-            if (tipo.isEmpty()) {
-                tipo = TipoEvaluacion.valueOf("PARCIAL"); // fallback simple
-            }
-
             Calificacion calificacion = new Calificacion(ins, tipo, nota);
 
             boolean ok = calificacionDAO.agregarCalificacion(calificacion);

@@ -54,6 +54,8 @@ public class Inscripcion {
         this.pago = null;
     }
 
+    public Inscripcion() { }
+
     // ==================== VALIDACIONES ====================
 
     /**

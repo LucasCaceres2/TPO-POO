@@ -13,6 +13,7 @@ public class Plataforma {
     private InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private PagoDAO pagoDAO = new PagoDAO();
     private AreaDAO areaDAO = new AreaDAO();
+    private ClaseDAO claseDAO = new ClaseDAO();
     private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
@@ -146,7 +147,7 @@ public class Plataforma {
         return exito;
     }
 
-    public boolean tomarAsistencia(String legajoAlumno, int idCurso, java.util.Date fecha, boolean presente) {
+    public boolean tomarAsistencia(String legajoAlumno, int idCurso, Clase clase, boolean presente) {
         Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
         if (alumno == null) {
             System.out.println("⚠️ Alumno no encontrado.");
@@ -167,7 +168,7 @@ public class Plataforma {
 
         Asistencia asistencia = new Asistencia(
                 inscripcion,
-                (fecha != null) ? fecha : new java.util.Date(),
+                clase,
                 presente
         );
 
@@ -221,38 +222,28 @@ public class Plataforma {
             return 0.0;
         }
 
-        List<Asistencia> asistencias = asistenciaDAO.obtenerAsistenciasPorInscripcion(inscripcion);
-        if (asistencias == null || asistencias.isEmpty()) {
-            return 0.0;
-        }
+        // 🔹 Obtenemos todas las clases del curso
+        List<Clase> clases = claseDAO.obtenerClasesPorCurso(curso);
+        if (clases.isEmpty()) return 0.0;
 
         int presentes = 0;
-        for (int i = 0; i < asistencias.size(); i++) {
-            Asistencia a = asistencias.get(i);
-            if (a.isPresente()) {
+        int total = clases.size(); // total de clases planificadas
+
+        for (Clase clase : clases) {
+            // Obtenemos asistencia del alumno para esta clase
+            Asistencia asistencia = asistenciaDAO.obtenerAsistencia(inscripcion, clase);
+            if (asistencia != null && asistencia.isPresente()) {
                 presentes++;
             }
         }
 
-        int totalReferencia;
+        if (total == 0) return 0.0;
 
-        if (curso.getCantidadClases() > 0) {
-            // Usamos la cantidad planificada del curso
-            totalReferencia = curso.getCantidadClases();
-        } else {
-            // Si no está seteado, usamos la cantidad de asistencias registradas
-            totalReferencia = asistencias.size();
-        }
-
-        if (totalReferencia == 0) {
-            return 0.0;
-        }
-
-        return (presentes * 100.0) / totalReferencia;
+        return (presentes * 100.0) / total;
     }
 
     public boolean inscribirAlumnoEnCurso(String emailAlumno, int idCurso) {
-        // Supongo que tenés este método; si no, se puede crear en AlumnoDAO
+        // Supongo que tenés este metodo; si no, se puede crear en AlumnoDAO
         Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
         if (alumno == null) {
             System.out.println("⚠️ Alumno no encontrado por email: " + emailAlumno);
@@ -281,13 +272,29 @@ public class Plataforma {
             return List.of();
         }
 
-        // Reusamos el método existente que trabaja con legajo
+        // Reusamos el metodo existente que trabaja con legajo
         return inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
     }
 
+    public void ajustarCantidadClases(Curso curso, int nuevaCantidad) {
+        List<Clase> clasesActuales = curso.getClases();
 
+        if (nuevaCantidad > curso.getCantidadClases()) {
+            // agregar nuevas clases
+            for (int i = curso.getCantidadClases(); i < nuevaCantidad; i++) {
+                Clase nueva = new Clase(curso, null, "Clase " + (i+1), "Contenido inicial");
+                claseDAO.agregarClase(nueva); // persistimos en BD
+                clasesActuales.add(nueva);     // agregamos al objeto en memoria
+            }
+        } else if (nuevaCantidad < curso.getCantidadClases()) {
+            // eliminar clases extra
+            List<Clase> aEliminar = clasesActuales.subList(nuevaCantidad, clasesActuales.size());
+            for (Clase c : aEliminar) {
+                claseDAO.eliminarClase(c.getIdClase());
+            }
+            aEliminar.clear();
+        }
 
-
-
-
+        curso.setCantidadClases(nuevaCantidad);
+    }
 }
