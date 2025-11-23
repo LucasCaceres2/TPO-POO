@@ -19,7 +19,7 @@ public class CursoDAO {
         }
 
         String checkSql = "SELECT 1 FROM curso WHERE titulo = ? AND idDocente = ? AND idArea = ?";
-        String insertSql = "INSERT INTO curso (titulo, cupoMax, idDocente, idArea, descripcion, cantidadClases) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertSql = "INSERT INTO curso (titulo, cupoMax, idDocente, idArea, contenido, cantidadClases) VALUES (?, ?, ?, ?, ?, ?)";
 
 
         try (Connection conn = ConexionDB.conectar()) {
@@ -101,7 +101,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("descripcion"),
+                            rs.getString("contenido"),
                             rs.getInt("cantidadClases")
                     );
                 }
@@ -118,7 +118,7 @@ public class CursoDAO {
     // --- OBTENER CURSO POR TÍTULO ---
     public Curso obtenerCursoPorTitulo(String titulo) {
         String sql = """
-            SELECT c.idCurso, c.titulo, c.cupoMax, c.descripcion,c.cantidadClases,
+            SELECT c.idCurso, c.titulo, c.cupoMax, c.contenido,c.cantidadClases,
                    d.idUsuario AS idDocente, d.matricula,
                    u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                    a.idArea, a.nombre AS areaNombre
@@ -152,7 +152,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("descripcion"),
+                            rs.getString("contenido"),
                             rs.getInt("cantidadClases")
                     );
                 }
@@ -167,7 +167,7 @@ public class CursoDAO {
     public List<Curso> listarCursos() {
         List<Curso> cursos = new ArrayList<>();
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.descripcion,c.cantidadClases,
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,c.cantidadClases,
                        u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                        a.nombre AS areaNombre
                 FROM curso c
@@ -197,7 +197,7 @@ public class CursoDAO {
                         rs.getInt("cupoMax"),
                         docente,
                         area,
-                        rs.getString("descripcion"),
+                        rs.getString("contenido"),
                         rs.getInt("cantidadClases")
                 );
                 cursos.add(curso);
@@ -216,7 +216,7 @@ public class CursoDAO {
     public List<Curso> listarCursosPorDocente(int idDocente) {
         List<Curso> cursos = new ArrayList<>();
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.descripcion,c.cantidadClases,
+                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.contenido,c.cantidadClases,
                        d.matricula,
                        u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                        a.nombre AS areaNombre
@@ -251,7 +251,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("descripcion"),
+                            rs.getString("contenido"),
                             rs.getInt("cantidadClases")
                     );
                     cursos.add(curso);

@@ -221,7 +221,7 @@ public class formCargarCalificacionesDocente extends JFrame {
     // main de prueba rápida
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formCargarCalificacionesDocente("laura.doc@correo.com").setVisible(true)
+                new formCargarCalificacionesDocente("pablo.sosa@example.com").setVisible(true)
         );
     }
 }

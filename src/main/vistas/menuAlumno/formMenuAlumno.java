@@ -14,6 +14,7 @@ public class formMenuAlumno extends JFrame {
     private JButton misPagosButton;
     private JButton miPerfilButton;
     private JButton cerrarSesionButton;
+    private JButton miAsistenciaButton;
 
     private final String emailAlumno;
 
