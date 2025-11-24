@@ -1,7 +1,5 @@
 package main.vistas.menuPrincipal;
 
-import main.vistas.menuAlumno.formRegistro;
-
 import javax.swing.*;
 
 public class formBienvenido extends JFrame {

@@ -1,7 +1,6 @@
-package main.vistas.menuAlumno;
+package main.vistas.menuPrincipal;
 
 import main.controlador.ControladorRegistro;
-import main.vistas.menuPrincipal.formBienvenido;
 
 import javax.swing.*;
 
@@ -26,6 +25,7 @@ public class formRegistro extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
 
         configurarEventos();
     }
