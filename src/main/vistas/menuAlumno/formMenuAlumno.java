@@ -15,6 +15,7 @@ public class formMenuAlumno extends JFrame {
     private JButton miPerfilButton;
     private JButton cerrarSesionButton;
     private JButton miAsistenciaButton;
+    private JButton misNotasButton;
 
     private final String emailAlumno;
 
@@ -63,6 +64,17 @@ public class formMenuAlumno extends JFrame {
         miPerfilButton.addActionListener(e ->
                 new formMiPerfilAlumno(emailAlumno).setVisible(true)
         );
+
+        misNotasButton.addActionListener(e ->
+                new formMisNotasAlumno(emailAlumno).setVisible(true)
+        );
+
+        // 🔹 Mi Asistencia  👈 AÑADÍ ESTO
+        miAsistenciaButton.addActionListener(e ->
+                new formMiAsistenciaAlumno(emailAlumno).setVisible(true)
+        );
+
+
 
 
         // Cerrar sesión

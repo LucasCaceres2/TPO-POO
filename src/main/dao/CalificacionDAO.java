@@ -12,7 +12,8 @@ import java.util.List;
 public class CalificacionDAO {
 
     public boolean agregarCalificacion(Calificacion calificacion) {
-        String sql = "INSERT INTO calificacion (idInscripcion, tipoEvaluacion, nota, fecha) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO calificacion (idInscripcion, tipo, nota, fecha) VALUES (?, ?, ?, ?)";
+
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -40,7 +41,8 @@ public class CalificacionDAO {
 
     public List<Calificacion> obtenerCalificacionesPorInscripcion(Inscripcion inscripcion) {
         List<Calificacion> lista = new ArrayList<>();
-        String sql = "SELECT idCalificacion, tipoEvaluacion, nota, fecha FROM calificacion WHERE idInscripcion = ?";
+        String sql = "SELECT idCalificacion, tipo, nota, fecha FROM calificacion WHERE idInscripcion = ?";
+
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -49,7 +51,7 @@ public class CalificacionDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     int id = rs.getInt("idCalificacion");
-                    TipoEvaluacion tipo = TipoEvaluacion.valueOf(rs.getString("tipoEvaluacion"));
+                    TipoEvaluacion tipo = TipoEvaluacion.valueOf(rs.getString("tipo"));
                     double nota = rs.getDouble("nota");
                     java.util.Date fecha = rs.getDate("fecha");
                     lista.add(new Calificacion(id, inscripcion, tipo, nota, fecha));

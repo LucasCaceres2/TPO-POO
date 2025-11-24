@@ -17,6 +17,7 @@ public class formLogin extends JFrame {
     private JTextField textField1;   // Email
     private JTextField textField2;   // Contraseña
     private JButton iniciarSesionButton;
+    private JButton volverButton;
 
     private final ControladorLogin controlador = new ControladorLogin();
 
@@ -34,7 +35,16 @@ public class formLogin extends JFrame {
                 onLogin();
             }
         });
+
+        volverButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();                     // cierro el login
+                new formBienvenido().setVisible(true);  // vuelvo a la pantalla de inicio
+            }
+        });
     }
+
 
     private void onLogin() {
         String email = textField1.getText();

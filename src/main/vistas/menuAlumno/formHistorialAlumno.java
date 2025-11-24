@@ -1,5 +1,6 @@
 package main.vistas.menuAlumno;
 
+import main.dao.CursoDAO;
 import main.modelo.Curso;
 import main.modelo.Inscripcion;
 import main.controlador.Plataforma;
@@ -11,11 +12,13 @@ import java.util.List;
 public class formHistorialAlumno extends JFrame {
 
     private JPanel pnlPrincipal;
-    private JTable table1;        // la tabla que creaste en el .form
+    private JTable table1;
     private JButton cerrarButton;
 
     private final Plataforma plataforma = new Plataforma();
-    private final String emailAlumno; // viene del login / menú alumno
+    private final String emailAlumno;   // viene del login / menú alumno
+
+    private final CursoDAO cursoDAO = new CursoDAO();
 
     // ---------- CONSTRUCTOR PRINCIPAL ----------
     public formHistorialAlumno(String emailAlumno) {
@@ -42,13 +45,11 @@ public class formHistorialAlumno extends JFrame {
     // ---------- CONFIG TABLA ----------
     private void configurarTabla() {
         String[] columnas = {
-                "ID Inscripción",
-                "ID Curso",
                 "Curso",
                 "Docente",
                 "Fecha inscripción",
                 "Estado Pago",
-                "Estado Curso"
+                "Estado de la cursada"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
@@ -77,19 +78,28 @@ public class formHistorialAlumno extends JFrame {
 
         for (Inscripcion i : inscripciones) {
             Curso c = i.getCurso();
+
+            // 🔹 Si el curso viene sin docente, lo cargo completo desde la BD
+            if (c != null && c.getDocente() == null) {
+                Curso cursoCompleto = cursoDAO.obtenerCursoPorId(c.getIdCurso());
+                if (cursoCompleto != null) {
+                    c = cursoCompleto;
+                    i.setCurso(c);  // opcional
+                }
+            }
+
+            String nombreCurso = (c != null ? c.getTitulo() : "");
             String docenteNombre = "";
             if (c != null && c.getDocente() != null) {
                 docenteNombre = c.getDocente().getNombre() + " " + c.getDocente().getApellido();
             }
 
             model.addRow(new Object[]{
-                    i.getIdInscripcion(),
-                    (c != null ? c.getIdCurso() : null),
-                    (c != null ? c.getTitulo() : ""),
+                    nombreCurso,
                     docenteNombre,
                     i.getFecha(),
-                    i.getEstadoPago(),
-                    i.getEstadoCurso()
+                    (i.getEstadoPago()  != null ? i.getEstadoPago().name()  : ""),
+                    (i.getEstadoCurso() != null ? i.getEstadoCurso().name() : "")
             });
         }
     }
@@ -102,8 +112,7 @@ public class formHistorialAlumno extends JFrame {
     // ---------- MAIN DE PRUEBA ----------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formHistorialAlumno("marcosezq@gmail.com").setVisible(true)
+                new formHistorialAlumno("ana.gomez@example.com").setVisible(true)
         );
     }
-
 }

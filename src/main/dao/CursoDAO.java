@@ -68,15 +68,16 @@ public class CursoDAO {
     // 🔹 Obtener curso por ID
     public Curso obtenerCursoPorId(int idCurso) {
         String sql = """
-                SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea, c.desccripcion,c.cantidadClases,
-                       u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
-                       a.nombre AS areaNombre
-                FROM curso c
-                JOIN docente d ON c.idDocente = d.idUsuario
-                JOIN usuario u ON d.idUsuario = u.idUsuario
-                JOIN area a ON c.idArea = a.idArea
-                WHERE c.idCurso = ?
-                """;
+            SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea,
+                   c.contenido, c.cantidadClases,
+                   u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
+                   a.nombre AS areaNombre
+            FROM curso c
+            JOIN docente d ON c.idDocente = d.idUsuario
+            JOIN usuario u ON d.idUsuario = u.idUsuario
+            JOIN area a ON c.idArea = a.idArea
+            WHERE c.idCurso = ?
+            """;
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -101,7 +102,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("contenido"),      // 👈 coincide con el SELECT
                             rs.getInt("cantidadClases")
                     );
                 }
@@ -114,6 +115,7 @@ public class CursoDAO {
         System.out.println("⚠️ No se encontró curso con ID: " + idCurso);
         return null;
     }
+
 
     // --- OBTENER CURSO POR TÍTULO ---
     public Curso obtenerCursoPorTitulo(String titulo) {
