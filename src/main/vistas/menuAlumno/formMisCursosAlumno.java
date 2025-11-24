@@ -3,6 +3,7 @@ package main.vistas.menuAlumno;
 import main.modelo.Inscripcion;
 import main.modelo.Curso;
 import main.controlador.Plataforma;
+import main.dao.CursoDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,6 +20,9 @@ public class formMisCursosAlumno extends JFrame {
     private final Plataforma plataforma = new Plataforma();
     private final String emailAlumno; // viene del login / menú alumno
 
+    // 👇 Igual que en el historial
+    private final CursoDAO cursoDAO = new CursoDAO();
+
     // --------- CONSTRUCTOR PRINCIPAL ----------
     public formMisCursosAlumno(String emailAlumno) {
         this.emailAlumno = emailAlumno;
@@ -32,7 +36,7 @@ public class formMisCursosAlumno extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 400);
+
         setLocationRelativeTo(null);
     }
 
@@ -77,13 +81,24 @@ public class formMisCursosAlumno extends JFrame {
         List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
 
         for (Inscripcion i : inscripciones) {
-            // mostramos solo las que están CURSANDO
+            // solo las que están CURSANDO
             if (i.getEstadoCurso() == null ||
                     !i.getEstadoCurso().name().equalsIgnoreCase("CURSANDO")) {
                 continue;
             }
 
             Curso c = i.getCurso();
+
+            // 👇 MISMO TRUCO QUE EN EL HISTORIAL:
+            // si el curso viene sin docente, lo cargo completo desde la BD
+            if (c != null && c.getDocente() == null) {
+                Curso cursoCompleto = cursoDAO.obtenerCursoPorId(c.getIdCurso());
+                if (cursoCompleto != null) {
+                    c = cursoCompleto;
+                    i.setCurso(c); // opcional, por si lo usás después
+                }
+            }
+
             String docenteNombre = "";
             if (c != null && c.getDocente() != null) {
                 docenteNombre = c.getDocente().getNombre() + " " + c.getDocente().getApellido();
@@ -101,7 +116,6 @@ public class formMisCursosAlumno extends JFrame {
         }
     }
 
-
     // --------- LISTENERS ----------
     private void initListeners() {
         cerrarButton.addActionListener(e -> dispose());
@@ -110,9 +124,7 @@ public class formMisCursosAlumno extends JFrame {
     // --------- MAIN DE PRUEBA ----------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                // probá con el email del alumno que exista en tu BD
-                new formMisCursosAlumno("marcosezq@gmail.com").setVisible(true)
+                new formMisCursosAlumno("ana.gomez@example.com").setVisible(true)
         );
     }
-
 }

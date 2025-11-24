@@ -8,7 +8,9 @@
     <properties>
       <preferredSize width="800" height="500"/>
     </properties>
-    <border type="none"/>
+    <border type="empty">
+      <size top="20" left="20" bottom="20" right="20"/>
+    </border>
     <children>
       <grid id="173dc" binding="pnlTitulo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
@@ -28,7 +30,7 @@
           </component>
         </children>
       </grid>
-      <grid id="1c81b" binding="pnlDatos" layout-manager="GridLayoutManager" row-count="8" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="1c81b" binding="pnlDatos" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -38,7 +40,9 @@
         <children>
           <component id="fda5f" class="javax.swing.JButton" binding="cursosDisponiblesButton" default-binding="true">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Cursos Disponibles"/>
@@ -46,7 +50,9 @@
           </component>
           <component id="e92df" class="javax.swing.JButton" binding="misCursosButton" default-binding="true">
             <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Mis cursos"/>
@@ -54,7 +60,9 @@
           </component>
           <component id="8eecd" class="javax.swing.JButton" binding="misPagosButton" default-binding="true">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Mis Pagos"/>
@@ -62,7 +70,9 @@
           </component>
           <component id="b731b" class="javax.swing.JButton" binding="miPerfilButton" default-binding="true">
             <constraints>
-              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Mi Perfil"/>
@@ -70,25 +80,19 @@
           </component>
           <component id="dc017" class="javax.swing.JButton" binding="cerrarSesionButton" default-binding="true">
             <constraints>
-              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Cerrar Sesion"/>
             </properties>
           </component>
-          <hspacer id="463ad">
-            <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
-          <hspacer id="5a881">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
           <component id="98fb8" class="javax.swing.JButton" binding="historialButton" default-binding="true">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Historial"/>
@@ -96,7 +100,9 @@
           </component>
           <component id="db646" class="javax.swing.JButton" binding="miAsistenciaButton" default-binding="true">
             <constraints>
-              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Mi asistencia"/>
@@ -104,7 +110,9 @@
           </component>
           <component id="4931a" class="javax.swing.JButton" binding="misNotasButton" default-binding="true">
             <constraints>
-              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Mis Notas"/>

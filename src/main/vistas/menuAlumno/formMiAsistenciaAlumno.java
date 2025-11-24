@@ -37,7 +37,6 @@ public class formMiAsistenciaAlumno extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 500);
         setLocationRelativeTo(null);
     }
 

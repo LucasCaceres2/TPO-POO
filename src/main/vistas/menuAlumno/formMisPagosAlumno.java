@@ -36,7 +36,6 @@ public class formMisPagosAlumno extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 400);
         setLocationRelativeTo(null);
     }
 
@@ -159,7 +158,7 @@ public class formMisPagosAlumno extends JFrame {
     // --------- MAIN DE PRUEBA ----------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formMisPagosAlumno("marcosezq@gmail.com").setVisible(true)
+                new formMisPagosAlumno("ana.gomez@example.com").setVisible(true)
         );
     }
 

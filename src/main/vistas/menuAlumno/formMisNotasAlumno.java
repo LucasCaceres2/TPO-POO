@@ -38,7 +38,7 @@ public class formMisNotasAlumno extends JFrame {
         initListeners();
 
         pack();
-        setSize(800, 400);
+        setLocationRelativeTo(null);
     }
 
     // Constructor vacío SOLO para el diseñador

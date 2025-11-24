@@ -142,7 +142,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formCursosDisponiblesAlumno("marcosezq@gmail.com").setVisible(true)
+                new formCursosDisponiblesAlumno("ana.gomez@example.com").setVisible(true)
         );
     }
 

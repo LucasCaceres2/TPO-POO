@@ -33,7 +33,7 @@ public class formHistorialAlumno extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 400);
+
         setLocationRelativeTo(null);
     }
 
