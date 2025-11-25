@@ -1,6 +1,8 @@
 package main.dao;
 
 import main.database.ConexionDB;
+import main.modelo.Alumno;
+import main.modelo.Docente;
 import main.modelo.TipoUsuario;
 import main.modelo.Usuario;
 
@@ -152,27 +154,113 @@ public class UsuarioDAO {
         return false;
     }
 
-    // 🔹 Eliminar usuario
     public boolean eliminarUsuario(int idUsuario) {
         if (idUsuario <= 0) return false;
 
-        String sql = "DELETE FROM usuario WHERE idUsuario = ?";
+        String sql = "UPDATE usuario SET activo = FALSE WHERE idUsuario = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idUsuario);
-            int filas = stmt.executeUpdate();
 
+            int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("🗑️ Usuario eliminado correctamente.");
+                System.out.println("✅ Usuario desactivado correctamente.");
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar usuario: " + e.getMessage());
+            System.out.println("❌ Error al desactivar usuario: " + e.getMessage());
         }
 
         return false;
+    }
+
+
+    public boolean desactivarUsuario(int idUsuario) {
+
+        String sql = "UPDATE usuario SET activo = FALSE WHERE idUsuario = ?";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUsuario);
+
+            int filas = stmt.executeUpdate();
+            if (filas > 0) {
+                System.out.println("✅ Usuario desactivado correctamente (ID: " + idUsuario + ")");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al desactivar usuario: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public Usuario validarCredenciales(String email, String contrasena) {
+
+        String sql = "SELECT * FROM usuario WHERE email = ? AND contrasena = ? AND activo = TRUE";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, contrasena);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                TipoUsuario tipo = TipoUsuario.valueOf(rs.getString("tipoUsuario"));
+
+                int id = rs.getInt("idUsuario");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String mail = rs.getString("email");
+                String pass = rs.getString("contrasena");
+
+                switch (tipo) {
+                    case ALUMNO:
+                        return new Alumno(id, nombre, apellido, mail, pass, null);
+
+                    case DOCENTE:
+                        return new Docente(id, nombre, apellido, mail, pass, null);
+
+                    case ADMIN:
+                        // No hay clase Admin, devolvemos null
+                        System.out.println("✅ Admin logueado correctamente");
+                        return null;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error en login: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public TipoUsuario obtenerTipoUsuario(String email, String contrasena) {
+
+        String sql = "SELECT tipoUsuario FROM usuario WHERE email = ? AND contrasena = ? AND activo = TRUE";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, contrasena);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return TipoUsuario.valueOf(rs.getString("tipoUsuario"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error en login: " + e.getMessage());
+        }
+
+        return null;
     }
 }

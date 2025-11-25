@@ -1,6 +1,7 @@
 package main.vistas.menuAlumno;
 
-import main.dao.CursoDAO;
+import main.dao.*;
+import main.modelo.Alumno;
 import main.modelo.Curso;
 import main.modelo.Inscripcion;
 import main.controlador.Plataforma;
@@ -16,13 +17,13 @@ public class formHistorialAlumno extends JFrame {
     private JButton cerrarButton;
 
     private final Plataforma plataforma = new Plataforma();
-    private final String emailAlumno;   // viene del login / menú alumno
+    private final String legajoAlumno;   // viene del login / menú alumno
 
     private final CursoDAO cursoDAO = new CursoDAO();
 
     // ---------- CONSTRUCTOR PRINCIPAL ----------
     public formHistorialAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+        this.legajoAlumno = emailAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Historial de cursos");
@@ -68,28 +69,19 @@ public class formHistorialAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
         model.setRowCount(0);
 
-        if (emailAlumno == null || emailAlumno.isBlank()) {
-            System.out.println("⚠️ emailAlumno no seteado en formHistorialAlumno");
+        if (legajoAlumno == null || legajoAlumno.isBlank()) {
+            System.out.println("⚠️ legajoAlumno no seteado");
             return;
         }
 
-        // Trae TODAS las inscripciones del alumno (sin filtrar estados)
-        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
+        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumno(legajoAlumno);
 
         for (Inscripcion i : inscripciones) {
             Curso c = i.getCurso();
 
-            // 🔹 Si el curso viene sin docente, lo cargo completo desde la BD
-            if (c != null && c.getDocente() == null) {
-                Curso cursoCompleto = cursoDAO.obtenerCursoPorId(c.getIdCurso());
-                if (cursoCompleto != null) {
-                    c = cursoCompleto;
-                    i.setCurso(c);  // opcional
-                }
-            }
-
-            String nombreCurso = (c != null ? c.getTitulo() : "");
+            String nombreCurso = c != null ? c.getTitulo() : "";
             String docenteNombre = "";
+
             if (c != null && c.getDocente() != null) {
                 docenteNombre = c.getDocente().getNombre() + " " + c.getDocente().getApellido();
             }
@@ -98,8 +90,8 @@ public class formHistorialAlumno extends JFrame {
                     nombreCurso,
                     docenteNombre,
                     i.getFecha(),
-                    (i.getEstadoPago()  != null ? i.getEstadoPago().name()  : ""),
-                    (i.getEstadoCurso() != null ? i.getEstadoCurso().name() : "")
+                    i.getEstadoPago().name(),
+                    i.getEstadoCurso().name()
             });
         }
     }

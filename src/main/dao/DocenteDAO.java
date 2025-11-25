@@ -13,23 +13,17 @@ public class DocenteDAO {
 
     // 🔹 Crear docente
     public boolean agregarDocente(Docente docente) {
+
         if (docente == null || docente.getMatricula() == null || docente.getMatricula().isEmpty()) {
             System.out.println("⚠️ El docente o su matrícula no pueden ser nulos.");
             return false;
         }
 
-        // Primero se crea el usuario base
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
-        int idUsuario = usuarioDAO.agregarUsuario(docente);
-        if (idUsuario <= 0) return false;
-        docente.setIdUsuario(idUsuario);
-
         String checkSql = "SELECT 1 FROM docente WHERE matricula = ?";
-        String insertSql = "INSERT INTO docente (idUsuario, matricula) VALUES (?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
-            // Evitar duplicados por matrícula
+            // 🔍 Validar matrícula antes de crear usuario
             try (PreparedStatement check = conn.prepareStatement(checkSql)) {
                 check.setString(1, docente.getMatricula());
                 ResultSet rs = check.executeQuery();
@@ -39,7 +33,14 @@ public class DocenteDAO {
                 }
             }
 
-            // Insertar docente
+            // ✅ Crear usuario base
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            int idUsuario = usuarioDAO.agregarUsuario(docente);
+            if (idUsuario <= 0) return false;
+            docente.setIdUsuario(idUsuario);
+
+            String insertSql = "INSERT INTO docente (idUsuario, matricula) VALUES (?, ?)";
+
             try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
                 stmt.setInt(1, docente.getIdUsuario());
                 stmt.setString(2, docente.getMatricula());
@@ -50,7 +51,6 @@ public class DocenteDAO {
                     return true;
                 }
             }
-
 
         } catch (SQLException e) {
             System.out.println("❌ Error al agregar docente: " + e.getMessage());
@@ -64,7 +64,7 @@ public class DocenteDAO {
         if (matricula == null || matricula.isEmpty()) return null;
 
         String sql = """
-                SELECT d.idUsuario, d.matricula, u.idUsuario, u.nombre, u.apellido, u.email, u.tipoUsuario
+                SELECT d.idUsuario, d.matricula, u.nombre, u.apellido, u.email
                 FROM docente d
                 JOIN usuario u ON d.idUsuario = u.idUsuario
                 WHERE d.matricula = ?
@@ -166,30 +166,14 @@ public class DocenteDAO {
         return false;
     }
 
-    // 🔹 Eliminar docente
+    //lo desactiva
     public boolean eliminarDocente(String matricula) {
-        if (matricula == null || matricula.isEmpty()) return false;
 
-        String sql = "DELETE FROM docente WHERE matricula = ?";
+        Docente docente = obtenerDocentePorMatricula(matricula);
+        if (docente == null) return false;
 
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, matricula);
-            int filas = stmt.executeUpdate();
-
-            if (filas > 0) {
-                System.out.println("🗑️ Docente eliminado correctamente: " + matricula);
-                return true;
-            } else {
-                System.out.println("⚠️ No se encontró docente con matrícula " + matricula);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar docente: " + e.getMessage());
-        }
-
-        return false;
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        return usuarioDAO.desactivarUsuario(docente.getIdUsuario());
     }
 
 

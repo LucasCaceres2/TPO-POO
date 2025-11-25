@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Alumno extends Usuario implements IUsuariosAcciones {
+public class Alumno extends Usuario {
     private String legajo;
-    private transient List<Inscripcion> inscripciones; // transient → no se serializa
+    private transient List<Inscripcion> inscripciones;
 
     // 🔹 Constructor para crear un alumno nuevo (antes de insertarlo en BD)
     public Alumno(String nombre, String apellido, String email, String contrasena, String legajo) {
@@ -55,17 +55,6 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
     }
 
 
-
-
-    // 🔹 Cargar inscripciones desde BD
-    public void cargarInscripciones() {
-        if (this.legajo == null || this.legajo.isEmpty()) {
-            return;
-        }
-        InscripcionDAO inscripcionDAO = new InscripcionDAO();
-        this.inscripciones = inscripcionDAO.listarInscripcionesPorLegajo(this.legajo);
-    }
-
     // 🔹 Obtener títulos de cursos inscritos (sin imprimir)
     public List<String> obtenerTitulosCursosInscritos() {
         if (inscripciones == null || inscripciones.isEmpty()) {
@@ -96,35 +85,6 @@ public class Alumno extends Usuario implements IUsuariosAcciones {
         }
 
         return true;
-    }
-
-    // 🔹 Métodos de la interfaz (para futura GUI con Swing)
-    @Override
-    public void registrarse() {
-        System.out.println("🟢 Registro exitoso del alumno " + nombre);
-    }
-
-    @Override
-    public boolean iniciarSesion(String email, String contrasena) {
-        if (this.email.equalsIgnoreCase(email) && this.contrasena.equals(contrasena)) {
-            System.out.println("✅ Sesión iniciada para " + nombre);
-            return true;
-        }
-        System.out.println("❌ Credenciales incorrectas para " + email);
-        return false;
-    }
-
-    @Override
-    public void cerrarSesion() {
-        System.out.println("👋 Sesión cerrada para " + nombre);
-    }
-
-    @Override
-    public void actualizarPerfil(String nombre, String apellido, String email) {
-        if (nombre != null && !nombre.isBlank()) this.nombre = nombre;
-        if (apellido != null && !apellido.isBlank()) this.apellido = apellido;
-        if (email != null && esEmailValido(email)) this.email = email;
-        System.out.println("🔄 Perfil actualizado correctamente.");
     }
 
     // 🔹 Validación de email mejorada

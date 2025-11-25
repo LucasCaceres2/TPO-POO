@@ -1,6 +1,7 @@
 package main.vistas.menuPrincipal;
 
 import main.controlador.ControladorLogin;
+import main.modelo.TipoUsuario;
 import main.vistas.menuAlumno.formMenuAlumno;
 import main.vistas.menuDocente.formMenuDocente;
 import main.vistas.menuAdministrador.formMenuAdmin;
@@ -8,6 +9,8 @@ import main.vistas.menuAdministrador.formMenuAdmin;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static main.modelo.TipoUsuario.*;
 
 public class formLogin extends JFrame {
 
@@ -50,65 +53,30 @@ public class formLogin extends JFrame {
         String email = textField1.getText();
         String contrasena = textField2.getText();
 
-        String resultado = controlador.login(email, contrasena);
+        TipoUsuario tipo = controlador.login(email, contrasena);
 
-        switch (resultado) {
-            case "ALUMNO": {
-                JOptionPane.showMessageDialog(this,
-                        "Inicio de sesión correcto (ALUMNO).",
-                        "Login",
-                        JOptionPane.INFORMATION_MESSAGE);
+        if (tipo == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Email o contraseña incorrectos, o usuario inactivo.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-                new formMenuAlumno(email).setVisible(true);
-                dispose();
-                break;
-            }
+        JOptionPane.showMessageDialog(this,
+                "Inicio de sesión correcto (" + tipo + ").",
+                "Login",
+                JOptionPane.INFORMATION_MESSAGE);
 
-            case "DOCENTE": {
-                JOptionPane.showMessageDialog(this,
-                        "Inicio de sesión correcto (DOCENTE).",
-                        "Login",
-                        JOptionPane.INFORMATION_MESSAGE);
+        dispose();
 
-                new formMenuDocente(email).setVisible(true);
-                dispose();
-                break;
-            }
-
-            case "ADMIN": {
-                JOptionPane.showMessageDialog(this,
-                        "Inicio de sesión correcto (ADMINISTRADOR).",
-                        "Login",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                new formMenuAdmin(email).setVisible(true);
-                dispose();
-                break;
-            }
-
-            case "ERROR_VACIO":
-                JOptionPane.showMessageDialog(this,
-                        "Ingresá email y contraseña.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                break;
-
-            case "ERROR_CREDENCIALES":
-                JOptionPane.showMessageDialog(this,
-                        "Email o contraseña incorrectos.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                break;
-
-            case "ERROR_BD":
-            default:
-                JOptionPane.showMessageDialog(this,
-                        "Error al conectar con la base de datos.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                break;
+        switch (tipo) {
+            case ALUMNO -> new formMenuAlumno(email).setVisible(true);
+            case DOCENTE -> new formMenuDocente(email).setVisible(true);
+            case ADMIN -> new formMenuAdmin(email).setVisible(true);
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new formLogin().setVisible(true));

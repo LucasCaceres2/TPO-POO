@@ -120,7 +120,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
 
             int idCurso = (int) tablaCursos.getValueAt(fila, 0);
 
-            boolean ok = plataforma.inscribirAlumnoEnCurso(emailAlumno, idCurso);
+            boolean ok = plataforma.inscribirAlumnoEnCurso(emailAlumno, String.valueOf(idCurso));
 
             if (ok) {
                 JOptionPane.showMessageDialog(this,

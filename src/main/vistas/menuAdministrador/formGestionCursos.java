@@ -97,7 +97,7 @@ public class formGestionCursos extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
         model.setRowCount(0);
 
-        List<Curso> cursos = cursoDAO.listarCursos();
+        List<Curso> cursos = cursoDAO.listarTodosLosCursos();
         for (Curso c : cursos) {
             model.addRow(new Object[]{
                     c.getIdCurso(),
@@ -260,7 +260,7 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-        // Podés hacer un método específico en CursoDAO para actualizar todos los campos.
+        // Podés hacer un metodo específico en CursoDAO para actualizar todos los campos.
         // Como tu DAO actual solo tiene actualizarCampo simple, lo ideal es agregar uno nuevo.
         // Por ahora, ejemplo simple:
         boolean okTitulo = cursoDAO.actualizarCurso(idCursoSeleccionado, "titulo", titulo);

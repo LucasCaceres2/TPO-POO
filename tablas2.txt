@@ -56,6 +56,7 @@ CREATE TABLE curso (
     idDocente INT NOT NULL,
     idArea INT NOT NULL,
     contenido TEXT,
+    activo BOOLEAN DEFAULT TRUE
     cantidadClases INT NOT NULL CHECK (cantidadClases > 0),
 
     FOREIGN KEY (idDocente) REFERENCES docente(idUsuario)

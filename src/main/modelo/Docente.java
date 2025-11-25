@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Docente extends Usuario implements IUsuariosAcciones {
+public class Docente extends Usuario {
     private String matricula;
     private List<Curso> cursosDictados;
 
@@ -73,36 +73,6 @@ public class Docente extends Usuario implements IUsuariosAcciones {
             }
         }
         return 0;
-    }
-
-    // 🔹 Métodos de la interfaz (para futura GUI con Swing)
-    
-    @Override
-    public void registrarse() {
-        // No aplica: el docente es creado por el admin
-    }
-
-    @Override
-    public boolean iniciarSesion(String email, String contrasena) {
-        if (this.email.equalsIgnoreCase(email) && this.contrasena.equals(contrasena)) {
-            System.out.println("✅ Sesión iniciada para " + nombre);
-            return true;
-        }
-        System.out.println("❌ Credenciales incorrectas para " + email);
-        return false;
-    }
-
-    @Override
-    public void cerrarSesion() {
-        System.out.println("👋 Sesión cerrada para " + nombre);
-    }
-
-    @Override
-    public void actualizarPerfil(String nombre, String apellido, String email) {
-        if (nombre != null && !nombre.isBlank()) this.nombre = nombre;
-        if (apellido != null && !apellido.isBlank()) this.apellido = apellido;
-        if (email != null && esEmailValido(email)) this.email = email;
-        System.out.println("🔄 Perfil actualizado correctamente.");
     }
 
     // 🔹 Validación de email mejorada

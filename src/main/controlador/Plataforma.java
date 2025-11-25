@@ -17,20 +17,13 @@ public class Plataforma {
     private final AsistenciaDAO asistenciaDAO = new AsistenciaDAO();
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
-    // --- Registrar nuevo alumno ---
-    public boolean registrarAlumno(String nombre,
-                                   String apellido,
-                                   String email,
-                                   String password) {
-
-        // 👉 Generamos el legajo automáticamente
-        String nuevoLegajo = alumnoDAO.generarNuevoLegajo();
-
-        Alumno alumno = new Alumno(nombre, apellido, email, password, nuevoLegajo);
+    // --- Registrar nuevo alumno (legajo autogenerado desde DAO) ---
+    public boolean registrarAlumno(String nombre, String apellido, String email, String password) {
+        Alumno alumno = new Alumno(nombre, apellido, email, password, null);
         return alumnoDAO.agregarAlumno(alumno);
     }
 
-    // --- Registrar nuevo docente ---
+    // --- Registrar nuevo docente (solo por admin) ---
     public boolean registrarDocente(String nombre, String apellido, String email, String password, String matricula) {
         Docente docente = new Docente(nombre, apellido, email, password, matricula);
         return docenteDAO.agregarDocente(docente);
@@ -60,21 +53,79 @@ public class Plataforma {
         return cursoDAO.agregarCurso(curso);
     }
 
-    // --- Inscribir alumno en curso ---
+    // ================== CURSOS ==================
+
+    // --- Listar cursos disponibles (solo activos) ---
+    public List<Curso> listarCursos() {
+        return cursoDAO.listarCursosActivos();
+    }
+
+    // --- Listar todos los cursos (admin) ---
+    public List<Curso> listarTodosLosCursos() {
+        return cursoDAO.listarTodosLosCursos();
+    }
+
+    public boolean desactivarCurso(int idCurso) {
+        return cursoDAO.desactivarCurso(idCurso);
+    }
+
+    public boolean reactivarCurso(int idCurso) {
+        return cursoDAO.reactivarCurso(idCurso);
+    }
+
+    // ================== INSCRIPCIONES ==================
+
     public boolean inscribirAlumnoEnCurso(String legajoAlumno, String tituloCurso) {
         Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        Curso curso = cursoDAO.obtenerCursoPorTitulo(tituloCurso);
+        Curso curso = cursoDAO.obtenerCursoActivoPorTitulo(tituloCurso);
 
         if (alumno == null || curso == null) {
             System.out.println("⚠️ No se encontró alumno o curso.");
             return false;
         }
 
+        if (!curso.isActivo()) {
+            System.out.println("❌ El curso no está disponible actualmente.");
+            return false;
+        }
+
+        int inscriptosActuales = inscripcionDAO.contarInscriptosPorCurso(curso.getIdCurso());
+        if (inscriptosActuales >= curso.getCupoMax()) {
+            System.out.println("❌ No hay cupo disponible para este curso.");
+            return false;
+        }
+
         Inscripcion inscripcion = new Inscripcion(alumno, curso);
-        return inscripcionDAO.agregarInscripcion(inscripcion);
+        boolean exito = inscripcionDAO.agregarInscripcion(inscripcion);
+
+        if (exito) {
+            System.out.println("✅ Inscripción realizada con éxito.");
+        }
+
+        return exito;
     }
 
-    // --- Registrar pago ---
+    public List<Inscripcion> obtenerInscripcionesDeAlumno(String legajoAlumno) {
+        return inscripcionDAO.listarInscripcionesPorLegajo(legajoAlumno);
+    }
+
+    public List<Inscripcion> obtenerInscripcionesPorEmail(String emailAlumno) {
+        if (emailAlumno == null || emailAlumno.isBlank()) {
+            return List.of();
+        }
+
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+
+        if (alumno == null) {
+            System.out.println("⚠️ No se encontró alumno con email: " + emailAlumno);
+            return List.of();
+        }
+
+        return inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
+    }
+
+    // ================== PAGOS ==================
+
     public boolean registrarPago(String legajoAlumno, double monto) {
         if (monto <= 0) {
             System.out.println("⚠️ El monto del pago debe ser mayor a 0.");
@@ -87,221 +138,76 @@ public class Plataforma {
             return false;
         }
 
-        // Lógica de negocio: crear entidad consistente
         Pago pago = new Pago(monto, alumno);
-
-        // Persistencia delegada al DAO
         return pagoDAO.agregarPago(pago);
     }
 
-    // --- Listar inscripciones por legajo ---
-    public List<Inscripcion> obtenerInscripcionesDeAlumno(String legajoAlumno) {
-        return inscripcionDAO.listarInscripcionesPorLegajo(legajoAlumno);
-    }
-
-    // --- Listar cursos disponibles ---
-    public List<Curso> listarCursos() {
-        return cursoDAO.listarCursos();
-    }
-
-    // --- Mostrar cursos de un alumno (reemplaza a verCursosInscritos()) ---
-    public void mostrarCursosDeAlumno(String legajo) {
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajo);
-        if (alumno == null) {
-            System.out.println("❌ Alumno no encontrado.");
-            return;
-        }
-
-        alumno.cargarInscripciones();
-        List<String> cursos = alumno.obtenerTitulosCursosInscritos();
-
-        if (cursos.isEmpty()) {
-            System.out.println(alumno.getNombre() + " no tiene cursos inscritos.");
-        } else {
-            System.out.println("📘 Cursos de " + alumno.getNombre() + ":");
-            for (String titulo : cursos) {
-                System.out.println("  - " + titulo);
-            }
-        }
-    }
-
-    // --- Inscribir con validación previa  ---
-    public boolean inscribirAlumnoEnCursoConValidacion(String legajoAlumno, String tituloCurso) {
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        Curso curso = cursoDAO.obtenerCursoPorTitulo(tituloCurso);
-
-        if (alumno == null || curso == null) {
-            System.out.println("⚠️ No se encontró alumno o curso.");
-            return false;
-        }
-
-        // 🔹 Cargar inscripciones para validar
-        alumno.cargarInscripciones();
-
-        // 🔹 Validar antes de intentar inscribir
-        if (!alumno.puedeInscribirseA(curso)) {
-            System.out.println("❌ El alumno no puede inscribirse (sin cupo o ya inscrito).");
-            return false;
-        }
-
-        Inscripcion inscripcion = new Inscripcion(alumno, curso);
-        boolean exito = inscripcionDAO.agregarInscripcion(inscripcion);
-
-        if (exito) {
-            System.out.println("✅ " + alumno.getNombre() + " inscrito correctamente en: " + curso.getTitulo());
-        }
-
-        return exito;
-    }
+    // ================== ASISTENCIA ==================
 
     public boolean tomarAsistencia(String legajoAlumno, int idCurso, Clase clase, boolean presente) {
         Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ Alumno no encontrado.");
-            return false;
-        }
+        if (alumno == null) return false;
 
         Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
-        if (curso == null) {
-            System.out.println("⚠️ Curso no encontrado.");
-            return false;
-        }
+        if (curso == null) return false;
 
         Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
-        if (inscripcion == null) {
-            System.out.println("⚠️ El alumno no está inscripto en este curso.");
-            return false;
-        }
+        if (inscripcion == null) return false;
 
-        Asistencia asistencia = new Asistencia(
-                inscripcion,
-                clase,
-                presente
-        );
-
+        Asistencia asistencia = new Asistencia(inscripcion, clase, presente);
         return asistenciaDAO.agregarAsistencia(asistencia);
     }
 
+    // ================== CALIFICACIONES ==================
+
     public boolean registrarCalificacion(String legajoAlumno, int idCurso, TipoEvaluacion tipo, double nota) {
-        if (nota < 0 || nota > 10) {
-            System.out.println("⚠️ La nota debe estar entre 0 y 10.");
-            return false;
-        }
+        if (nota < 0 || nota > 10) return false;
 
         Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ Alumno no encontrado.");
-            return false;
-        }
-
         Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
-        if (curso == null) {
-            System.out.println("⚠️ Curso no encontrado.");
-            return false;
-        }
+        if (alumno == null || curso == null) return false;
 
         Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
-        if (inscripcion == null) {
-            System.out.println("⚠️ El alumno no está inscripto en este curso.");
-            return false;
-        }
+        if (inscripcion == null) return false;
 
         Calificacion calificacion = new Calificacion(inscripcion, tipo, nota);
-
         return calificacionDAO.agregarCalificacion(calificacion);
     }
+
     public double calcularPorcentajeAsistencia(String legajoAlumno, int idCurso) {
         Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ Alumno no encontrado.");
-            return 0.0;
-        }
-
         Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
-        if (curso == null) {
-            System.out.println("⚠️ Curso no encontrado.");
-            return 0.0;
-        }
+        if (alumno == null || curso == null) return 0;
 
         Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
-        if (inscripcion == null) {
-            System.out.println("⚠️ El alumno no está inscripto en este curso.");
-            return 0.0;
-        }
+        if (inscripcion == null) return 0;
 
-        // 🔹 Obtenemos todas las clases del curso
         List<Clase> clases = claseDAO.obtenerClasesPorCurso(curso);
-        if (clases.isEmpty()) return 0.0;
+        if (clases.isEmpty()) return 0;
 
         int presentes = 0;
-        int total = clases.size(); // total de clases planificadas
-
         for (Clase clase : clases) {
-            // Obtenemos asistencia del alumno para esta clase
-            Asistencia asistencia = asistenciaDAO.obtenerAsistencia(inscripcion, clase);
-            if (asistencia != null && asistencia.isPresente()) {
-                presentes++;
-            }
+            Asistencia a = asistenciaDAO.obtenerAsistencia(inscripcion, clase);
+            if (a != null && a.isPresente()) presentes++;
         }
 
-        if (total == 0) return 0.0;
-
-        return (presentes * 100.0) / total;
+        return (presentes * 100.0) / clases.size();
     }
 
-    public boolean inscribirAlumnoEnCurso(String emailAlumno, int idCurso) {
-        // Supongo que tenés este metodo; si no, se puede crear en AlumnoDAO
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ Alumno no encontrado por email: " + emailAlumno);
-            return false;
-        }
+    // ================== LOGIN ==================
 
-        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
-        if (curso == null) {
-            System.out.println("⚠️ Curso no encontrado con id: " + idCurso);
-            return false;
-        }
-
-        Inscripcion inscripcion = new Inscripcion(alumno, curso);
-        return inscripcionDAO.agregarInscripcion(inscripcion);
+    public TipoUsuario login(String email, String contrasena) {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        return usuarioDAO.obtenerTipoUsuario(email, contrasena);
     }
 
-    public List<Inscripcion> obtenerInscripcionesDeAlumnoPorEmail(String emailAlumno) {
-        if (emailAlumno == null || emailAlumno.isBlank()) {
-            return List.of();
-        }
+    // ================== DESACTIVAR USUARIOS ==================
 
-        // Necesitamos el alumno para conocer su legajo
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
-        if (alumno == null) {
-            System.out.println("⚠️ No se encontró alumno con email: " + emailAlumno);
-            return List.of();
-        }
-
-        // Reusamos el metodo existente que trabaja con legajo
-        return inscripcionDAO.listarInscripcionesPorLegajo(alumno.getLegajo());
+    public boolean desactivarAlumno(String legajo) {
+        return alumnoDAO.eliminarAlumno(legajo);
     }
 
-    public void ajustarCantidadClases(Curso curso, int nuevaCantidad) {
-        List<Clase> clasesActuales = curso.getClases();
-
-        if (nuevaCantidad > curso.getCantidadClases()) {
-            // agregar nuevas clases
-            for (int i = curso.getCantidadClases(); i < nuevaCantidad; i++) {
-                Clase nueva = new Clase(curso, null, "Clase " + (i+1), "Contenido inicial");
-                claseDAO.agregarClase(nueva); // persistimos en BD
-                clasesActuales.add(nueva);     // agregamos al objeto en memoria
-            }
-        } else if (nuevaCantidad < curso.getCantidadClases()) {
-            // eliminar clases extra
-            List<Clase> aEliminar = clasesActuales.subList(nuevaCantidad, clasesActuales.size());
-            for (Clase c : aEliminar) {
-                claseDAO.eliminarClase(c.getIdClase());
-            }
-            aEliminar.clear();
-        }
-
-        curso.setCantidadClases(nuevaCantidad);
+    public boolean desactivarDocente(String matricula) {
+        return docenteDAO.eliminarDocente(matricula);
     }
 }

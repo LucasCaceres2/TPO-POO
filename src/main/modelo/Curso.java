@@ -12,6 +12,7 @@ public class Curso {
     private Docente docente;
     private Area area;
     private String descripcion; //  texto general del curso
+    private boolean activo = true;
     private transient List<Clase> clases;
     private transient List<Inscripcion> inscripciones;
     private int cantidadClases = 12;
@@ -25,6 +26,7 @@ public class Curso {
         this.descripcion = descripcion;
         this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
+        this.activo = true; // ✅ por defecto activo
     }
 
     // 🔹 Constructor para instanciar desde BD
@@ -37,6 +39,7 @@ public class Curso {
         this.descripcion = descripcion;
         this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
+        this.activo = activo;
     }
 
     // 🔹 Cargar inscripciones desde BD
@@ -137,6 +140,10 @@ public class Curso {
     public List<Clase> getClases() { return clases; }
 
     public void setClases(List<Clase> clases) { this.clases = clases; }
+
+    public boolean isActivo() { return activo; }
+
+    public void setActivo(boolean activo) { this.activo = activo; }
 
     // 🔹 equals() y hashCode() basados en idCurso
     @Override

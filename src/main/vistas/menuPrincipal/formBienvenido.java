@@ -22,7 +22,7 @@ public class formBienvenido extends JFrame {
         crearCuentaButton.addActionListener(e -> {
             formRegistro registro = new formRegistro();
             registro.setVisible(true);
-            dispose(); // cierra esta ventana (opcional: usar setVisible(false) si querés volver después)
+            dispose();
         });
 
         // Botón INICIAR SESIÓN -> abre formulario de login

@@ -40,8 +40,8 @@ public class InscripcionDAO {
             return false;
         }
 
-        String checkSql = "SELECT 1 FROM inscripcion WHERE idAlumno = ? AND idCurso = ?";
-        String insertSql = "INSERT INTO inscripcion (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkSql = "SELECT 1 FROM inscripcion WHERE idUsuario = ? AND idCurso = ?";
+        String insertSql = "INSERT INTO inscripcion (fecha, idUsuario, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -110,7 +110,7 @@ public class InscripcionDAO {
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
-                JOIN alumno a ON i.idAlumno = a.idUsuario
+                JOIN alumno a ON i.idUsuario = a.idUsuario
                 JOIN usuario u ON a.idUsuario = u.idUsuario
                 JOIN curso c ON i.idCurso = c.idCurso
                 LEFT JOIN pago p ON i.idPago = p.idPago
@@ -216,7 +216,7 @@ public class InscripcionDAO {
                        c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
-                JOIN alumno a ON i.idAlumno = a.idUsuario
+                JOIN alumno a ON i.idUsuario = a.idUsuario
                 JOIN usuario u ON a.idUsuario = u.idUsuario
                 JOIN curso c ON i.idCurso = c.idCurso
                 LEFT JOIN pago p ON i.idPago = p.idPago
@@ -289,7 +289,7 @@ public class InscripcionDAO {
                    c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripcion i
-            JOIN alumno a ON i.idAlumno = a.idUsuario
+            JOIN alumno a ON i.idUsuario = a.idUsuario
             JOIN usuario u ON a.idUsuario = u.idUsuario
             JOIN curso c ON i.idCurso = c.idCurso
             LEFT JOIN pago p ON i.idPago = p.idPago

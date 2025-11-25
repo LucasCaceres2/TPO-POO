@@ -75,7 +75,7 @@ public class formVerInscripciones extends JFrame {
         comboCurso.removeAllItems();
         comboCurso.addItem(null); // opción "Todos"
 
-        List<Curso> cursos = cursoDAO.listarCursos();
+        List<Curso> cursos = cursoDAO.listarTodosLosCursos();
         for (Curso c : cursos) {
             comboCurso.addItem(c); // se ve el título gracias a toString()
         }

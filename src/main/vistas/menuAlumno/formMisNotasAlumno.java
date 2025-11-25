@@ -19,14 +19,14 @@ public class formMisNotasAlumno extends JFrame {
     private JTable tablaNotas;
     private JButton cerrarButton;
 
-    private final String emailAlumno;
+    private final String legajoAlumno;
 
     private final Plataforma plataforma = new Plataforma();
     private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
     // Constructor “real”: recibe el email desde el menú / login
     public formMisNotasAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+        this.legajoAlumno = emailAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Mis notas");
@@ -71,14 +71,14 @@ public class formMisNotasAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaNotas.getModel();
         model.setRowCount(0);
 
-        if (emailAlumno == null || emailAlumno.isBlank()) {
+        if (legajoAlumno == null || legajoAlumno.isBlank()) {
             System.out.println("⚠ emailAlumno no seteado en formMisNotasAlumno");
             return;
         }
 
         // 1) Traer todas las inscripciones del alumno
         List<Inscripcion> inscripciones =
-                plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
+                plataforma.obtenerInscripcionesDeAlumno(legajoAlumno);
 
         // 2) Por cada inscripción, traer sus calificaciones
         for (Inscripcion ins : inscripciones) {

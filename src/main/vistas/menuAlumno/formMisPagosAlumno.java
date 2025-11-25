@@ -21,11 +21,11 @@ public class formMisPagosAlumno extends JFrame {
 
     private final Plataforma plataforma = new Plataforma();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
-    private final String emailAlumno; // viene del login / menú alumno
+    private final String legajoAlumno; // viene del login / menú alumno
 
     // --------- CONSTRUCTOR PRINCIPAL ----------
     public formMisPagosAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+        this.legajoAlumno = emailAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Mis pagos");
@@ -70,13 +70,13 @@ public class formMisPagosAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaPagos.getModel();
         model.setRowCount(0);
 
-        if (emailAlumno == null || emailAlumno.isBlank()) {
+        if (legajoAlumno == null || legajoAlumno.isBlank()) {
             System.out.println("⚠️ emailAlumno no seteado en formMisPagosAlumno");
             return;
         }
 
         // Reutilizamos las inscripciones del alumno (por email)
-        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
+        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumno(legajoAlumno);
 
         for (Inscripcion insc : inscripciones) {
             Curso curso = insc.getCurso();

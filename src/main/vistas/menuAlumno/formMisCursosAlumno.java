@@ -18,14 +18,14 @@ public class formMisCursosAlumno extends JFrame {
     private JButton cerrarButton;
 
     private final Plataforma plataforma = new Plataforma();
-    private final String emailAlumno; // viene del login / menú alumno
+    private final String legajoAlumno; // viene del login / menú alumno
 
     // 👇 Igual que en el historial
     private final CursoDAO cursoDAO = new CursoDAO();
 
     // --------- CONSTRUCTOR PRINCIPAL ----------
-    public formMisCursosAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+    public formMisCursosAlumno(String legajoAlumno) {
+        this.legajoAlumno = legajoAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Mis cursos");
@@ -72,13 +72,13 @@ public class formMisCursosAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaMisCursos.getModel();
         model.setRowCount(0);
 
-        if (emailAlumno == null || emailAlumno.isBlank()) {
+        if (legajoAlumno == null || legajoAlumno.isBlank()) {
             System.out.println("⚠️ emailAlumno no seteado en formMisCursosAlumno");
             return;
         }
 
         // trae TODAS las inscripciones del alumno por email
-        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
+        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumno(legajoAlumno);
 
         for (Inscripcion i : inscripciones) {
             // solo las que están CURSANDO
