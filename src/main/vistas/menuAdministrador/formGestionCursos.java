@@ -23,7 +23,7 @@ public class formGestionCursos extends JFrame {
     private JTextField txtCantidadClases;
     private JComboBox<Docente> comboDocente;
     private JComboBox<Area> comboArea;
-    private JTextArea txtContenido;
+    private JTextArea txtDescripcion;
 
     private JButton btnNuevo;
     private JButton btnGuardar;
@@ -62,7 +62,7 @@ public class formGestionCursos extends JFrame {
                 "Área",
                 "Cupo Max",
                 "Clases",
-                "Contenido"
+                "Descripcion"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
@@ -86,7 +86,7 @@ public class formGestionCursos extends JFrame {
             comboDocente.addItem(d); // se ve lindo si Docente.toString() devuelve nombre
         }
 
-        var areas = areaDAO.listarAreas();
+        var areas = areaDAO.listarTodasLasAreas();
         for (Area a : areas) {
             comboArea.addItem(a); // idem con Area.toString()
         }
@@ -157,12 +157,12 @@ public class formGestionCursos extends JFrame {
         String areaNombre = (String) model.getValueAt(fila, 3);
         Integer cupoMax = (Integer) model.getValueAt(fila, 4);
         Integer clases = (Integer) model.getValueAt(fila, 5);
-        String contenido = (String) model.getValueAt(fila, 6);
+        String descripcion = (String) model.getValueAt(fila, 6);
 
         txtTitulo.setText(titulo);
         txtCupoMax.setText(String.valueOf(cupoMax));
         txtCantidadClases.setText(String.valueOf(clases));
-        txtContenido.setText(contenido != null ? contenido : "");
+        txtDescripcion.setText(descripcion != null ? descripcion : "");
 
         // seleccionar docente en combo
         if (docenteNombre != null) {
@@ -193,7 +193,7 @@ public class formGestionCursos extends JFrame {
         txtTitulo.setText("");
         txtCupoMax.setText("");
         txtCantidadClases.setText("");
-        txtContenido.setText("");
+        txtDescripcion.setText("");
         if (comboDocente.getItemCount() > 0) comboDocente.setSelectedIndex(0);
         if (comboArea.getItemCount() > 0) comboArea.setSelectedIndex(0);
         tablaCursos.clearSelection();
@@ -205,7 +205,7 @@ public class formGestionCursos extends JFrame {
         String clasesStr = txtCantidadClases.getText().trim();
         Docente docente = (Docente) comboDocente.getSelectedItem();
         Area area = (Area) comboArea.getSelectedItem();
-        String contenido = txtContenido.getText().trim();
+        String descripcion = txtDescripcion.getText().trim();
 
         if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty() || docente == null || area == null) {
             JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
@@ -221,7 +221,7 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-        Curso curso = new Curso(titulo, cupo, docente, area, contenido, clases);
+        Curso curso = new Curso(titulo, cupo, docente, area, descripcion, clases);
         boolean ok = cursoDAO.agregarCurso(curso);
 
         if (ok) {
@@ -244,7 +244,7 @@ public class formGestionCursos extends JFrame {
         String clasesStr = txtCantidadClases.getText().trim();
         Docente docente = (Docente) comboDocente.getSelectedItem();
         Area area = (Area) comboArea.getSelectedItem();
-        String contenido = txtContenido.getText().trim();
+        String descripcion = txtDescripcion.getText().trim();
 
         if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty() || docente == null || area == null) {
             JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
@@ -263,11 +263,21 @@ public class formGestionCursos extends JFrame {
         // Podés hacer un metodo específico en CursoDAO para actualizar todos los campos.
         // Como tu DAO actual solo tiene actualizarCampo simple, lo ideal es agregar uno nuevo.
         // Por ahora, ejemplo simple:
-        boolean okTitulo = cursoDAO.actualizarCurso(idCursoSeleccionado, "titulo", titulo);
-        boolean okContenido = cursoDAO.actualizarCurso(idCursoSeleccionado, "contenido", contenido);
+        Curso curso = new Curso(
+                idCursoSeleccionado,
+                titulo,
+                cupo,
+                docente,
+                area,
+                descripcion,
+                clases
+        );
+
+        boolean ok = cursoDAO.actualizarCursoCompleto(curso);
+
         // Si agregás columnas doc/area/cupo/clases al UPDATE, los sumás acá.
 
-        if (okTitulo || okContenido) {
+        if (ok) {
             JOptionPane.showMessageDialog(this, "Curso actualizado.", "OK", JOptionPane.INFORMATION_MESSAGE);
             cargarCursosEnTabla();
         } else {
@@ -282,12 +292,12 @@ public class formGestionCursos extends JFrame {
         }
 
         int r = JOptionPane.showConfirmDialog(this,
-                "¿Seguro que desea eliminar el curso ID " + idCursoSeleccionado + "?",
+                "¿Seguro que desea desactivar este curso " + idCursoSeleccionado + "?",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION);
 
         if (r == JOptionPane.YES_OPTION) {
-            boolean ok = cursoDAO.eliminarCurso(idCursoSeleccionado);
+            boolean ok = cursoDAO.desactivarCurso(idCursoSeleccionado);
             if (ok) {
                 JOptionPane.showMessageDialog(this, "Curso eliminado.", "OK", JOptionPane.INFORMATION_MESSAGE);
                 cargarCursosEnTabla();

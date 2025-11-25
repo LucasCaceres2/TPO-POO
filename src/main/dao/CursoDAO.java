@@ -22,7 +22,7 @@ public class CursoDAO {
         }
 
         String checkSql = "SELECT 1 FROM curso WHERE titulo = ? AND idDocente = ? AND idArea = ?";
-        String insertSql = "INSERT INTO curso (titulo, cupoMax, idDocente, idArea, contenido, cantidadClases, activo) VALUES (?, ?, ?, ?, ?, ?, TRUE)";
+        String insertSql = "INSERT INTO curso (titulo, cupoMax, idDocente, idArea, descripcion, cantidadClases, activo) VALUES (?, ?, ?, ?, ?, ?, TRUE)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
@@ -71,7 +71,7 @@ public class CursoDAO {
 
         String sql = """
             SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea,
-                   c.contenido, c.cantidadClases, c.activo,
+                   c.descripcion, c.cantidadClases, c.activo,
                    u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                    a.nombre AS areaNombre
             FROM curso c
@@ -103,7 +103,7 @@ public class CursoDAO {
                         rs.getInt("cupoMax"),
                         docente,
                         area,
-                        rs.getString("contenido"),
+                        rs.getString("descripcion"),
                         rs.getInt("cantidadClases")
                 );
 
@@ -125,7 +125,7 @@ public class CursoDAO {
 
         String sql = """
         SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea,
-               c.contenido, c.cantidadClases, c.activo,
+               c.descripcion, c.cantidadClases, c.activo,
                d.matricula,
                u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                a.nombre AS areaNombre
@@ -164,7 +164,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
 
@@ -190,7 +190,7 @@ public class CursoDAO {
 
         String sql = """
             SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea,
-                   c.contenido, c.cantidadClases, c.activo,
+                   c.descripcion, c.cantidadClases, c.activo,
                    u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                    a.nombre AS areaNombre
             FROM curso c
@@ -221,7 +221,7 @@ public class CursoDAO {
                         rs.getInt("cupoMax"),
                         docente,
                         area,
-                        rs.getString("contenido"),
+                        rs.getString("descripcion"),
                         rs.getInt("cantidadClases")
                 );
 
@@ -240,7 +240,7 @@ public class CursoDAO {
     // ============================
     public Curso obtenerCursoActivoPorTitulo(String titulo) {
         String sql = """
-            SELECT c.idCurso, c.titulo, c.cupoMax, c.contenido, c.cantidadClases,
+            SELECT c.idCurso, c.titulo, c.cupoMax, c.descripcion, c.cantidadClases,
                    d.idUsuario AS idDocente, u.nombre, u.apellido, u.email,
                    a.idArea, a.nombre AS areaNombre
             FROM curso c
@@ -274,7 +274,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
 
@@ -296,7 +296,7 @@ public class CursoDAO {
 
         String sql = """
         SELECT c.idCurso, c.titulo, c.cupoMax, c.idDocente, c.idArea,
-               c.contenido, c.cantidadClases, c.activo,
+               c.descripcion, c.cantidadClases, c.activo,
                u.nombre AS docenteNombre, u.apellido AS docenteApellido, u.email AS docenteEmail,
                d.matricula,
                a.nombre AS areaNombre
@@ -335,7 +335,7 @@ public class CursoDAO {
                             rs.getInt("cupoMax"),
                             docente,
                             area,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
 
@@ -350,6 +350,36 @@ public class CursoDAO {
 
         System.out.println("⚠️ No se encontró curso con ID: " + idCurso);
         return null;
+    }
+
+    // ============================
+    // ACTUALIZAR CURSO
+    // ============================
+
+    public boolean actualizarCursoCompleto(Curso curso) {
+        String sql = """
+        UPDATE curso
+        SET titulo = ?, cupoMax = ?, descripcion = ?, cantidadClases = ?, idDocente = ?, idArea = ?
+        WHERE idCurso = ?
+    """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, curso.getTitulo());
+            stmt.setInt(2, curso.getCupoMax());
+            stmt.setString(3, curso.getDescripcion());
+            stmt.setInt(4, curso.getCantidadClases());
+            stmt.setInt(5, curso.getDocente().getIdUsuario());
+            stmt.setInt(6, curso.getArea().getIdArea());
+            stmt.setInt(7, curso.getIdCurso());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al actualizar curso completo: " + e.getMessage());
+        }
+        return false;
     }
 
     // ============================

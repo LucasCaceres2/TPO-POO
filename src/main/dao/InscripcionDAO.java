@@ -107,7 +107,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.descripcion, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
                 JOIN alumno a ON i.idUsuario = a.idUsuario
@@ -138,7 +138,7 @@ public class InscripcionDAO {
                             rs.getInt("cupoMax"),
                             null,
                             null,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
 
                     );
@@ -213,7 +213,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.descripcion, c.cantidadClases,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
                 JOIN alumno a ON i.idUsuario = a.idUsuario
@@ -244,7 +244,7 @@ public class InscripcionDAO {
                             rs.getInt("cupoMax"),
                             null,
                             null,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
 
@@ -286,7 +286,7 @@ public class InscripcionDAO {
             SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                    a.idUsuario, a.legajo,
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.descripcion, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripcion i
             JOIN alumno a ON i.idUsuario = a.idUsuario
@@ -321,7 +321,7 @@ public class InscripcionDAO {
                             rs.getInt("cupoMax"),
                             null,
                             null,
-                            rs.getString("contenido"),
+                            rs.getString("descripcion"),
                             rs.getInt("cantidadClases")
                     );
 
@@ -382,7 +382,7 @@ public class InscripcionDAO {
             SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                    a.idUsuario, a.legajo,
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.descripcion, c.cantidadClases,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripcion i
             JOIN alumno a ON i.idUsuario = a.idUsuario
@@ -412,7 +412,7 @@ public class InscripcionDAO {
                         rs.getInt("cupoMax"),
                         null,
                         null,
-                        rs.getString("contenido"),
+                        rs.getString("descripcion"),
                         rs.getInt("cantidadClases")
                 );
 

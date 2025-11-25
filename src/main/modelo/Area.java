@@ -8,6 +8,7 @@ public class Area {
     private int idArea;
     private String nombre;
     private List<Curso> cursos = new ArrayList<>();
+    private boolean activo;
 
     public Area(String nombre) {
         setNombre(nombre);
@@ -53,6 +54,13 @@ public class Area {
         this.nombre = nombre.trim();
     }
 
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
     // equals / hashCode opcional, basado en idArea
     @Override
     public boolean equals(Object o) {

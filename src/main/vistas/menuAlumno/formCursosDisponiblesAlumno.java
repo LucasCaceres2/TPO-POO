@@ -55,7 +55,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
                 "Cupo Max",
                 "Inscriptos",
                 "Clases",     // 👈 nueva columna
-                "Contenido"
+                "descripcion"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {

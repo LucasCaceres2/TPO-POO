@@ -44,6 +44,7 @@ CREATE TABLE docente (
 CREATE TABLE area (
     idArea INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE
+    activo BOOLEAN DEFAULT TRUE
 );
 
 -- ============================
