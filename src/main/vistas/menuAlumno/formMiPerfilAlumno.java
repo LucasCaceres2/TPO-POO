@@ -17,13 +17,13 @@ public class formMiPerfilAlumno extends JFrame {
     private JButton guardarButton;
     private JButton cerrarButton;
 
-    private final String emailAlumno;     // email con el que se logueó
+    private final String legajoAlumno;
     private final AlumnoDAO alumnoDAO = new AlumnoDAO();
     private Alumno alumno;               // alumno cargado desde BD
 
     // --------- CONSTRUCTOR PRINCIPAL ----------
-    public formMiPerfilAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+    public formMiPerfilAlumno(String legajoAlumno) {
+        this.legajoAlumno = legajoAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Mi Perfil");
@@ -44,7 +44,7 @@ public class formMiPerfilAlumno extends JFrame {
 
     // --------- CARGAR DATOS DESDE BD ----------
     private void cargarDatosAlumno() {
-        if (emailAlumno == null || emailAlumno.isBlank()) {
+        if (legajoAlumno == null || legajoAlumno.isBlank()) {
             JOptionPane.showMessageDialog(this,
                     "No se encontró el email del alumno logueado.",
                     "Error",
@@ -52,7 +52,7 @@ public class formMiPerfilAlumno extends JFrame {
             return;
         }
 
-        alumno = alumnoDAO.obtenerAlumnoPorEmail(emailAlumno);
+        alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
 
         if (alumno == null) {
             JOptionPane.showMessageDialog(this,

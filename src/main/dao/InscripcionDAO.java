@@ -61,7 +61,7 @@ public class InscripcionDAO {
                 );
 
                 stmt.setDate(1, fechaSQL);
-                stmt.setInt(2, idUsuario); // idUsuario del alumno = idAlumno en la tabla
+                stmt.setInt(2, idUsuario);
                 stmt.setInt(3, inscripcion.getCurso().getIdCurso());
 
                 if (inscripcion.getPago() != null && inscripcion.getPago().getIdPago() > 0) {
@@ -220,7 +220,7 @@ public class InscripcionDAO {
                 JOIN usuario u ON a.idUsuario = u.idUsuario
                 JOIN curso c ON i.idCurso = c.idCurso
                 LEFT JOIN pago p ON i.idPago = p.idPago
-                WHERE i.idAlumno = ?""";
+                WHERE i.idUsuario = ?""";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -293,7 +293,7 @@ public class InscripcionDAO {
             JOIN usuario u ON a.idUsuario = u.idUsuario
             JOIN curso c ON i.idCurso = c.idCurso
             LEFT JOIN pago p ON i.idPago = p.idPago
-            WHERE i.idAlumno = ? AND i.idCurso = ?
+            WHERE i.idUsuario = ? AND i.idCurso = ?
             """;
 
         try (Connection conn = ConexionDB.conectar();

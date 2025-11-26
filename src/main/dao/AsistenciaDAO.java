@@ -72,10 +72,10 @@ public class AsistenciaDAO {
                     uDoc.nombre  AS docenteNombre,
                     uDoc.apellido AS docenteApellido
                 FROM inscripcion i
-                JOIN alumno al       ON i.idAlumno   = al.idUsuario
+                JOIN alumno al       ON i.idUsuario   = al.idUsuario
                 JOIN usuario uAl     ON al.idUsuario = uAl.idUsuario
                 JOIN curso cu        ON i.idCurso    = cu.idCurso
-                JOIN docente d       ON cu.idDocente = d.idUsuario
+                JOIN docente d       ON cu.idUsuario = d.idUsuario
                 JOIN usuario uDoc    ON d.idUsuario  = uDoc.idUsuario
                 WHERE uAl.email = ?
                   AND i.estadoCurso = 'CURSANDO'
@@ -115,7 +115,7 @@ public class AsistenciaDAO {
                     a.presente
                 FROM asistencia a
                 JOIN inscripcion i  ON a.idInscripcion = i.idInscripcion
-                JOIN alumno al      ON i.idAlumno      = al.idUsuario
+                JOIN alumno al      ON i.idUsuario      = al.idUsuario
                 JOIN usuario u      ON al.idUsuario    = u.idUsuario
                 JOIN clase c        ON a.idClase       = c.idClase
                 JOIN curso cu       ON c.idCurso       = cu.idCurso
