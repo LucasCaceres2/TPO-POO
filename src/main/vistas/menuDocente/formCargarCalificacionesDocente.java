@@ -1,10 +1,13 @@
 package main.vistas.menuDocente;
 
-import main.dao.CalificacionDAO;
+import main.controlador.Plataforma;
 import main.dao.CursoDAO;
 import main.dao.DocenteDAO;
 import main.dao.InscripcionDAO;
-import main.modelo.*;
+import main.modelo.Curso;
+import main.modelo.Docente;
+import main.modelo.Inscripcion;
+import main.modelo.TipoEvaluacion;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,54 +21,58 @@ public class formCargarCalificacionesDocente extends JFrame {
     private JPanel pnlDatos;
 
     private JComboBox<Curso> comboCursos;
+    private JComboBox<TipoEvaluacion> comboTipoEvaluacion;   // <-- combo del enum
     private JTable tablaNotas;
     private JButton guardarButton;
     private JButton cerrarButton;
 
-    private final String emailDocente;
-
-    private final DocenteDAO docenteDAO = new DocenteDAO();
-    private final CursoDAO cursoDAO = new CursoDAO();
+    private final Plataforma plataforma     = new Plataforma();
+    private final CursoDAO cursoDAO         = new CursoDAO();
+    private final DocenteDAO docenteDAO     = new DocenteDAO();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
-    private final CalificacionDAO calificacionDAO = new CalificacionDAO();
 
-    // Para mapear filas de la tabla con inscripciones reales
+    private final String emailDocente;
     private List<Inscripcion> inscripcionesActuales = new ArrayList<>();
 
+    // ----- constructor principal -----
     public formCargarCalificacionesDocente(String emailDocente) {
         this.emailDocente = emailDocente;
 
         setContentPane(pnlPrincipal);
         setTitle("Cargar calificaciones");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(900, 600);
         setLocationRelativeTo(null);
 
         configurarTabla();
-        cargarCursosDelDocente();
+        configurarCombos();
         initListeners();
-
-        pack();
-        setSize(900, 450);
     }
 
-    // constructor vacío SOLO para el diseñador
+    // constructor vacío solo para el diseñador
     public formCargarCalificacionesDocente() {
         this(null);
     }
 
+    // ================= TABLA =================
     private void configurarTabla() {
         String[] columnas = {
                 "Legajo",
                 "Alumno",
-                "Tipo calificación",
-                "Nota (0-10)"
+                "Nota (0 - 10)"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Permitimos edición solo en Tipo y Nota
-                return column == 2 || column == 3;
+                // Solo la columna de nota es editable
+                return column == 2;
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 2) return Double.class;
+                return String.class;
             }
         };
 
@@ -73,81 +80,103 @@ public class formCargarCalificacionesDocente extends JFrame {
         tablaNotas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    private void cargarCursosDelDocente() {
+    // ================= COMBOS =================
+    private void configurarCombos() {
+        // Combo de tipos de evaluación (enum)
+        if (comboTipoEvaluacion != null) {
+            comboTipoEvaluacion.removeAllItems();
+            for (TipoEvaluacion t : TipoEvaluacion.values()) {
+                comboTipoEvaluacion.addItem(t);
+            }
+            if (comboTipoEvaluacion.getItemCount() > 0) {
+                comboTipoEvaluacion.setSelectedIndex(0);
+            }
+        }
+
+        // Combo de cursos del docente
         comboCursos.removeAllItems();
 
         if (emailDocente == null || emailDocente.isBlank()) {
-            JOptionPane.showMessageDialog(this,
-                    "No se encontró el email del docente logueado.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // 1) Buscar docente por email
         Docente docente = docenteDAO.obtenerDocentePorEmail(emailDocente);
         if (docente == null) {
             JOptionPane.showMessageDialog(this,
-                    "No se encontró el docente en la base de datos.",
+                    "No se encontró el perfil del docente.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        int idDocente = docente.getIdUsuario();
-
-        // 2) Listar cursos de ese docente
-        var cursos = cursoDAO.listarCursosPorDocente(idDocente);
+        var cursos = cursoDAO.listarCursosPorDocente(docente.getIdUsuario());
         for (Curso c : cursos) {
-            comboCursos.addItem(c); // muestra título gracias al toString() del Curso
+            comboCursos.addItem(c);
         }
 
         if (comboCursos.getItemCount() > 0) {
             comboCursos.setSelectedIndex(0);
-            cargarAlumnosDelCursoSeleccionado();
+            cargarAlumnosDelCurso((Curso) comboCursos.getSelectedItem());
         }
     }
 
-    private void cargarAlumnosDelCursoSeleccionado() {
+    // ================= CARGA DE ALUMNOS =================
+    private void cargarAlumnosDelCurso(Curso curso) {
         DefaultTableModel model = (DefaultTableModel) tablaNotas.getModel();
         model.setRowCount(0);
         inscripcionesActuales.clear();
 
-        Curso curso = (Curso) comboCursos.getSelectedItem();
         if (curso == null) return;
 
-        // 1) Traer inscripciones del curso
-        List<Inscripcion> inscripciones = inscripcionDAO.listarInscripcionesPorCurso(curso.getIdCurso());
+        inscripcionesActuales = inscripcionDAO.listarInscripcionesPorCurso(curso.getIdCurso());
 
-        for (Inscripcion ins : inscripciones) {
+        for (Inscripcion ins : inscripcionesActuales) {
             if (ins.getAlumno() == null) continue;
 
             String legajo = ins.getAlumno().getLegajo();
             String nombreCompleto = ins.getAlumno().getNombre() + " " + ins.getAlumno().getApellido();
 
-            // Tipo default sugerido, el docente puede editar
-            String tipoDefault = "PARCIAL";
-
             model.addRow(new Object[]{
                     legajo,
                     nombreCompleto,
-                    tipoDefault,
-                    ""       // nota vacía para completar
+                    null  // nota vacía
             });
-
-            inscripcionesActuales.add(ins);
         }
     }
 
+    // ================= LISTENERS =================
+    private void initListeners() {
+
+        comboCursos.addActionListener(e -> {
+            Curso seleccionado = (Curso) comboCursos.getSelectedItem();
+            cargarAlumnosDelCurso(seleccionado);
+        });
+
+        guardarButton.addActionListener(e -> guardarCalificaciones());
+
+        cerrarButton.addActionListener(e -> dispose());
+    }
+
+    // ================= GUARDAR =================
     private void guardarCalificaciones() {
         Curso curso = (Curso) comboCursos.getSelectedItem();
         if (curso == null) {
             JOptionPane.showMessageDialog(this,
-                    "Seleccioná un curso.",
-                    "Aviso",
-                    JOptionPane.WARNING_MESSAGE);
+                    "Seleccione un curso.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (comboTipoEvaluacion == null || comboTipoEvaluacion.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione un tipo de evaluación.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        TipoEvaluacion tipo = (TipoEvaluacion) comboTipoEvaluacion.getSelectedItem();
 
         DefaultTableModel model = (DefaultTableModel) tablaNotas.getModel();
         int filas = model.getRowCount();
@@ -161,67 +190,52 @@ public class formCargarCalificacionesDocente extends JFrame {
         }
 
         int guardadas = 0;
+
         for (int i = 0; i < filas; i++) {
-            Inscripcion ins = inscripcionesActuales.get(i);
+            String legajo = String.valueOf(model.getValueAt(i, 0));
+            Object notaObj = model.getValueAt(i, 2);
 
-            TipoEvaluacion tipo = (TipoEvaluacion) model.getValueAt(i, 2);
-            String notaStr = String.valueOf(model.getValueAt(i, 3)).trim();
-
-            // Si no completó nota, saltamos esa fila
-            if (notaStr.isEmpty()) {
-                continue;
-            }
+            if (notaObj == null) continue; // fila sin nota
 
             double nota;
             try {
-                nota = Double.parseDouble(notaStr);
+                nota = Double.parseDouble(notaObj.toString());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Nota inválida en la fila " + (i + 1) + ". Debe ser numérica.",
-                        "Error de validación",
+                        "La nota de " + legajo + " no es válida.",
+                        "Error",
                         JOptionPane.ERROR_MESSAGE);
-                return;
+                continue;
             }
 
             if (nota < 0 || nota > 10) {
                 JOptionPane.showMessageDialog(this,
-                        "La nota en la fila " + (i + 1) + " debe estar entre 0 y 10.",
-                        "Error de validación",
+                        "La nota debe ser entre 0 y 10 (legajo " + legajo + ").",
+                        "Error",
                         JOptionPane.ERROR_MESSAGE);
-                return;
+                continue;
             }
 
-            Calificacion calificacion = new Calificacion(ins, tipo, nota);
+            boolean ok = plataforma.registrarCalificacion(
+                    legajo,
+                    curso.getIdCurso(),
+                    tipo,
+                    nota
+            );
 
-            boolean ok = calificacionDAO.agregarCalificacion(calificacion);
-            if (ok) {
-                guardadas++;
-            }
+            if (ok) guardadas++;
         }
 
-        if (guardadas > 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Se guardaron " + guardadas + " calificaciones.",
-                    "Éxito",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "No se guardó ninguna calificación. Completá las notas antes de guardar.",
-                    "Aviso",
-                    JOptionPane.WARNING_MESSAGE);
-        }
+        JOptionPane.showMessageDialog(this,
+                "Se guardaron " + guardadas + " calificaciones.",
+                "Resultado",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void initListeners() {
-        comboCursos.addActionListener(e -> cargarAlumnosDelCursoSeleccionado());
-        guardarButton.addActionListener(e -> guardarCalificaciones());
-        cerrarButton.addActionListener(e -> dispose());
-    }
-
-    // main de prueba rápida
+    // Main de prueba opcional
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formCargarCalificacionesDocente("pablo.sosa@example.com").setVisible(true)
+                new formCargarCalificacionesDocente("docente@example.com").setVisible(true)
         );
     }
 }

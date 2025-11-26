@@ -91,6 +91,35 @@ public class ClaseDAO {
         return null;
     }
 
+    public void crearClasesAutomaticas(Curso curso) {
+
+        if (curso == null || curso.getCantidadClases() <= 0) {
+            System.out.println("⚠️ Curso inválido para crear clases");
+            return;
+        }
+
+        String sql = "INSERT INTO clase (idCurso, fecha, titulo, contenido) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            for (int i = 1; i <= curso.getCantidadClases(); i++) {
+
+                stmt.setInt(1, curso.getIdCurso());
+                stmt.setDate(2, null); // ✅ sin fecha por ahora
+                stmt.setString(3, "Clase " + i); // ✅ solo Clase 1, Clase 2...
+                stmt.setString(4, null);
+
+                stmt.executeUpdate();
+            }
+
+            System.out.println("✅ Clases creadas automáticamente para el curso " + curso.getTitulo());
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al crear clases automáticas: " + e.getMessage());
+        }
+    }
+
     // Actualizar clase
     public boolean actualizarClase(Clase clase) {
         String sql = "UPDATE clase SET fecha = ?, titulo = ?, contenido = ? WHERE idClase = ?";

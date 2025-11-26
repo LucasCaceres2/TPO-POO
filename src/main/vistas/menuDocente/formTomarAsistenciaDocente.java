@@ -17,7 +17,6 @@ public class formTomarAsistenciaDocente extends JFrame {
 
     private JComboBox<Curso> comboCursos;
     private JTable tablaAlumnos;
-    private JTextField txtFecha;
     private JButton guardarButton;
     private JButton cerrarButton;
     private JComboBox comboClases;
@@ -26,6 +25,7 @@ public class formTomarAsistenciaDocente extends JFrame {
     private final DocenteDAO docenteDAO = new DocenteDAO();
     private final AlumnoDAO alumnoDAO = new AlumnoDAO();
     private final CursoDAO cursoDAO = new CursoDAO();
+    private final ClaseDAO ClaseDAO = new ClaseDAO();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
     private final Plataforma plataforma = new Plataforma();
 
@@ -40,9 +40,6 @@ public class formTomarAsistenciaDocente extends JFrame {
         configurarTabla();
         cargarCursosDelDocente();
         initListeners();
-
-        // fecha por defecto: hoy (texto simple)
-        txtFecha.setText(new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         pack();
         setSize(900, 500);
@@ -97,7 +94,7 @@ public class formTomarAsistenciaDocente extends JFrame {
         }
 
         int idDocente = docente.getIdUsuario();
-        List<Curso> cursos = cursoDAO.listarCursosPorDocente(idDocente);
+        List<Curso> cursos = cursoDAO.listarCursosPorDocente(docente.getIdUsuario());
 
         for (Curso c : cursos) {
             comboCursos.addItem(c);
@@ -131,6 +128,20 @@ public class formTomarAsistenciaDocente extends JFrame {
             }
         }
     }
+
+    private void cargarClasesDelCursoSeleccionado() {
+        comboClases.removeAllItems();
+
+        Curso curso = (Curso) comboCursos.getSelectedItem();
+        if (curso == null) return;
+
+        List<Clase> clases = ClaseDAO.obtenerClasesPorCurso(curso);
+
+        for (Clase c : clases) {
+            comboClases.addItem(c);
+        }
+    }
+
 
     // ================= GUARDAR ASISTENCIA =================
     private void guardarAsistencia() {
@@ -197,7 +208,10 @@ public class formTomarAsistenciaDocente extends JFrame {
 
     // ================= LISTENERS =================
     private void initListeners() {
-        comboCursos.addActionListener(e -> cargarAlumnosDelCursoSeleccionado());
+        comboCursos.addActionListener(e -> {
+            cargarAlumnosDelCursoSeleccionado();
+            cargarClasesDelCursoSeleccionado();
+        });
         guardarButton.addActionListener(e -> guardarAsistencia());
         cerrarButton.addActionListener(e -> dispose());
     }

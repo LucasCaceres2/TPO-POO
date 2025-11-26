@@ -38,19 +38,21 @@ public class Plataforma {
     // --- Crear curso nuevo ---
     public boolean crearCurso(String titulo, int cupoMax, String matriculaDocente, String nombreArea, String descripcion, int cantidadClases) {
         Docente docente = docenteDAO.obtenerDocentePorMatricula(matriculaDocente);
-        if (docente == null) {
-            System.out.println("⚠️ No se encontró el docente con matrícula: " + matriculaDocente);
-            return false;
-        }
+        if (docente == null) return false;
 
         Area area = areaDAO.obtenerAreaPorNombre(nombreArea);
-        if (area == null) {
-            System.out.println("⚠️ No se encontró el área con nombre: " + nombreArea);
-            return false;
-        }
+        if (area == null) return false;
 
         Curso curso = new Curso(0, titulo, cupoMax, docente, area, descripcion, cantidadClases);
-        return cursoDAO.agregarCurso(curso);
+
+        boolean creado = cursoDAO.agregarCurso(curso);
+
+        if (creado) {
+            System.out.println("Curso creado con ID: " + curso.getIdCurso());
+            claseDAO.crearClasesAutomaticas(curso);
+        }
+
+        return creado;
     }
 
     // ================== CURSOS ==================

@@ -1,5 +1,6 @@
 package main.vistas.menuAdministrador;
 
+import main.controlador.Plataforma;
 import main.dao.AreaDAO;
 import main.dao.CursoDAO;
 import main.dao.DocenteDAO;
@@ -209,7 +210,7 @@ public class formGestionCursos extends JFrame {
         String descripcion = txtDescripcion.getText().trim();
 
         if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty() || docente == null || area == null) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.");
             return;
         }
 
@@ -217,20 +218,28 @@ public class formGestionCursos extends JFrame {
         try {
             cupo = Integer.parseInt(cupoStr);
             clases = Integer.parseInt(clasesStr);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Cupo y clases deben ser números enteros.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Cupo y clases deben ser números.");
             return;
         }
 
-        Curso curso = new Curso(titulo, cupo, docente, area, descripcion, clases);
-        boolean ok = cursoDAO.agregarCurso(curso);
+        Plataforma plataforma = new Plataforma();
+
+        boolean ok = plataforma.crearCurso(
+                titulo,
+                cupo,
+                docente.getMatricula(),
+                area.getNombre(),
+                descripcion,
+                clases
+        );
 
         if (ok) {
-            JOptionPane.showMessageDialog(this, "Curso creado correctamente.", "OK", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Curso creado correctamente con sus clases.");
             cargarCursosEnTabla();
             limpiarFormulario();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo crear el curso.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pudo crear el curso.");
         }
     }
 

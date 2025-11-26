@@ -35,5 +35,10 @@ public class Clase {
     public void setContenido(String contenido) { this.contenido = contenido; }
     public void setIdClase(int idClase) { this.idClase = idClase; }
     public int getIdClase() { return idClase; }
+
+    @Override
+    public String toString() {
+        return titulo + " (" + fecha + ")";
+    }
 }
 
