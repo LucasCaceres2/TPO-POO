@@ -69,7 +69,7 @@ public class formHistorialAlumno extends JFrame {
         model.setRowCount(0);
 
         if (emailAlumno == null || emailAlumno.isBlank()) {
-            System.out.println("⚠️ emailAlumno no seteado en formHistorialAlumno");
+            System.out.println(" emailAlumno no seteado en formHistorialAlumno");
             return;
         }
 
@@ -79,7 +79,7 @@ public class formHistorialAlumno extends JFrame {
         for (Inscripcion i : inscripciones) {
             Curso c = i.getCurso();
 
-            // 🔹 Si el curso viene sin docente, lo cargo completo desde la BD
+            //  Si el curso viene sin docente, lo cargo completo desde la BD
             if (c != null && c.getDocente() == null) {
                 Curso cursoCompleto = cursoDAO.obtenerCursoPorId(c.getIdCurso());
                 if (cursoCompleto != null) {

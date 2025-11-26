@@ -34,7 +34,7 @@ public class ClaseDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar clase: " + e.getMessage());
+            System.out.println(" Error al agregar clase: " + e.getMessage());
         }
 
         return false;
@@ -61,7 +61,7 @@ public class ClaseDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener clases: " + e.getMessage());
+            System.out.println("Error al obtener clases: " + e.getMessage());
         }
         return clases;
     }
@@ -85,7 +85,7 @@ public class ClaseDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener clase: " + e.getMessage());
+            System.out.println(" Error al obtener clase: " + e.getMessage());
         }
 
         return null;

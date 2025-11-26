@@ -20,13 +20,14 @@ public class formTomarAsistenciaDocente extends JFrame {
     private JTextField txtFecha;
     private JButton guardarButton;
     private JButton cerrarButton;
-    private JComboBox comboClases;
+    private JComboBox<Clase> comboClases;
 
     private final String emailDocente;
     private final DocenteDAO docenteDAO = new DocenteDAO();
     private final AlumnoDAO alumnoDAO = new AlumnoDAO();
     private final CursoDAO cursoDAO = new CursoDAO();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
+    private final ClaseDAO claseDAO = new ClaseDAO();   // 👈 NUEVO
     private final Plataforma plataforma = new Plataforma();
 
     public formTomarAsistenciaDocente(String emailDocente) {
@@ -41,8 +42,10 @@ public class formTomarAsistenciaDocente extends JFrame {
         cargarCursosDelDocente();
         initListeners();
 
-        // fecha por defecto: hoy (texto simple)
-        txtFecha.setText(new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        // fecha por defecto: hoy (solo informativa)
+        if (txtFecha != null) {
+            txtFecha.setText(new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        }
 
         pack();
         setSize(900, 500);
@@ -103,10 +106,11 @@ public class formTomarAsistenciaDocente extends JFrame {
             comboCursos.addItem(c);
         }
 
-        // Cuando haya al menos un curso, cargamos alumnos
+        // Cuando haya al menos un curso, cargamos alumnos y clases
         if (comboCursos.getItemCount() > 0) {
             comboCursos.setSelectedIndex(0);
             cargarAlumnosDelCursoSeleccionado();
+            cargarClasesDelCursoSeleccionado();   // 👈 NUEVO
         }
     }
 
@@ -126,9 +130,22 @@ public class formTomarAsistenciaDocente extends JFrame {
                 model.addRow(new Object[]{
                         a.getLegajo(),
                         a.getNombre() + " " + a.getApellido(),
-                        Boolean.TRUE   // por defecto presente, podés poner FALSE si querés
+                        Boolean.TRUE   // por defecto presente
                 });
             }
+        }
+    }
+
+    // ================= CARGAR CLASES POR CURSO =================
+    private void cargarClasesDelCursoSeleccionado() {
+        comboClases.removeAllItems();
+
+        Curso curso = (Curso) comboCursos.getSelectedItem();
+        if (curso == null) return;
+
+        List<Clase> clases = claseDAO.obtenerClasesPorCurso(curso);
+        for (Clase cl : clases) {
+            comboClases.addItem(cl);
         }
     }
 
@@ -143,7 +160,7 @@ public class formTomarAsistenciaDocente extends JFrame {
             return;
         }
 
-        // 🔹 Ahora NO se usa fecha: se selecciona la Clase
+        // Se usa la clase seleccionada
         Clase claseSeleccionada = (Clase) comboClases.getSelectedItem();
         if (claseSeleccionada == null) {
             JOptionPane.showMessageDialog(this,
@@ -174,7 +191,7 @@ public class formTomarAsistenciaDocente extends JFrame {
             boolean ok = plataforma.tomarAsistencia(
                     legajo,
                     idCurso,
-                    claseSeleccionada,   // 🔹 ahora mandamos la Clase
+                    claseSeleccionada,
                     presente
             );
 
@@ -194,10 +211,13 @@ public class formTomarAsistenciaDocente extends JFrame {
         }
     }
 
-
     // ================= LISTENERS =================
     private void initListeners() {
-        comboCursos.addActionListener(e -> cargarAlumnosDelCursoSeleccionado());
+        comboCursos.addActionListener(e -> {
+            cargarAlumnosDelCursoSeleccionado();
+            cargarClasesDelCursoSeleccionado();   // 👈 NUEVO
+        });
+
         guardarButton.addActionListener(e -> guardarAsistencia());
         cerrarButton.addActionListener(e -> dispose());
     }
@@ -205,7 +225,7 @@ public class formTomarAsistenciaDocente extends JFrame {
     // ================= MAIN TEST OPCIONAL =================
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formTomarAsistenciaDocente("laura.doc@correo.com").setVisible(true)
+                new formTomarAsistenciaDocente("martin.rodriguez@example.com").setVisible(true)
         );
     }
 }

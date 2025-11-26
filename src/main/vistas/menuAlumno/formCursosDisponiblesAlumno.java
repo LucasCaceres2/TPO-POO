@@ -49,13 +49,14 @@ public class formCursosDisponiblesAlumno extends JFrame {
     private void configurarTabla() {
         String[] columnas = {
                 "ID",
-                "Titulo",
+                "Título",
                 "Área",
                 "Docente",
                 "Cupo Max",
                 "Inscriptos",
-                "Clases",     // 👈 nueva columna
-                "Contenido"
+                "Clases",
+                "Contenido",
+                "Precio"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
@@ -69,12 +70,13 @@ public class formCursosDisponiblesAlumno extends JFrame {
         tablaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
+    // =========== CARGA DE CURSOS ===========
 
     private void cargarCursos() {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
         model.setRowCount(0);
 
-        // usa tu método existente
+
         List<Curso> cursos = plataforma.listarCursos();
 
         for (Curso c : cursos) {
@@ -90,7 +92,8 @@ public class formCursosDisponiblesAlumno extends JFrame {
                     c.getCupoMax(),
                     inscriptos,
                     c.getCantidadClases(),
-                    c.getDescripcion()
+                    c.getDescripcion(),
+                    String.format("$ %.2f", c.getPrecio()),
             };
             model.addRow(fila);
         }
@@ -145,6 +148,5 @@ public class formCursosDisponiblesAlumno extends JFrame {
                 new formCursosDisponiblesAlumno("ana.gomez@example.com").setVisible(true)
         );
     }
-
 
 }

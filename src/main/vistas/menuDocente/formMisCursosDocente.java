@@ -36,7 +36,7 @@ public class formMisCursosDocente extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 400);
+        setLocationRelativeTo(null);
     }
 
     // constructor vacío SOLO para el diseñador
@@ -117,7 +117,7 @@ public class formMisCursosDocente extends JFrame {
     // main de prueba
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formMisCursosDocente("laura.doc@correo.com").setVisible(true)
+                new formMisCursosDocente("martin.rodriguez@example.com").setVisible(true)
         );
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DocenteDAO {
 
-    // 🔹 Crear docente
+    // Crear docente
     public boolean agregarDocente(Docente docente) {
         if (docente == null || docente.getMatricula() == null || docente.getMatricula().isEmpty()) {
             System.out.println("⚠️ El docente o su matrícula no pueden ser nulos.");
@@ -34,7 +34,7 @@ public class DocenteDAO {
                 check.setString(1, docente.getMatricula());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
-                    System.out.println("⚠️ Ya existe un docente con matrícula " + docente.getMatricula());
+                    System.out.println(" Ya existe un docente con matrícula " + docente.getMatricula());
                     return false;
                 }
             }
@@ -46,20 +46,20 @@ public class DocenteDAO {
 
                 int filas = stmt.executeUpdate();
                 if (filas > 0) {
-                    System.out.println("✅ Docente agregado correctamente: " + docente.getNombre());
+                    System.out.println("Docente agregado correctamente: " + docente.getNombre());
                     return true;
                 }
             }
 
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar docente: " + e.getMessage());
+            System.out.println("Error al agregar docente: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Obtener docente por matrícula
+    // Obtener docente por matrícula
     public Docente obtenerDocentePorMatricula(String matricula) {
         if (matricula == null || matricula.isEmpty()) return null;
 
@@ -88,14 +88,14 @@ public class DocenteDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener docente: " + e.getMessage());
+            System.out.println(" Error al obtener docente: " + e.getMessage());
         }
 
-        System.out.println("⚠️ No se encontró docente con matrícula: " + matricula);
+        System.out.println("No se encontró docente con matrícula: " + matricula);
         return null;
     }
 
-    // 🔹 Listar todos los docentes
+    // Listar todos los docentes
     public List<Docente> listarDocentes() {
         List<Docente> docentes = new ArrayList<>();
         String sql = """
@@ -120,10 +120,10 @@ public class DocenteDAO {
                 docentes.add(docente);
             }
 
-            System.out.println("📘 Total docentes cargados: " + docentes.size());
+            System.out.println("Total docentes cargados: " + docentes.size());
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar docentes: " + e.getMessage());
+            System.out.println(" Error al listar docentes: " + e.getMessage());
         }
 
         return docentes;
@@ -136,7 +136,7 @@ public class DocenteDAO {
         // Solo campos permitidos
         List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
         if (!camposPermitidos.contains(campo)) {
-            System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
+            System.out.println(" No se puede modificar el campo '" + campo + "'.");
             return false;
         }
 
@@ -155,18 +155,18 @@ public class DocenteDAO {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("✅ Campo '" + campo + "' actualizado correctamente para matrícula " + matricula);
+                System.out.println(" Campo '" + campo + "' actualizado correctamente para matrícula " + matricula);
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar docente: " + e.getMessage());
+            System.out.println(" Error al actualizar docente: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Eliminar docente
+    //  Eliminar docente
     public boolean eliminarDocente(String matricula) {
         if (matricula == null || matricula.isEmpty()) return false;
 
@@ -179,14 +179,14 @@ public class DocenteDAO {
             int filas = stmt.executeUpdate();
 
             if (filas > 0) {
-                System.out.println("🗑️ Docente eliminado correctamente: " + matricula);
+                System.out.println(" Docente eliminado correctamente: " + matricula);
                 return true;
             } else {
-                System.out.println("⚠️ No se encontró docente con matrícula " + matricula);
+                System.out.println(" No se encontró docente con matrícula " + matricula);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar docente: " + e.getMessage());
+            System.out.println(" Error al eliminar docente: " + e.getMessage());
         }
 
         return false;
@@ -226,10 +226,10 @@ public class DocenteDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener docente por email: " + e.getMessage());
+            System.out.println("Error al obtener docente por email: " + e.getMessage());
         }
 
-        System.out.println("⚠️ No se encontró docente con email: " + email);
+        System.out.println(" No se encontró docente con email: " + email);
         return null;
     }
 

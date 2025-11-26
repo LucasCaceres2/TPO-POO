@@ -22,7 +22,7 @@ public class InscripcionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener idUsuario por legajo: " + e.getMessage());
+            System.out.println("Error al obtener idUsuario por legajo: " + e.getMessage());
         }
         return null;
     }
@@ -30,31 +30,34 @@ public class InscripcionDAO {
     // --- AGREGAR INSCRIPCIÓN (recibe legajo en Alumno) ---
     public boolean agregarInscripcion(Inscripcion inscripcion) {
         if (inscripcion == null || inscripcion.getAlumno() == null || inscripcion.getCurso() == null) {
-            System.out.println("⚠️ Datos incompletos de la inscripción.");
+            System.out.println("Datos incompletos de la inscripción.");
             return false;
         }
 
         Integer idUsuario = obtenerIdUsuarioPorLegajo(inscripcion.getAlumno().getLegajo());
         if (idUsuario == null) {
-            System.out.println("⚠️ Alumno no encontrado por legajo.");
+            System.out.println(" Alumno no encontrado por legajo.");
             return false;
         }
 
         String checkSql = "SELECT 1 FROM inscripcion WHERE idAlumno = ? AND idCurso = ?";
-        String insertSql = "INSERT INTO inscripcion (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertSql = "INSERT INTO inscripcion (fecha, idAlumno, idCurso, idPago, estadoPago, estadoCurso) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar()) {
 
+            // Validar que no esté ya inscripto
             try (PreparedStatement check = conn.prepareStatement(checkSql)) {
                 check.setInt(1, idUsuario);
                 check.setInt(2, inscripcion.getCurso().getIdCurso());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
-                    System.out.println("⚠️ El alumno ya está inscripto en este curso.");
+                    System.out.println("El alumno ya está inscripto en este curso.");
                     return false;
                 }
             }
 
+            // Insertar inscripción
             try (PreparedStatement stmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                 java.sql.Date fechaSQL = new java.sql.Date(
                         (inscripcion.getFecha() != null ? inscripcion.getFecha() : new Date()).getTime()
@@ -81,13 +84,13 @@ public class InscripcionDAO {
                     try (ResultSet rs = stmt.getGeneratedKeys()) {
                         if (rs.next()) inscripcion.setIdInscripcion(rs.getInt(1));
                     }
-                    System.out.println("✅ Inscripción registrada correctamente.");
+                    System.out.println(" Inscripción registrada correctamente.");
                     return true;
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar inscripción: " + e.getMessage());
+            System.out.println(" Error al agregar inscripción: " + e.getMessage());
         }
         return false;
     }
@@ -107,7 +110,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases, c.precio,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
                 JOIN alumno a ON i.idAlumno = a.idUsuario
@@ -139,8 +142,8 @@ public class InscripcionDAO {
                             null,
                             null,
                             rs.getString("contenido"),
-                            rs.getInt("cantidadClases")
-
+                            rs.getInt("cantidadClases"),
+                            rs.getDouble("precio")    // 👈 ahora con precio
                     );
 
                     Pago pago = null;
@@ -160,20 +163,22 @@ public class InscripcionDAO {
                     ));
                 }
             }
-            System.out.println("📘 Total inscripciones del curso: " + lista.size());
+            System.out.println("Total inscripciones del curso: " + lista.size());
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar inscripciones por curso: " + e.getMessage());
+            System.out.println("Error al listar inscripciones por curso: " + e.getMessage());
         }
         return lista;
     }
 
     // --- ACTUALIZAR ESTADOS ---
     public boolean actualizarEstadoPago(int idInscripcion, EstadoInscripcion nuevoEstado) {
-        return ejecutarUpdate("UPDATE inscripcion SET estadoPago = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
+        return ejecutarUpdate("UPDATE inscripcion SET estadoPago = ? WHERE idInscripcion = ?",
+                nuevoEstado.name(), idInscripcion);
     }
 
     public boolean actualizarEstadoCurso(int idInscripcion, EstadoCurso nuevoEstado) {
-        return ejecutarUpdate("UPDATE inscripcion SET estadoCurso = ? WHERE idInscripcion = ?", nuevoEstado.name(), idInscripcion);
+        return ejecutarUpdate("UPDATE inscripcion SET estadoCurso = ? WHERE idInscripcion = ?",
+                nuevoEstado.name(), idInscripcion);
     }
 
     private boolean ejecutarUpdate(String sql, String estado, int id) {
@@ -185,7 +190,7 @@ public class InscripcionDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar inscripción: " + e.getMessage());
+            System.out.println("Error al actualizar inscripción: " + e.getMessage());
         }
         return false;
     }
@@ -213,7 +218,7 @@ public class InscripcionDAO {
                 SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                        a.idUsuario, a.legajo,
                        u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                       c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases, c.precio,
                        p.idPago, p.monto, p.fecha AS fechaPago
                 FROM inscripcion i
                 JOIN alumno a ON i.idAlumno = a.idUsuario
@@ -245,7 +250,8 @@ public class InscripcionDAO {
                             null,
                             null,
                             rs.getString("contenido"),
-                            rs.getInt("cantidadClases")
+                            rs.getInt("cantidadClases"),
+                            rs.getDouble("precio")
                     );
 
                     Pago pago = null;
@@ -265,18 +271,18 @@ public class InscripcionDAO {
                     ));
                 }
             }
-            System.out.println("📘 Total inscripciones por alumno: " + lista.size());
+            System.out.println("Total inscripciones por alumno: " + lista.size());
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar inscripciones: " + e.getMessage());
+            System.out.println("Error al listar inscripciones: " + e.getMessage());
         }
         return lista;
     }
+
     public Inscripcion obtenerInscripcion(Alumno alumno, Curso curso) {
         if (alumno == null || curso == null) {
             return null;
         }
 
-        // Usamos tu helper existente
         Integer idUsuario = obtenerIdUsuarioPorLegajo(alumno.getLegajo());
         if (idUsuario == null) {
             return null;
@@ -286,7 +292,7 @@ public class InscripcionDAO {
             SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                    a.idUsuario, a.legajo,
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases, c.precio,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripcion i
             JOIN alumno a ON i.idAlumno = a.idUsuario
@@ -304,7 +310,6 @@ public class InscripcionDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Reconstruimos Alumno (igual que en tus otros métodos)
                     Alumno alu = new Alumno(
                             rs.getInt("idUsuario"),
                             rs.getString("alumnoNombre"),
@@ -314,7 +319,6 @@ public class InscripcionDAO {
                             rs.getString("legajo")
                     );
 
-                    // Reconstruimos Curso manteniendo tus nombres y constructor
                     Curso cur = new Curso(
                             rs.getInt("idCurso"),
                             rs.getString("cursoTitulo"),
@@ -322,10 +326,10 @@ public class InscripcionDAO {
                             null,
                             null,
                             rs.getString("contenido"),
-                            rs.getInt("cantidadClases")
+                            rs.getInt("cantidadClases"),
+                            rs.getDouble("precio")
                     );
 
-                    // Reconstruimos Pago si existe
                     Pago pago = null;
                     int idPago = rs.getInt("idPago");
                     if (!rs.wasNull()) {
@@ -337,7 +341,6 @@ public class InscripcionDAO {
                         );
                     }
 
-                    // Devolvemos Inscripcion
                     return new Inscripcion(
                             rs.getInt("idInscripcion"),
                             rs.getDate("fecha"),
@@ -369,7 +372,7 @@ public class InscripcionDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error al contar inscriptos: " + e.getMessage());
+            System.out.println("Error al contar inscriptos: " + e.getMessage());
         }
         return 0;
     }
@@ -382,10 +385,10 @@ public class InscripcionDAO {
             SELECT i.idInscripcion, i.fecha, i.estadoPago, i.estadoCurso,
                    a.idUsuario, a.legajo,
                    u.nombre AS alumnoNombre, u.apellido AS alumnoApellido, u.email AS alumnoEmail,
-                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases,
+                   c.idCurso, c.titulo AS cursoTitulo, c.cupoMax, c.contenido, c.cantidadClases, c.precio,
                    p.idPago, p.monto, p.fecha AS fechaPago
             FROM inscripcion i
-            JOIN alumno a ON i.idUsuario = a.idUsuario
+            JOIN alumno a ON i.idAlumno = a.idUsuario
             JOIN usuario u ON a.idUsuario = u.idUsuario
             JOIN curso c ON i.idCurso = c.idCurso
             LEFT JOIN pago p ON i.idPago = p.idPago
@@ -413,7 +416,8 @@ public class InscripcionDAO {
                         null,
                         null,
                         rs.getString("contenido"),
-                        rs.getInt("cantidadClases")
+                        rs.getInt("cantidadClases"),
+                        rs.getDouble("precio")
                 );
 
                 Pago pago = null;
@@ -434,10 +438,36 @@ public class InscripcionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar todas las inscripciones: " + e.getMessage());
+            System.out.println(" Error al listar todas las inscripciones: " + e.getMessage());
         }
 
         return lista;
+    }
+
+    public boolean vincularPagoAInscripcion(int idInscripcion,
+                                            int idPago,
+                                            EstadoInscripcion nuevoEstado) {
+
+        String sql = """
+            UPDATE inscripcion
+            SET idPago = ?, estadoPago = ?
+            WHERE idInscripcion = ?
+            """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idPago);
+            ps.setString(2, nuevoEstado.name()); // "PAGO" o "PENDIENTE_PAGO"
+            ps.setInt(3, idInscripcion);
+
+            int filas = ps.executeUpdate();
+            return filas > 0;
+
+        } catch (SQLException e) {
+            System.out.println(" Error al vincular pago a inscripción: " + e.getMessage());
+            return false;
+        }
     }
 
 }

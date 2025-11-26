@@ -108,11 +108,6 @@ public class formVerInscripciones extends JFrame {
         String legajo = txtLegajo.getText().trim();
         String email = txtEmail.getText().trim();
 
-        // Prioridad simple:
-        // 1) si hay legajo -> por legajo
-        // 2) sino si hay email -> por email (usando Plataforma/otro DAO si lo tenés)
-        // 3) sino si hay curso -> por curso
-        // 4) sino -> todas
 
         if (!legajo.isEmpty()) {
             var lista = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
@@ -121,9 +116,7 @@ public class formVerInscripciones extends JFrame {
         }
 
         if (!email.isEmpty()) {
-            // Si no tenés un método directo por email, podrías:
-            // - obtener Alumno por email y luego listar por legajo/idUsuario
-            // Para no romper nada, por ahora mostramos aviso.
+
             JOptionPane.showMessageDialog(this,
                     "Filtro por email: implementá la búsqueda de alumno por email si lo necesitás.",
                     "Info",

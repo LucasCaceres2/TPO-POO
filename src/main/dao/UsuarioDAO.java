@@ -11,7 +11,7 @@ public class UsuarioDAO {
     // 🔹 Crear usuario
     public int agregarUsuario(Usuario usuario) {
         if (usuario == null || usuario.getEmail() == null || !usuario.getEmail().contains("@")) {
-            System.out.println("⚠️ Usuario o email inválido.");
+            System.out.println("Usuario o email inválido.");
             return -1;
         }
 
@@ -24,7 +24,7 @@ public class UsuarioDAO {
                 check.setString(1, usuario.getEmail());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
-                    System.out.println("⚠️ Ya existe un usuario con email " + usuario.getEmail());
+                    System.out.println("Ya existe un usuario con email " + usuario.getEmail());
                     return -1;
                 }
             }
@@ -42,7 +42,7 @@ public class UsuarioDAO {
                     try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int idUsuario = generatedKeys.getInt(1);
-                            System.out.println("✅ Usuario creado con id: " + idUsuario);
+                            System.out.println(" Usuario creado con id: " + idUsuario);
                             return idUsuario;
                         }
                     }
@@ -50,7 +50,7 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar usuario: " + e.getMessage());
+            System.out.println(" Error al agregar usuario: " + e.getMessage());
         }
 
         return -1;
@@ -81,10 +81,10 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener usuario: " + e.getMessage());
+            System.out.println(" Error al obtener usuario: " + e.getMessage());
         }
 
-        System.out.println("⚠️ No se encontró usuario con id: " + idUsuario);
+        System.out.println("No se encontró usuario con id: " + idUsuario);
         return null;
     }
 
@@ -115,7 +115,7 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener usuario: " + e.getMessage());
+            System.out.println("Error al obtener usuario: " + e.getMessage());
         }
 
         return null;
@@ -127,7 +127,7 @@ public class UsuarioDAO {
 
         // Solo campos permitidos
         if (!campo.equals("nombre") && !campo.equals("apellido") && !campo.equals("email") && !campo.equals("contrasena")) {
-            System.out.println("⚠️ Campo no permitido: " + campo);
+            System.out.println(" Campo no permitido: " + campo);
             return false;
         }
 
@@ -141,12 +141,12 @@ public class UsuarioDAO {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("✅ Usuario actualizado correctamente.");
+                System.out.println("Usuario actualizado correctamente.");
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar usuario: " + e.getMessage());
+            System.out.println("Error al actualizar usuario: " + e.getMessage());
         }
 
         return false;
@@ -170,7 +170,7 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar usuario: " + e.getMessage());
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
         }
 
         return false;

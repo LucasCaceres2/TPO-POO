@@ -35,6 +35,7 @@ public class formMiPerfilDocente extends JFrame {
 
         pack();
         setSize(400, 300);
+        setLocationRelativeTo(null);
     }
 
     // SOLO para el diseñador (no usar en producción real)
@@ -133,7 +134,7 @@ public class formMiPerfilDocente extends JFrame {
     // --------- MAIN TEST OPCIONAL ----------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formMiPerfilDocente("laura.doc@correo.com").setVisible(true)
+                new formMiPerfilDocente("martin.rodriguez@example.com").setVisible(true)
         );
     }
 }

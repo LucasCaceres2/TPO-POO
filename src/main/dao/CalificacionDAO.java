@@ -34,7 +34,7 @@ public class CalificacionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al registrar calificación: " + e.getMessage());
+            System.out.println(" Error al registrar calificación: " + e.getMessage());
         }
         return false;
     }
@@ -59,7 +59,7 @@ public class CalificacionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar calificaciones: " + e.getMessage());
+            System.out.println(" Error al listar calificaciones: " + e.getMessage());
         }
 
         return lista;

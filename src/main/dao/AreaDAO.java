@@ -9,10 +9,10 @@ import java.util.List;
 
 public class AreaDAO {
 
-    // 🔹 Crear área
+    //  Crear área
     public boolean agregarArea(Area area) {
         if (area == null || area.getNombre() == null || area.getNombre().isEmpty()) {
-            System.out.println("⚠️ El área no puede ser nula ni vacía.");
+            System.out.println(" El área no puede ser nula ni vacía.");
             return false;
         }
 
@@ -26,7 +26,7 @@ public class AreaDAO {
                 check.setString(1, area.getNombre());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
-                    System.out.println("⚠️ Ya existe un área con nombre: " + area.getNombre());
+                    System.out.println(" Ya existe un área con nombre: " + area.getNombre());
                     return false;
                 }
             }
@@ -42,19 +42,19 @@ public class AreaDAO {
                             area.setIdArea(rs.getInt(1));
                         }
                     }
-                    System.out.println("✅ Área agregada correctamente: " + area.getNombre());
+                    System.out.println(" Área agregada correctamente: " + area.getNombre());
                     return true;
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar área: " + e.getMessage());
+            System.out.println(" Error al agregar área: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Obtener área por ID
+    //  Obtener área por ID
     public Area obtenerAreaPorId(int idArea) {
         String sql = "SELECT idArea, nombre FROM area WHERE idArea = ?";
 
@@ -69,10 +69,10 @@ public class AreaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener área: " + e.getMessage());
+            System.out.println(" Error al obtener área: " + e.getMessage());
         }
 
-        System.out.println("⚠️ No se encontró un área con ID: " + idArea);
+        System.out.println(" No se encontró un área con ID: " + idArea);
         return null;
     }
 
@@ -93,12 +93,12 @@ public class AreaDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener área por nombre: " + e.getMessage());
+            System.out.println(" Error al obtener área por nombre: " + e.getMessage());
         }
         return null;
     }
 
-    // 🔹 Listar todas las áreas
+    // Listar todas las áreas
     public List<Area> listarAreas() {
         List<Area> areas = new ArrayList<>();
         String sql = "SELECT idArea, nombre FROM area";
@@ -111,16 +111,16 @@ public class AreaDAO {
                 areas.add(new Area(rs.getInt("idArea"), rs.getString("nombre")));
             }
 
-            System.out.println("📘 Total áreas cargadas: " + areas.size());
+            System.out.println(" Total áreas cargadas: " + areas.size());
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar áreas: " + e.getMessage());
+            System.out.println(" Error al listar áreas: " + e.getMessage());
         }
 
         return areas;
     }
 
-    // 🔹 Actualizar área
+    // Actualizar área
     public boolean actualizarArea(int idArea, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.isEmpty()) return false;
 
@@ -134,18 +134,18 @@ public class AreaDAO {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("✅ Área actualizada correctamente: " + nuevoNombre);
+                System.out.println(" Área actualizada correctamente: " + nuevoNombre);
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar área: " + e.getMessage());
+            System.out.println(" Error al actualizar área: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Eliminar área
+    // Eliminar área
     public boolean eliminarArea(int idArea) {
         String sql = "DELETE FROM area WHERE idArea = ?";
 
@@ -155,14 +155,14 @@ public class AreaDAO {
             stmt.setInt(1, idArea);
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("🗑️ Área eliminada correctamente: " + idArea);
+                System.out.println(" Área eliminada correctamente: " + idArea);
                 return true;
             } else {
-                System.out.println("⚠️ No se encontró área con ID " + idArea);
+                System.out.println(" No se encontró área con ID " + idArea);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar área: " + e.getMessage());
+            System.out.println(" Error al eliminar área: " + e.getMessage());
         }
 
         return false;

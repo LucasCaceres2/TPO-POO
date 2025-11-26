@@ -3,6 +3,7 @@ package main.vistas.menuAdministrador;
 import main.dao.AreaDAO;
 import main.dao.CursoDAO;
 import main.dao.DocenteDAO;
+import main.modelo.Administrador;
 import main.modelo.Area;
 import main.modelo.Curso;
 import main.modelo.Docente;
@@ -21,6 +22,7 @@ public class formGestionCursos extends JFrame {
     private JTextField txtTitulo;
     private JTextField txtCupoMax;
     private JTextField txtCantidadClases;
+    private JTextField txtPrecio;      // campo para precio
     private JComboBox<Docente> comboDocente;
     private JComboBox<Area> comboArea;
     private JTextArea txtContenido;
@@ -36,6 +38,15 @@ public class formGestionCursos extends JFrame {
     private final DocenteDAO docenteDAO = new DocenteDAO();
     private final AreaDAO areaDAO = new AreaDAO();
 
+    // 👇 Ahora sí usamos la clase Administrador
+    private final Administrador administrador = new Administrador(
+            0,
+            "Admin",
+            "Sistema",
+            "admin@sistema.com",
+            "admin"
+    );
+
     private Integer idCursoSeleccionado = null;
 
     public formGestionCursos() {
@@ -43,7 +54,6 @@ public class formGestionCursos extends JFrame {
         setTitle("Gestión de Cursos");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // tamaño inicial cómodo
         setSize(1100, 700);
         setLocationRelativeTo(null);
 
@@ -62,6 +72,7 @@ public class formGestionCursos extends JFrame {
                 "Área",
                 "Cupo Max",
                 "Clases",
+                "Precio",
                 "Contenido"
         };
 
@@ -83,12 +94,12 @@ public class formGestionCursos extends JFrame {
 
         List<Docente> docentes = docenteDAO.listarDocentes();
         for (Docente d : docentes) {
-            comboDocente.addItem(d); // se ve lindo si Docente.toString() devuelve nombre
+            comboDocente.addItem(d); // Docente.toString() debería devolver "Nombre Apellido"
         }
 
         var areas = areaDAO.listarAreas();
         for (Area a : areas) {
-            comboArea.addItem(a); // idem con Area.toString()
+            comboArea.addItem(a); // Area.toString() debería devolver el nombre
         }
     }
 
@@ -106,6 +117,7 @@ public class formGestionCursos extends JFrame {
                     c.getArea() != null ? c.getArea().getNombre() : "",
                     c.getCupoMax(),
                     c.getCantidadClases(),
+                    c.getPrecio(),
                     c.getDescripcion()
             });
         }
@@ -127,13 +139,13 @@ public class formGestionCursos extends JFrame {
         // Nuevo: limpia formulario
         btnNuevo.addActionListener(e -> limpiarFormulario());
 
-        // Guardar: alta
+        // Guardar: alta usando Administrador
         btnGuardar.addActionListener(e -> guardarCurso());
 
-        // Actualizar: modifica curso seleccionado
+        // Actualizar: modifica curso seleccionado (sigue usando CursoDAO)
         btnActualizar.addActionListener(e -> actualizarCurso());
 
-        // Eliminar: baja
+        // Eliminar: baja usando Administrador
         btnEliminar.addActionListener(e -> eliminarCurso());
 
         // Refrescar: recarga tabla y combos
@@ -157,11 +169,13 @@ public class formGestionCursos extends JFrame {
         String areaNombre = (String) model.getValueAt(fila, 3);
         Integer cupoMax = (Integer) model.getValueAt(fila, 4);
         Integer clases = (Integer) model.getValueAt(fila, 5);
-        String contenido = (String) model.getValueAt(fila, 6);
+        Double precio = (Double) model.getValueAt(fila, 6);
+        String contenido = (String) model.getValueAt(fila, 7);
 
         txtTitulo.setText(titulo);
         txtCupoMax.setText(String.valueOf(cupoMax));
         txtCantidadClases.setText(String.valueOf(clases));
+        txtPrecio.setText(precio != null ? String.valueOf(precio) : "");
         txtContenido.setText(contenido != null ? contenido : "");
 
         // seleccionar docente en combo
@@ -193,46 +207,68 @@ public class formGestionCursos extends JFrame {
         txtTitulo.setText("");
         txtCupoMax.setText("");
         txtCantidadClases.setText("");
+        txtPrecio.setText("");
         txtContenido.setText("");
         if (comboDocente.getItemCount() > 0) comboDocente.setSelectedIndex(0);
         if (comboArea.getItemCount() > 0) comboArea.setSelectedIndex(0);
         tablaCursos.clearSelection();
     }
 
+    // ==== GUARDAR (alta) usando Administrador ====
     private void guardarCurso() {
         String titulo = txtTitulo.getText().trim();
         String cupoStr = txtCupoMax.getText().trim();
         String clasesStr = txtCantidadClases.getText().trim();
+        String precioStr = txtPrecio.getText().trim();
         Docente docente = (Docente) comboDocente.getSelectedItem();
         Area area = (Area) comboArea.getSelectedItem();
         String contenido = txtContenido.getText().trim();
 
-        if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty() || docente == null || area == null) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+        if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty()
+                || precioStr.isEmpty() || docente == null || area == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Complete todos los campos obligatorios (incluido el precio).",
+                    "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int cupo, clases;
+        double precio;
         try {
             cupo = Integer.parseInt(cupoStr);
             clases = Integer.parseInt(clasesStr);
+            precio = Double.parseDouble(precioStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Cupo y clases deben ser números enteros.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Cupo, clases y precio deben ser numéricos.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Curso curso = new Curso(titulo, cupo, docente, area, contenido, clases);
-        boolean ok = cursoDAO.agregarCurso(curso);
+
+        String matriculaDocente = docente.getMatricula();
+        String nombreArea = area.getNombre();
+
+        boolean ok = administrador.crearCurso(
+                titulo,
+                cupo,
+                matriculaDocente,
+                nombreArea,
+                contenido,
+                clases,
+                precio
+        );
 
         if (ok) {
             JOptionPane.showMessageDialog(this, "Curso creado correctamente.", "OK", JOptionPane.INFORMATION_MESSAGE);
             cargarCursosEnTabla();
             limpiarFormulario();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo crear el curso.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pudo crear el curso (ver consola).", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // ==== ACTUALIZAR (sigue usando CursoDAO) ====
     private void actualizarCurso() {
         if (idCursoSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Seleccione un curso de la tabla.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -242,32 +278,37 @@ public class formGestionCursos extends JFrame {
         String titulo = txtTitulo.getText().trim();
         String cupoStr = txtCupoMax.getText().trim();
         String clasesStr = txtCantidadClases.getText().trim();
+        String precioStr = txtPrecio.getText().trim();
         Docente docente = (Docente) comboDocente.getSelectedItem();
         Area area = (Area) comboArea.getSelectedItem();
         String contenido = txtContenido.getText().trim();
 
-        if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty() || docente == null || area == null) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+        if (titulo.isEmpty() || cupoStr.isEmpty() || clasesStr.isEmpty()
+                || precioStr.isEmpty() || docente == null || area == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Complete todos los campos obligatorios (incluido el precio).",
+                    "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int cupo, clases;
+        double precio;
         try {
             cupo = Integer.parseInt(cupoStr);
             clases = Integer.parseInt(clasesStr);
+            precio = Double.parseDouble(precioStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Cupo y clases deben ser números enteros.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Cupo, clases y precio deben ser numéricos.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Podés hacer un método específico en CursoDAO para actualizar todos los campos.
-        // Como tu DAO actual solo tiene actualizarCampo simple, lo ideal es agregar uno nuevo.
-        // Por ahora, ejemplo simple:
         boolean okTitulo = cursoDAO.actualizarCurso(idCursoSeleccionado, "titulo", titulo);
         boolean okContenido = cursoDAO.actualizarCurso(idCursoSeleccionado, "contenido", contenido);
-        // Si agregás columnas doc/area/cupo/clases al UPDATE, los sumás acá.
+        boolean okPrecio = cursoDAO.actualizarCurso(idCursoSeleccionado, "precio", String.valueOf(precio));
 
-        if (okTitulo || okContenido) {
+        if (okTitulo || okContenido || okPrecio) {
             JOptionPane.showMessageDialog(this, "Curso actualizado.", "OK", JOptionPane.INFORMATION_MESSAGE);
             cargarCursosEnTabla();
         } else {
@@ -275,6 +316,7 @@ public class formGestionCursos extends JFrame {
         }
     }
 
+    // ==== ELIMINAR usando Administrador ====
     private void eliminarCurso() {
         if (idCursoSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Seleccione un curso de la tabla.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -287,7 +329,7 @@ public class formGestionCursos extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (r == JOptionPane.YES_OPTION) {
-            boolean ok = cursoDAO.eliminarCurso(idCursoSeleccionado);
+            boolean ok = administrador.eliminarCurso(idCursoSeleccionado);
             if (ok) {
                 JOptionPane.showMessageDialog(this, "Curso eliminado.", "OK", JOptionPane.INFORMATION_MESSAGE);
                 cargarCursosEnTabla();

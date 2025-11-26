@@ -15,31 +15,37 @@ public class Curso {
     private transient List<Clase> clases;
     private transient List<Inscripcion> inscripciones;
     private int cantidadClases = 12;
+    private double precio;
 
-    // 🔹 Constructor para crear curso nuevo (antes de BD)
-    public Curso(String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
+
+    //  Constructor para crear curso nuevo (antes de BD)
+    public Curso(String titulo, int cupoMax, Docente docente, Area area,
+                 String descripcion, int cantidadClases, double precio) {
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
         this.descripcion = descripcion;
-        this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
+        this.precio = precio;
     }
 
-    // 🔹 Constructor para instanciar desde BD
-    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
+
+    // Constructor para instanciar desde BD
+    public Curso(int idCurso, String titulo, int cupoMax, Docente docente, Area area,
+                 String descripcion, int cantidadClases, double precio) {
         this.idCurso = idCurso;
         this.titulo = titulo;
         this.cupoMax = cupoMax;
         this.docente = docente;
         this.area = area;
         this.descripcion = descripcion;
-        this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
+        this.precio = precio;
     }
 
-    // 🔹 Cargar inscripciones desde BD
+
+    // Cargar inscripciones desde BD
     public void cargarInscripciones() {
         if (this.idCurso <= 0) {
             return;
@@ -48,7 +54,7 @@ public class Curso {
         this.inscripciones = inscripcionDAO.listarInscripcionesPorCurso(this.idCurso);
     }
 
-    // 🔹 Obtener nombres de alumnos inscritos (sin imprimir)
+    // Obtener nombres de alumnos inscritos (sin imprimir)
     public List<String> obtenerNombresAlumnosInscritos() {
         if (inscripciones == null || inscripciones.isEmpty()) {
             return new ArrayList<>();
@@ -63,23 +69,33 @@ public class Curso {
         return nombres;
     }
 
-    // 🔹 Validación: ¿Tiene cupo disponible?
+
+
+    // Validación:
     public boolean tieneCupo() {
         if (inscripciones == null) return true;
         return inscripciones.size() < cupoMax;
     }
 
-    // 🔹 Obtener cantidad de inscriptos
+    // Obtener cantidad de inscriptos
     public int getCantidadInscriptos() {
         return (inscripciones != null) ? inscripciones.size() : 0;
     }
 
-    // 🔹 Obtener cupos disponibles
+    // Obtener cupos disponibles
     public int getCuposDisponibles() {
         return cupoMax - getCantidadInscriptos();
     }
 
     // Getters y Setters
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
     public int getIdCurso() { 
         return idCurso; 
     }
@@ -138,7 +154,7 @@ public class Curso {
 
     public void setClases(List<Clase> clases) { this.clases = clases; }
 
-    // 🔹 equals() y hashCode() basados en idCurso
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

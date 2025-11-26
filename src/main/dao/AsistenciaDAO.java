@@ -33,7 +33,7 @@ public class AsistenciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al registrar asistencia: " + e.getMessage());
+            System.out.println(" Error al registrar asistencia: " + e.getMessage());
         }
         return false;
     }
@@ -57,7 +57,7 @@ public class AsistenciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener asistencia: " + e.getMessage());
+            System.out.println(" Error al obtener asistencia: " + e.getMessage());
         }
 
         return null; // si no hay asistencia registrada
@@ -99,7 +99,7 @@ public class AsistenciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar cursos CURSANDO por alumno: " + e.getMessage());
+            System.out.println(" Error al listar cursos CURSANDO por alumno: " + e.getMessage());
         }
 
         return lista;
@@ -143,7 +143,7 @@ public class AsistenciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar asistencias por alumno y curso: " + e.getMessage());
+            System.out.println(" Error al listar asistencias por alumno y curso: " + e.getMessage());
         }
 
         return lista;

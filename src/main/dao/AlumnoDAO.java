@@ -14,32 +14,27 @@ public class AlumnoDAO {
     // 🔹 Crear alumno (primero crea usuario)
     public boolean agregarAlumno(Alumno alumno) {
         if (alumno == null) {
-            System.out.println("⚠️ El alumno no puede ser nulo.");
-            return false;
-        }
-        if (alumno.getLegajo() == null || alumno.getLegajo().isEmpty()) {
-            System.out.println("⚠️ El legajo no puede ser nulo/vacío.");
+            System.out.println(" El alumno no puede ser nulo.");
             return false;
         }
 
-        // 1️⃣ Crear usuario base primero
+
+        if (alumno.getLegajo() == null || alumno.getLegajo().isEmpty()) {
+            String nuevoLegajo = generarNuevoLegajo();
+            alumno.setLegajo(nuevoLegajo);
+            System.out.println(" Legajo autogenerado para el alumno: " + nuevoLegajo);
+        }
+
+
         UsuarioDAO usuarioDAO = new UsuarioDAO();
         int idUsuario = usuarioDAO.agregarUsuario(alumno); // devuelve idUsuario generado
         if (idUsuario <= 0) {
-            System.out.println("❌ No se pudo crear el usuario base.");
+            System.out.println("No se pudo crear el usuario base.");
             return false;
         }
         alumno.setIdUsuario(idUsuario);
 
-        // 2️⃣ Generar legajo automáticamente si vino null o vacío
-        if (alumno.getLegajo() == null || alumno.getLegajo().isEmpty()) {
-            // ej: ALU1, ALU2, ALU3...
-            String nuevoLegajo = "ALU" + idUsuario;
-            alumno.setLegajo(nuevoLegajo);
-            System.out.println("ℹ️ Legajo autogenerado para el alumno: " + nuevoLegajo);
-        }
 
-        // 3️⃣ Evitar duplicados por legajo (por las dudas)
         String checkSql = "SELECT 1 FROM alumno WHERE legajo = ?";
         String insertSql = "INSERT INTO alumno (idUsuario, legajo) VALUES (?, ?)";
 
@@ -49,30 +44,31 @@ public class AlumnoDAO {
                 check.setString(1, alumno.getLegajo());
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
-                    System.out.println("⚠️ Ya existe un alumno con el legajo " + alumno.getLegajo());
+                    System.out.println(" Ya existe un alumno con el legajo " + alumno.getLegajo());
                     return false;
                 }
             }
 
-            // 4️⃣ Insertar alumno en la tabla `alumno`
+
             try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
                 stmt.setInt(1, alumno.getIdUsuario());
                 stmt.setString(2, alumno.getLegajo());
 
                 int filas = stmt.executeUpdate();
                 if (filas > 0) {
-                    System.out.println("✅ Alumno agregado correctamente: " + alumno.getNombre()
+                    System.out.println("Alumno agregado correctamente: " + alumno.getNombre()
                             + " (legajo = " + alumno.getLegajo() + ")");
                     return true;
                 }
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al agregar alumno: " + e.getMessage());
+            System.out.println(" Error al agregar alumno: " + e.getMessage());
         }
 
         return false;
     }
+
 
     public String generarNuevoLegajo() {
         String sql = "SELECT MAX(legajo) AS maxLegajo FROM alumno";
@@ -98,14 +94,14 @@ public class AlumnoDAO {
             return String.format("ALU%04d", siguiente); // "ALU0008"
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al generar legajo: " + e.getMessage());
+            System.out.println(" Error al generar legajo: " + e.getMessage());
             // fallback por si algo falla
             return "ALU0001";
         }
     }
 
 
-    // 🔹 Obtener alumno por legajo
+
     public Alumno obtenerAlumnoPorLegajo(String legajo) {
         if (legajo == null || legajo.isEmpty()) return null;
 
@@ -134,14 +130,14 @@ public class AlumnoDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener alumno: " + e.getMessage());
+            System.out.println(" Error al obtener alumno: " + e.getMessage());
         }
 
-        System.out.println("⚠️ No se encontró un alumno con legajo: " + legajo);
+        System.out.println(" No se encontró un alumno con legajo: " + legajo);
         return null;
     }
 
-    // 🔹 Listar todos los alumnos
+    // Listar todos los alumnos
     public List<Alumno> listarAlumnos() {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = """
@@ -165,22 +161,22 @@ public class AlumnoDAO {
                 ));
             }
 
-            System.out.println("📘 Total alumnos cargados: " + alumnos.size());
+            System.out.println("Total alumnos cargados: " + alumnos.size());
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al listar alumnos: " + e.getMessage());
+            System.out.println(" Error al listar alumnos: " + e.getMessage());
         }
 
         return alumnos;
     }
 
-    // 🔹 Actualizar dato de perfil
+    // Actualizar dato de perfil
     public boolean actualizarDatoPerfil(String legajo, String campo, String nuevoValor) {
         if (legajo == null || campo == null || legajo.isEmpty() || campo.isEmpty()) return false;
 
         List<String> camposPermitidos = List.of("nombre", "apellido", "email", "contrasena");
         if (!camposPermitidos.contains(campo)) {
-            System.out.println("⚠️ No se puede modificar el campo '" + campo + "'.");
+            System.out.println(" No se puede modificar el campo '" + campo + "'.");
             return false;
         }
 
@@ -199,18 +195,18 @@ public class AlumnoDAO {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("✅ Campo '" + campo + "' actualizado correctamente para legajo " + legajo);
+                System.out.println(" Campo '" + campo + "' actualizado correctamente para legajo " + legajo);
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar: " + e.getMessage());
+            System.out.println(" Error al actualizar: " + e.getMessage());
         }
 
         return false;
     }
 
-    // 🔹 Eliminar alumno
+    // Eliminar alumno
     public boolean eliminarAlumno(String legajo) {
         if (legajo == null || legajo.isEmpty()) return false;
 
@@ -223,14 +219,14 @@ public class AlumnoDAO {
             int filas = stmt.executeUpdate();
 
             if (filas > 0) {
-                System.out.println("🗑️ Alumno eliminado correctamente: " + legajo);
+                System.out.println(" Alumno eliminado correctamente: " + legajo);
                 return true;
             } else {
-                System.out.println("⚠️ No se encontró alumno con legajo " + legajo);
+                System.out.println(" No se encontró alumno con legajo " + legajo);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al eliminar alumno: " + e.getMessage());
+            System.out.println(" Error al eliminar alumno: " + e.getMessage());
         }
 
         return false;
@@ -269,7 +265,7 @@ public class AlumnoDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al obtener alumno por email: " + e.getMessage());
+            System.out.println(" Error al obtener alumno por email: " + e.getMessage());
         }
         return null;
     }
@@ -277,7 +273,7 @@ public class AlumnoDAO {
 
     public boolean actualizarAlumno(Alumno alumno) {
         if (alumno == null || alumno.getIdUsuario() <= 0) {
-            System.out.println("⚠️ Alumno inválido para actualización.");
+            System.out.println(" Alumno inválido para actualización.");
             return false;
         }
 
@@ -297,12 +293,12 @@ public class AlumnoDAO {
 
             int filas = ps.executeUpdate();
             if (filas > 0) {
-                System.out.println("✅ Perfil de alumno actualizado (idUsuario=" + alumno.getIdUsuario() + ")");
+                System.out.println(" Perfil de alumno actualizado (idUsuario=" + alumno.getIdUsuario() + ")");
                 return true;
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar alumno: " + e.getMessage());
+            System.out.println(" Error al actualizar alumno: " + e.getMessage());
         }
 
         return false;

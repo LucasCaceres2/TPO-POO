@@ -1,10 +1,7 @@
 package main.vistas.menuAdministrador;
 
+import main.modelo.Administrador;
 import main.vistas.menuPrincipal.formLogin;
-import main.vistas.menuAdministrador.formAdminAlumnos;
-import main.vistas.menuAdministrador.formAdminDocentes;
-import main.vistas.menuAdministrador.formGestionCursos;
-import main.vistas.menuAdministrador.formVerInscripciones;
 
 import javax.swing.*;
 
@@ -21,14 +18,18 @@ public class formMenuAdmin extends JFrame {
     private JButton verInscripcionesButton;
     private JButton cerrarSesionButton;
 
-    private final String emailAdmin; // opcional
+    private Administrador admin; // 👈 ahora guardamos el admin (opcional)
 
     // Constructor real
-    public formMenuAdmin(String emailAdmin) {
-        this.emailAdmin = emailAdmin;
+    public formMenuAdmin(Administrador admin) {
+        this.admin = admin;
 
         setContentPane(pnlPrincipal);
-        setTitle("Menú Administrador");
+        if (admin != null) {
+            setTitle("Menú Administrador - " + admin.getNombre());
+        } else {
+            setTitle("Menú Administrador");
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(600, 500);
@@ -37,48 +38,26 @@ public class formMenuAdmin extends JFrame {
         initListeners();
     }
 
-    // SOLO para diseñador
+    // SOLO para diseñador / pruebas
     public formMenuAdmin() {
         this(null);
     }
 
     private void initListeners() {
+        gestionAlumnosButton.addActionListener(e -> new formAdminAlumnos().setVisible(true));
+        gestionDocentesButton.addActionListener(e -> new formAdminDocentes().setVisible(true));
+        gestionCursosButton.addActionListener(e -> new formGestionCursos().setVisible(true));
+        verInscripcionesButton.addActionListener(e -> new formVerInscripciones().setVisible(true));
 
-        // 👉 Gestión de Alumnos
-        gestionAlumnosButton.addActionListener(e -> {
-            formAdminAlumnos frm = new formAdminAlumnos();
-            frm.setVisible(true);
-        });
-
-        // 👉 Gestión de Docentes
-        gestionDocentesButton.addActionListener(e -> {
-            formAdminDocentes frm = new formAdminDocentes();
-            frm.setVisible(true);
-        });
-
-        // 👉 Gestión de Cursos
-        gestionCursosButton.addActionListener(e -> {
-            formGestionCursos frm = new formGestionCursos();
-            frm.setVisible(true);
-        });
-
-        // 👉 Ver Inscripciones
-        verInscripcionesButton.addActionListener(e -> {
-            formVerInscripciones frm = new formVerInscripciones();
-            frm.setVisible(true);
-        });
-
-        // 👉 Cerrar sesión
         cerrarSesionButton.addActionListener(e -> {
             dispose();
             new formLogin().setVisible(true);
         });
     }
 
-    // main de prueba
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formMenuAdmin("admin@correo.com").setVisible(true)
+                new formMenuAdmin().setVisible(true)
         );
     }
 }

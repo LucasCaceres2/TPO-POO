@@ -1,6 +1,7 @@
 package main.vistas.menuPrincipal;
 
 import main.controlador.ControladorLogin;
+import main.modelo.Administrador;
 import main.vistas.menuAlumno.formMenuAlumno;
 import main.vistas.menuDocente.formMenuDocente;
 import main.vistas.menuAdministrador.formMenuAdmin;
@@ -81,11 +82,19 @@ public class formLogin extends JFrame {
                         "Login",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                new formMenuAdmin(email).setVisible(true);
+                // Podés crear un Administrador "lógico" con los datos que tengas
+                Administrador admin = new Administrador(
+                        0,           // idUsuario (si no lo tenés a mano, ponés 0)
+                        "Admin",     // nombre genérico, o el que tengas en BD
+                        "",          // apellido
+                        email,       // email que se logueó
+                        contrasena   // la que puso en el login
+                );
+
+                new formMenuAdmin(admin).setVisible(true);
                 dispose();
                 break;
             }
-
             case "ERROR_VACIO":
                 JOptionPane.showMessageDialog(this,
                         "Ingresá email y contraseña.",

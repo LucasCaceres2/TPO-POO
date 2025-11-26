@@ -44,7 +44,7 @@ public class formHistorialAlumnosDocente extends JFrame {
         initListeners();
 
         pack();
-        setSize(950, 450);
+        setLocationRelativeTo(null);
     }
 
     // solo para el diseñador
@@ -151,32 +151,56 @@ public class formHistorialAlumnosDocente extends JFrame {
 
     // ===== HELPERS =====
 
-    // Porcentaje de asistencia según asistencias del alumno en ese curso
+    // Porcentaje de asistencia usando la misma lógica que formMiAsistenciaAlumno
     private double calcularPorcentajeAsistencia(Inscripcion inscripcion, Curso curso) {
         try {
-            // 🔹 Obtenemos todas las clases del curso
-            List<Clase> clases = claseDAO.obtenerClasesPorCurso(curso);
-            if (clases.isEmpty()) return 0.0;
+            if (inscripcion == null || curso == null || inscripcion.getAlumno() == null) {
+                return 0.0;
+            }
 
-            int presentes = 0;
-            int total = clases.size(); // total de clases planificadas
+            String emailAlumno = inscripcion.getAlumno().getEmail();
+            int idCurso = curso.getIdCurso();
 
-            for (Clase clase : clases) {
-                // 🔹 Obtenemos la asistencia del alumno para esta clase
-                Asistencia asistencia = asistenciaDAO.obtenerAsistencia(inscripcion, clase);
-                if (asistencia != null && asistencia.isPresente()) {
-                    presentes++;
+            // 1) Traemos las asistencias igual que en formMiAsistenciaAlumno
+            List<Object[]> filas = asistenciaDAO.listarAsistenciasPorAlumnoYCurso(emailAlumno, idCurso);
+
+            int totalRegistros = 0;
+            int faltas = 0;
+
+            for (Object[] fila : filas) {
+                totalRegistros++;
+                Boolean presente = (Boolean) fila[3]; // índice 3 = columna "presente"
+                if (presente != null && !presente) {
+                    faltas++;
                 }
             }
 
-            if (total == 0) return 0.0;
-            return (presentes * 100.0) / total;
+            // 2) Total de clases: usamos cantidadClases del curso (como en MiAsistencia)
+            int totalClases;
+            if (curso.getCantidadClases() > 0) {
+                totalClases = curso.getCantidadClases();
+            } else {
+                // fallback si por algún motivo no está seteado
+                totalClases = totalRegistros;
+            }
+
+            if (totalClases <= 0) {
+                return 0.0;
+            }
+
+            // 3) Mismo cálculo que en formMiAsistenciaAlumno
+            double porcentaje = 100.0 - (faltas * 100.0 / totalClases);
+            if (porcentaje < 0) porcentaje = 0.0;
+
+            return porcentaje;
 
         } catch (Exception e) {
             System.out.println("❌ Error al calcular asistencia: " + e.getMessage());
             return 0.0;
         }
     }
+
+
 
     // Promedio de notas para la inscripción
     private double calcularPromedioNotas(Inscripcion inscripcion) {
@@ -206,7 +230,7 @@ public class formHistorialAlumnosDocente extends JFrame {
     // ===== MAIN PRUEBA RÁPIDA =====
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new formHistorialAlumnosDocente("laura.doc@correo.com").setVisible(true)
+                new formHistorialAlumnosDocente("pablo.sosa@example.com").setVisible(true)
         );
     }
 }

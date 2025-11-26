@@ -1,10 +1,9 @@
 package main.vistas.menuAlumno;
 
-import main.dao.InscripcionDAO;
-import main.modelo.Curso;
-import main.modelo.EstadoInscripcion;
-import main.modelo.Inscripcion;
 import main.controlador.Plataforma;
+import main.dao.InscripcionDAO;
+import main.dao.PagoDAO;
+import main.modelo.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -21,7 +20,9 @@ public class formMisPagosAlumno extends JFrame {
 
     private final Plataforma plataforma = new Plataforma();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
-    private final String emailAlumno; // viene del login / menú alumno
+    private final PagoDAO pagoDAO = new PagoDAO();
+    private final GestorPagos gestorPagos = new GestorPagos();
+    private final String emailAlumno;
 
     // --------- CONSTRUCTOR PRINCIPAL ----------
     public formMisPagosAlumno(String emailAlumno) {
@@ -47,11 +48,15 @@ public class formMisPagosAlumno extends JFrame {
     // --------- CONFIG TABLA ----------
     private void configurarTabla() {
         String[] columnas = {
-                "ID Inscripción",
-                "Curso",
-                "Fecha inscripción",
-                "Estado Pago",
-                "Estado Curso"
+                "ID Inscripción",      // 0
+                "Curso",               // 1
+                "Precio curso",        // 2
+                "Monto pagado",        // 3
+                "Deuda",               // 4
+                "Medio de pago",       // 5
+                "Fecha inscripción",   // 6
+                "Estado Pago",         // 7
+                "Estado Curso"         // 8
         };
 
         DefaultTableModel model = new DefaultTableModel(columnas, 0) {
@@ -71,7 +76,7 @@ public class formMisPagosAlumno extends JFrame {
         model.setRowCount(0);
 
         if (emailAlumno == null || emailAlumno.isBlank()) {
-            System.out.println("⚠️ emailAlumno no seteado en formMisPagosAlumno");
+            System.out.println(" emailAlumno no seteado en formMisPagosAlumno");
             return;
         }
 
@@ -81,15 +86,28 @@ public class formMisPagosAlumno extends JFrame {
         for (Inscripcion insc : inscripciones) {
             Curso curso = insc.getCurso();
             String nombreCurso = (curso != null) ? curso.getTitulo() : "";
+            double precio = (curso != null) ? curso.getPrecio() : 0.0;
 
-            // Mostramos todas: las PENDIENTES y las PAGADAS
-            // (el botón decidirá qué se puede pagar)
+            // Datos del pago (si existe)
+            Pago pago = insc.getPago();
+            double montoPagado = (pago != null) ? pago.getMonto() : 0.0;
+            double deuda = Math.max(precio - montoPagado, 0.0);
+
+            String medioPagoStr = "-";
+            if (pago != null && pago.getMedioPago() != null) {
+                medioPagoStr = pago.getMedioPago().name();
+            }
+
             model.addRow(new Object[]{
-                    insc.getIdInscripcion(),     // col 0
-                    nombreCurso,                 // col 1
-                    insc.getFecha(),             // col 2
-                    insc.getEstadoPago(),        // col 3
-                    insc.getEstadoCurso()        // col 4
+                    insc.getIdInscripcion(),                // 0
+                    nombreCurso,                            // 1
+                    String.format("$ %.2f", precio),        // 2
+                    String.format("$ %.2f", montoPagado),   // 3
+                    String.format("$ %.2f", deuda),         // 4
+                    medioPagoStr,                           // 5
+                    insc.getFecha(),                        // 6
+                    insc.getEstadoPago(),                   // 7
+                    insc.getEstadoCurso()                   // 8
             });
         }
     }
@@ -111,7 +129,8 @@ public class formMisPagosAlumno extends JFrame {
 
             DefaultTableModel model = (DefaultTableModel) tablaPagos.getModel();
 
-            Object valorEstado = model.getValueAt(fila, 3); // col 3 = Estado Pago
+            // col 7 = Estado Pago (misma posición que definiste)
+            Object valorEstado = model.getValueAt(fila, 7);
             String estadoPagoActual = (valorEstado != null) ? valorEstado.toString() : "";
 
             // Solo permitimos pagar si está pendiente
@@ -126,8 +145,38 @@ public class formMisPagosAlumno extends JFrame {
 
             int idInscripcion = (int) model.getValueAt(fila, 0); // col 0 = ID Inscripción
 
+            // Recuperamos la inscripción completa
+            Inscripcion inscripcion = buscarInscripcionPorId(idInscripcion);
+            if (inscripcion == null) {
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo recuperar la inscripción seleccionada.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Curso curso = inscripcion.getCurso();
+            double precioCurso = (curso != null) ? curso.getPrecio() : 0.0;
+
+            // Elegir medio de pago
+            MedioPago medioSeleccionado = (MedioPago) JOptionPane.showInputDialog(
+                    this,
+                    "Seleccioná el medio de pago:",
+                    "Medio de pago",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    MedioPago.values(),
+                    MedioPago.EFECTIVO
+            );
+
+            if (medioSeleccionado == null) {
+                // canceló el diálogo
+                return;
+            }
+
             int opc = JOptionPane.showConfirmDialog(this,
-                    "¿Confirmás el pago de esta inscripción?",
+                    "¿Confirmás el pago de $" + precioCurso + " para el curso '" +
+                            (curso != null ? curso.getTitulo() : "") + "'?",
                     "Confirmar pago",
                     JOptionPane.YES_NO_OPTION);
 
@@ -135,24 +184,37 @@ public class formMisPagosAlumno extends JFrame {
                 return;
             }
 
-            // Cambiamos el estado en BD usando el DAO
-            boolean ok = inscripcionDAO.actualizarEstadoPago(idInscripcion, EstadoInscripcion.PAGO);
+
+            boolean ok = gestorPagos.pagarInscripcion(inscripcion, medioSeleccionado);
 
             if (ok) {
-                // Actualizamos la tabla en pantalla
-                model.setValueAt(EstadoInscripcion.PAGO, fila, 3);
-
                 JOptionPane.showMessageDialog(this,
                         "Pago registrado correctamente.",
                         "Éxito",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                // Recargamos la tabla: se actualizan monto pagado, deuda, medio, estado, etc.
+                cargarPagos();
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "No se pudo actualizar el estado de pago.",
+                        "No se pudo registrar el pago en la base de datos.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
+    }
+
+    // --------- HELPER: buscar inscripción por ID ----------
+    private Inscripcion buscarInscripcionPorId(int idInscripcion) {
+        if (emailAlumno == null || emailAlumno.isBlank()) return null;
+
+        List<Inscripcion> inscripciones = plataforma.obtenerInscripcionesDeAlumnoPorEmail(emailAlumno);
+        for (Inscripcion i : inscripciones) {
+            if (i.getIdInscripcion() == idInscripcion) {
+                return i;
+            }
+        }
+        return null;
     }
 
     // --------- MAIN DE PRUEBA ----------

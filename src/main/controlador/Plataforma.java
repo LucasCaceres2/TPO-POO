@@ -43,7 +43,10 @@ public class Plataforma {
     }
 
     // --- Crear curso nuevo ---
-    public boolean crearCurso(String titulo, int cupoMax, String matriculaDocente, String nombreArea, String descripcion, int cantidadClases) {
+    public boolean crearCurso(String titulo, int cupoMax, String matriculaDocente,
+                              String nombreArea, String descripcion,
+                              int cantidadClases, double precio) {
+
         Docente docente = docenteDAO.obtenerDocentePorMatricula(matriculaDocente);
         if (docente == null) {
             System.out.println("⚠️ No se encontró el docente con matrícula: " + matriculaDocente);
@@ -56,9 +59,19 @@ public class Plataforma {
             return false;
         }
 
-        Curso curso = new Curso(0, titulo, cupoMax, docente, area, descripcion, cantidadClases);
+        Curso curso = new Curso(
+                0,
+                titulo,
+                cupoMax,
+                docente,
+                area,
+                descripcion,
+                cantidadClases,
+                precio
+        );
         return cursoDAO.agregarCurso(curso);
     }
+
 
     // --- Inscribir alumno en curso ---
     public boolean inscribirAlumnoEnCurso(String legajoAlumno, String tituloCurso) {
@@ -75,7 +88,7 @@ public class Plataforma {
     }
 
     // --- Registrar pago ---
-    public boolean registrarPago(String legajoAlumno, double monto) {
+    public boolean registrarPago(String legajoAlumno, double monto, MedioPago medio) {
         if (monto <= 0) {
             System.out.println("⚠️ El monto del pago debe ser mayor a 0.");
             return false;
@@ -87,10 +100,9 @@ public class Plataforma {
             return false;
         }
 
-        // Lógica de negocio: crear entidad consistente
-        Pago pago = new Pago(monto, alumno);
+        // Ahora indicás el medio de pago
+        Pago pago = new Pago(monto, alumno, medio);
 
-        // Persistencia delegada al DAO
         return pagoDAO.agregarPago(pago);
     }
 
@@ -304,4 +316,50 @@ public class Plataforma {
 
         curso.setCantidadClases(nuevaCantidad);
     }
+
+    // en Plataforma
+    public boolean eliminarCurso(int idCurso) {
+        return cursoDAO.eliminarCurso(idCurso);
+    }
+
+    public boolean registrarPagoDeInscripcion(String legajoAlumno, int idCurso, double monto) {
+        if (monto <= 0) {
+            System.out.println("⚠️ El monto debe ser mayor a 0.");
+            return false;
+        }
+
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajoAlumno);
+        if (alumno == null) {
+            System.out.println("⚠️ Alumno no encontrado.");
+            return false;
+        }
+
+        Curso curso = cursoDAO.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            System.out.println("⚠️ Curso no encontrado.");
+            return false;
+        }
+
+        Inscripcion inscripcion = inscripcionDAO.obtenerInscripcion(alumno, curso);
+        if (inscripcion == null) {
+            System.out.println("⚠️ El alumno no está inscripto en este curso.");
+            return false;
+        }
+
+        // 1) Crear pago
+        Pago pago = new Pago(monto, alumno);
+        boolean okPago = pagoDAO.agregarPago(pago);
+        if (!okPago || pago.getIdPago() <= 0) {
+            System.out.println("❌ No se pudo registrar el pago.");
+            return false;
+        }
+
+        // 2) Vincular pago a inscripción y marcar como PAGADO
+        return inscripcionDAO.vincularPagoAInscripcion(
+                inscripcion.getIdInscripcion(),
+                pago.getIdPago(),
+                EstadoInscripcion.PAGO
+        );
+    }
+
 }

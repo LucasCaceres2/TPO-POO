@@ -10,21 +10,21 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     private String matricula;
     private List<Curso> cursosDictados;
 
-    // 🔹 Constructor para crear un docente nuevo (antes de insertarlo en BD)
+    // Constructor para crear un docente nuevo (antes de insertarlo en BD)
     public Docente(String nombre, String apellido, String email, String contrasena, String matricula) {
         super(nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
         this.matricula = matricula;
         this.cursosDictados = new ArrayList<>();
     }
 
-    // 🔹 Constructor para instanciar un docente que ya existe en BD
+    //  Constructor para instanciar un docente que ya existe en BD
     public Docente(int idUsuario, String nombre, String apellido, String email, String contrasena, String matricula) {
         super(idUsuario, nombre, apellido, email, contrasena, TipoUsuario.DOCENTE);
         this.matricula = matricula;
         this.cursosDictados = new ArrayList<>();
     }
 
-    // 🔹 Getters y Setters
+    // Getters y Setters
     public String getMatricula() { 
         return matricula; 
     }
@@ -41,7 +41,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
         this.cursosDictados = cursosDictados; 
     }
 
-    // 🔹 Cargar cursos desde BD
+    // Cargar cursos desde BD
     public void cargarCursosDictados() {
         if (this.idUsuario <= 0) {
             return;
@@ -50,7 +50,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
         this.cursosDictados = cursoDAO.listarCursosPorDocente(this.idUsuario);
     }
 
-    // 🔹 Obtener títulos de cursos dictados (sin imprimir)
+    //  Obtener títulos de cursos dictados (sin imprimir)
     public List<String> obtenerTitulosCursosDictados() {
         if (cursosDictados == null || cursosDictados.isEmpty()) {
             return new ArrayList<>();
@@ -63,7 +63,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
         return titulos;
     }
 
-    // 🔹 Obtener cantidad de alumnos en un curso específico
+    // Obtener cantidad de alumnos en un curso específico
     public int getCantidadAlumnosEnCurso(int idCurso) {
         if (cursosDictados == null) return 0;
         
@@ -75,7 +75,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
         return 0;
     }
 
-    // 🔹 Métodos de la interfaz (para futura GUI con Swing)
+    // Métodos de la interfaz (para futura GUI con Swing)
     
     @Override
     public void registrarse() {
@@ -105,19 +105,19 @@ public class Docente extends Usuario implements IUsuariosAcciones {
         System.out.println("🔄 Perfil actualizado correctamente.");
     }
 
-    // 🔹 Validación de email mejorada
+    // Validación de email mejorada
     private boolean esEmailValido(String email) {
         return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
-    // 🔹 toString() para debugging
+    // toString() para debugging
     @Override
     public String toString() {
         return String.format("Docente{matricula='%s', nombre='%s %s', email='%s'}", 
             matricula, nombre, apellido, email);
     }
 
-    // 🔹 equals() y hashCode() basados en matrícula
+    //  equals() y hashCode() basados en matrícula
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

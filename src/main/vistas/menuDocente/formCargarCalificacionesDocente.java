@@ -45,7 +45,8 @@ public class formCargarCalificacionesDocente extends JFrame {
         initListeners();
 
         pack();
-        setSize(900, 450);
+        setLocationRelativeTo(null);
+
     }
 
     // constructor vacío SOLO para el diseñador
@@ -71,6 +72,13 @@ public class formCargarCalificacionesDocente extends JFrame {
 
         tablaNotas.setModel(model);
         tablaNotas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // 👇 Combo en la columna "Tipo calificación"
+        JComboBox<TipoEvaluacion> comboTipo = new JComboBox<>(TipoEvaluacion.values());
+        tablaNotas.getColumnModel()
+                .getColumn(2) // columna "Tipo calificación"
+                .setCellEditor(new DefaultCellEditor(comboTipo));
+        // No hace falta renderer custom: toString() del enum ya devuelve la etiqueta
     }
 
     private void cargarCursosDelDocente() {
@@ -125,14 +133,14 @@ public class formCargarCalificacionesDocente extends JFrame {
             String legajo = ins.getAlumno().getLegajo();
             String nombreCompleto = ins.getAlumno().getNombre() + " " + ins.getAlumno().getApellido();
 
-            // Tipo default sugerido, el docente puede editar
-            String tipoDefault = "PARCIAL";
+            // Tipo default sugerido, el docente puede editar en el combo
+            TipoEvaluacion tipoDefault = TipoEvaluacion.PARCIAL;
 
             model.addRow(new Object[]{
                     legajo,
                     nombreCompleto,
-                    tipoDefault,
-                    ""       // nota vacía para completar
+                    tipoDefault, // 👈 guardamos el enum, no un String
+                    ""           // nota vacía para completar
             });
 
             inscripcionesActuales.add(ins);
@@ -164,7 +172,17 @@ public class formCargarCalificacionesDocente extends JFrame {
         for (int i = 0; i < filas; i++) {
             Inscripcion ins = inscripcionesActuales.get(i);
 
-            TipoEvaluacion tipo = (TipoEvaluacion) model.getValueAt(i, 2);
+            // 👇 leemos el enum desde la celda
+            Object valorTipo = model.getValueAt(i, 2);
+            if (!(valorTipo instanceof TipoEvaluacion)) {
+                JOptionPane.showMessageDialog(this,
+                        "Seleccioná el tipo de calificación en la fila " + (i + 1) + ".",
+                        "Error de validación",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            TipoEvaluacion tipo = (TipoEvaluacion) valorTipo;
+
             String notaStr = String.valueOf(model.getValueAt(i, 3)).trim();
 
             // Si no completó nota, saltamos esa fila
