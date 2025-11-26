@@ -18,7 +18,6 @@ public class formVerInscripciones extends JFrame {
 
     private JComboBox<Curso> comboCurso;
     private JTextField txtLegajo;
-    private JTextField txtEmail;
     private JButton btnFiltrar;
     private JButton btnVerTodas;
     private JButton btnCerrar;
@@ -86,7 +85,6 @@ public class formVerInscripciones extends JFrame {
 
         btnVerTodas.addActionListener(e -> {
             txtLegajo.setText("");
-            txtEmail.setText("");
             comboCurso.setSelectedIndex(0);
             cargarTodas();
         });
@@ -106,7 +104,6 @@ public class formVerInscripciones extends JFrame {
     private void aplicarFiltros() {
         Curso curso = (Curso) comboCurso.getSelectedItem();
         String legajo = txtLegajo.getText().trim();
-        String email = txtEmail.getText().trim();
 
         // Prioridad simple:
         // 1) si hay legajo -> por legajo
@@ -117,17 +114,6 @@ public class formVerInscripciones extends JFrame {
         if (!legajo.isEmpty()) {
             var lista = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
             cargarEnTabla(lista);
-            return;
-        }
-
-        if (!email.isEmpty()) {
-            // Si no tenés un método directo por email, podrías:
-            // - obtener Alumno por email y luego listar por legajo/idUsuario
-            // Para no romper nada, por ahora mostramos aviso.
-            JOptionPane.showMessageDialog(this,
-                    "Filtro por email: implementá la búsqueda de alumno por email si lo necesitás.",
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
