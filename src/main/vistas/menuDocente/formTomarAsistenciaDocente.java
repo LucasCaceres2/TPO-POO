@@ -45,7 +45,6 @@ public class formTomarAsistenciaDocente extends JFrame {
         setSize(900, 500);
     }
 
-    // constructor vacío SOLO para el diseñador
     public formTomarAsistenciaDocente() {
         this(null);
     }
@@ -123,7 +122,7 @@ public class formTomarAsistenciaDocente extends JFrame {
                 model.addRow(new Object[]{
                         a.getLegajo(),
                         a.getNombre() + " " + a.getApellido(),
-                        Boolean.TRUE   // por defecto presente, podés poner FALSE si querés
+                        Boolean.TRUE
                 });
             }
         }
