@@ -41,7 +41,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="60a0d" class="javax.swing.JTable" binding="tablaCursos">
+              <component id="60a0d" class="javax.swing.JTable" binding="tablaAreas">
                 <constraints/>
                 <properties/>
               </component>

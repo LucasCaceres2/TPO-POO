@@ -46,7 +46,7 @@ public class ControladorRegistro {
                 );
 
             if (!ok) {
-                return "ERROR: No se pudo registrar el alumno. Verificá que el legajo o el email no estén ya usados.";
+                return "ERROR: No se pudo registrar el alumno. Verificá que el email no esté ya usado.";
             }
 
             return "REGISTRO_OK";

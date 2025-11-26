@@ -61,6 +61,7 @@ public class Area {
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
+
     // equals / hashCode opcional, basado en idArea
     @Override
     public boolean equals(Object o) {

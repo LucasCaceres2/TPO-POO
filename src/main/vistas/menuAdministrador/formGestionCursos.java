@@ -17,7 +17,7 @@ public class formGestionCursos extends JFrame {
     private JPanel pnlTitulo;
     private JPanel pnlDatos;
 
-    private JTable tablaCursos;
+    private JTable tablaAreas;
     private JTextField txtTitulo;
     private JTextField txtCupoMax;
     private JTextField txtCantidadClases;
@@ -31,6 +31,7 @@ public class formGestionCursos extends JFrame {
     private JButton btnEliminar;
     private JButton btnRefrescar;
     private JButton btnCerrar;
+    private JTextField txtNombreArea;
 
     private final CursoDAO cursoDAO = new CursoDAO();
     private final DocenteDAO docenteDAO = new DocenteDAO();
@@ -72,8 +73,8 @@ public class formGestionCursos extends JFrame {
             }
         };
 
-        tablaCursos.setModel(model);
-        tablaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaAreas.setModel(model);
+        tablaAreas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     // ==== Cargar combos Docente / Área ====
@@ -94,7 +95,7 @@ public class formGestionCursos extends JFrame {
 
     // ==== Cargar cursos en tabla ====
     private void cargarCursosEnTabla() {
-        DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
+        DefaultTableModel model = (DefaultTableModel) tablaAreas.getModel();
         model.setRowCount(0);
 
         List<Curso> cursos = cursoDAO.listarTodosLosCursos();
@@ -115,9 +116,9 @@ public class formGestionCursos extends JFrame {
     private void initListeners() {
 
         // tabla -> carga datos al formulario
-        tablaCursos.getSelectionModel().addListSelectionListener(e -> {
+        tablaAreas.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int fila = tablaCursos.getSelectedRow();
+                int fila = tablaAreas.getSelectedRow();
                 if (fila >= 0) {
                     cargarCursoDesdeFila(fila);
                 }
@@ -149,7 +150,7 @@ public class formGestionCursos extends JFrame {
     // ==== Helpers de formulario ====
 
     private void cargarCursoDesdeFila(int fila) {
-        DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
+        DefaultTableModel model = (DefaultTableModel) tablaAreas.getModel();
 
         idCursoSeleccionado = (Integer) model.getValueAt(fila, 0);
         String titulo = (String) model.getValueAt(fila, 1);
@@ -196,7 +197,7 @@ public class formGestionCursos extends JFrame {
         txtDescripcion.setText("");
         if (comboDocente.getItemCount() > 0) comboDocente.setSelectedIndex(0);
         if (comboArea.getItemCount() > 0) comboArea.setSelectedIndex(0);
-        tablaCursos.clearSelection();
+        tablaAreas.clearSelection();
     }
 
     private void guardarCurso() {

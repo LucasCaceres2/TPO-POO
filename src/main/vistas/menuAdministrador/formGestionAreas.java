@@ -10,10 +10,13 @@ import java.util.List;
 public class formGestionAreas extends JFrame {
 
     private JPanel pnlPrincipal;
+    private JPanel pnlTitulo;
+    private JPanel pnlDatos;
     private JTable tablaAreas;
     private JTextField txtNombre;
     private JButton btnNuevo;
     private JButton btnGuardar;
+    private JButton btnRefrescar;
     private JButton btnActualizar;
     private JButton btnDesactivar;
     private JButton btnReactivar;
@@ -46,14 +49,13 @@ public class formGestionAreas extends JFrame {
         };
 
         tablaAreas.setModel(model);
-        tablaAreas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     private void cargarAreasEnTabla() {
         DefaultTableModel model = (DefaultTableModel) tablaAreas.getModel();
         model.setRowCount(0);
 
-        List<Area> areas = areaDAO.listarTodasLasAreas(); // incluye activas e inactivas
+        List<Area> areas = areaDAO.listarTodasLasAreas(); // ✅ ahora sí existe
 
         for (Area a : areas) {
             model.addRow(new Object[]{
@@ -83,6 +85,8 @@ public class formGestionAreas extends JFrame {
         btnDesactivar.addActionListener(e -> cambiarEstado(false));
 
         btnReactivar.addActionListener(e -> cambiarEstado(true));
+
+        btnRefrescar.addActionListener(e -> { cargarAreasEnTabla(); limpiarFormulario(); });
 
         btnCerrar.addActionListener(e -> dispose());
     }
@@ -146,10 +150,7 @@ public class formGestionAreas extends JFrame {
     }
 
     private void cambiarEstado(boolean activar) {
-        if (idAreaSeleccionada == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un área.");
-            return;
-        }
+        if (idAreaSeleccionada == null) return;
 
         boolean ok = activar
                 ? areaDAO.reactivarArea(idAreaSeleccionada)
@@ -157,6 +158,7 @@ public class formGestionAreas extends JFrame {
 
         if (ok) {
             cargarAreasEnTabla();
+            limpiarFormulario();
         }
     }
 
