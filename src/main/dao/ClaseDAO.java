@@ -126,14 +126,19 @@ public class ClaseDAO {
         }
     }
 
-    // Actualizar clase
+    // Actualizar clase (versión segura)
     public boolean actualizarClase(Clase clase) {
         String sql = "UPDATE clase SET fecha = ?, titulo = ?, contenido = ? WHERE idClase = ?";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setDate(1, new java.sql.Date(clase.getFecha().getTime()));
+            if (clase.getFecha() != null) {
+                stmt.setDate(1, new java.sql.Date(clase.getFecha().getTime()));
+            } else {
+                stmt.setNull(1, Types.DATE);
+            }
+
             stmt.setString(2, clase.getTitulo());
             stmt.setString(3, clase.getContenido());
             stmt.setInt(4, clase.getIdClase());
@@ -145,6 +150,7 @@ public class ClaseDAO {
         }
         return false;
     }
+
 
     // Eliminar clase
     public boolean eliminarClase(int idClase) {

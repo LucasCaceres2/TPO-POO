@@ -120,6 +120,24 @@ public class Plataforma {
         return actualizado;
     }
 
+    // ================== CLASES ==================
+
+    public List<Clase> obtenerClasesPorCurso(Curso curso) {
+        return claseDAO.obtenerClasesPorCurso(curso);
+    }
+
+    public boolean agregarNuevaClase(Clase clase) {
+        return claseDAO.agregarClase(clase);
+    }
+
+    public boolean modificarClase(Clase clase) {
+        return claseDAO.actualizarClase(clase);
+    }
+
+    public boolean eliminarClase(int idClase) {
+        return claseDAO.eliminarClase(idClase);
+    }
+
     // ================== INSCRIPCIONES ==================
 
     public boolean inscribirAlumnoEnCurso(String legajoAlumno, String tituloCurso) {

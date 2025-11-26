@@ -16,6 +16,7 @@ public class formMenuAdmin extends JFrame {
     private JButton verInscripcionesButton;
     private JButton cerrarSesionButton;
     private JButton gestionAreaButton;
+    private JButton gestionClasesButton;
 
     private final String emailAdmin; // opcional
 
@@ -60,6 +61,11 @@ public class formMenuAdmin extends JFrame {
 
         gestionAreaButton.addActionListener(e -> {
             formGestionAreas frm = new formGestionAreas();
+            frm.setVisible(true);
+        });
+
+        gestionClasesButton.addActionListener(e -> {
+            formGestionClases frm = new formGestionClases();
             frm.setVisible(true);
         });
 
