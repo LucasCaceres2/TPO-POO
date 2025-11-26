@@ -8,6 +8,7 @@ import main.modelo.Calificacion;
 import main.modelo.Curso;
 import main.modelo.Docente;
 import main.modelo.Inscripcion;
+import main.modelo.TipoEvaluacion;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -167,7 +168,18 @@ public class formCargarCalificacionesDocente extends JFrame {
         for (int i = 0; i < filas; i++) {
             Inscripcion ins = inscripcionesActuales.get(i);
 
-            String tipo = String.valueOf(model.getValueAt(i, 2)).trim();
+            String tipoStr = String.valueOf(model.getValueAt(i, 2)).trim();
+            TipoEvaluacion tipo;
+
+            try {
+                tipo = TipoEvaluacion.valueOf(tipoStr.toUpperCase().replace(" ", "_"));
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Tipo de evaluación inválido en la fila " + (i + 1),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String notaStr = String.valueOf(model.getValueAt(i, 3)).trim();
 
             // Si no completó nota, saltamos esa fila
@@ -194,9 +206,8 @@ public class formCargarCalificacionesDocente extends JFrame {
                 return;
             }
 
-            if (tipo.isEmpty()) {
-                tipo = "EXAMEN"; // fallback simple
-            }
+            String tipoDefault = TipoEvaluacion.PARCIAL.toString();
+
 
             Calificacion calificacion = new Calificacion(ins, tipo, nota);
 

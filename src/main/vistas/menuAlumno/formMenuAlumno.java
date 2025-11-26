@@ -70,6 +70,13 @@ public class formMenuAlumno extends JFrame {
             new formLogin().setVisible(true); // vuelvo al login
         });
 
-        // (historial, pagos, perfil: los implementás después igual que estos)
+
     }
+    // ================= MAIN DE PRUEBA RÁPIDA =================
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new formMenuAlumno("alumno@correo.com").setVisible(true);
+        });
+    }
+
 }
