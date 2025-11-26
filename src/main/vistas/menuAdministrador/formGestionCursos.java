@@ -280,12 +280,12 @@ public class formGestionCursos extends JFrame {
                 clases
         );
 
-        boolean ok = cursoDAO.actualizarCursoCompleto(curso);
+        Plataforma plataforma = new Plataforma();
 
-        // Si agregás columnas doc/area/cupo/clases al UPDATE, los sumás acá.
+        boolean ok = plataforma.modificarCurso(curso);
 
         if (ok) {
-            JOptionPane.showMessageDialog(this, "Curso actualizado.", "OK", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Curso actualizado y clases sincronizadas.", "OK", JOptionPane.INFORMATION_MESSAGE);
             cargarCursosEnTabla();
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo actualizar el curso.", "Error", JOptionPane.ERROR_MESSAGE);

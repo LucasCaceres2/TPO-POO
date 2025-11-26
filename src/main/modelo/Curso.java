@@ -15,7 +15,7 @@ public class Curso {
     private boolean activo = true;
     private transient List<Clase> clases;
     private transient List<Inscripcion> inscripciones;
-    private int cantidadClases = 12;
+    private int cantidadClases;
 
     // 🔹 Constructor para crear curso nuevo (antes de BD)
     public Curso(String titulo, int cupoMax, Docente docente, Area area, String descripcion,int cantidadClases) {
@@ -26,7 +26,7 @@ public class Curso {
         this.descripcion = descripcion;
         this.inscripciones = new ArrayList<>();
         this.cantidadClases = cantidadClases;
-        this.activo = true; // ✅ por defecto activo
+        this.activo = true; //
     }
 
     // 🔹 Constructor para instanciar desde BD

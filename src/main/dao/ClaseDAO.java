@@ -12,13 +12,19 @@ public class ClaseDAO {
 
     // Crear clase
     public boolean agregarClase(Clase clase) {
-        String sql = "INSERT INTO clase (idCurso, fecha, titulo, contenido) VALUES (?, ?, ?, ?)\n";
+        String sql = "INSERT INTO clase (idCurso, fecha, titulo, contenido) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, clase.getCurso().getIdCurso());
-            stmt.setDate(2, new java.sql.Date(clase.getFecha().getTime()));
+
+            if (clase.getFecha() != null) {
+                stmt.setDate(2, new java.sql.Date(clase.getFecha().getTime()));
+            } else {
+                stmt.setNull(2, Types.DATE);
+            }
+
             stmt.setString(3, clase.getTitulo());
             stmt.setString(4, clase.getContenido());
 
@@ -155,4 +161,130 @@ public class ClaseDAO {
         }
         return false;
     }
+
+    public void sincronizarClases(Curso curso) {
+        int idCurso = curso.getIdCurso();
+        int actuales = contarClasesPorCurso(idCurso);
+        int nuevas = curso.getCantidadClases();
+
+        // Si hay que agregar clases
+        if (nuevas > actuales) {
+            for (int i = actuales + 1; i <= nuevas; i++) {
+                Clase clase = new Clase(0, curso, null, "Clase " + i, null);
+                agregarClase(clase);
+            }
+            System.out.println("✅ Se agregaron " + (nuevas - actuales) + " clases nuevas al curso " + curso.getTitulo());
+        }
+
+        // Si hay que eliminar clases
+        if (nuevas < actuales) {
+            int aEliminar = actuales - nuevas;
+
+            int eliminadas = eliminarClasesSinAsistenciaHasta(idCurso, aEliminar);
+
+            if (eliminadas < aEliminar) {
+                System.out.println("⚠️ Solo se pudieron eliminar " + eliminadas +
+                        " clases sin asistencia. Quedan clases con asistencia que no se pueden borrar.");
+            } else {
+                System.out.println("✅ Se eliminaron " + eliminadas + " clases del curso " + curso.getTitulo());
+            }
+        }
+    }
+
+    public int contarClasesPorCurso(int idCurso) {
+        String sql = "SELECT COUNT(*) FROM clase WHERE idCurso = ?";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al contar clases: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public void eliminarUltimasClases(int idCurso, int cantidad) {
+        String sql = """
+        DELETE FROM clase
+        WHERE idClase IN (
+            SELECT idClase FROM clase
+            WHERE idCurso = ?
+            ORDER BY idClase DESC
+            LIMIT ?
+        )
+    """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+            stmt.setInt(2, cantidad);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al eliminar clases: " + e.getMessage());
+        }
+    }
+
+    public int contarClasesSinAsistencia(int idCurso) {
+        String sql = """
+        SELECT COUNT(*) 
+        FROM clase c
+        WHERE c.idCurso = ?
+          AND NOT EXISTS (
+              SELECT 1 FROM asistencia a
+              WHERE a.idClase = c.idClase
+          )
+    """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al contar clases sin asistencia: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int eliminarClasesSinAsistenciaHasta(int idCurso, int cantidad) {
+        String sql = """
+        DELETE FROM clase
+        WHERE idClase IN (
+            SELECT idClase FROM (
+                SELECT c.idClase
+                FROM clase c
+                WHERE c.idCurso = ?
+                  AND NOT EXISTS (
+                      SELECT 1 FROM asistencia a
+                      WHERE a.idClase = c.idClase
+                  )
+                ORDER BY c.idClase DESC
+                LIMIT ?
+            ) AS sub
+        )
+    """;
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCurso);
+            stmt.setInt(2, cantidad);
+
+            return stmt.executeUpdate(); // devuelve cuántas eliminó
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al eliminar clases sin asistencia: " + e.getMessage());
+        }
+        return 0;
+    }
+
 }

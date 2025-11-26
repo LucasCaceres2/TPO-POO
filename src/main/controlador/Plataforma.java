@@ -75,6 +75,51 @@ public class Plataforma {
         return cursoDAO.reactivarCurso(idCurso);
     }
 
+    public boolean modificarCurso(Curso curso) {
+
+        Curso cursoActual = cursoDAO.obtenerCursoPorId(curso.getIdCurso());
+        if (cursoActual == null) return false;
+
+        int idCurso = curso.getIdCurso();
+        int actuales = claseDAO.contarClasesPorCurso(idCurso);
+        int nuevas = curso.getCantidadClases();
+
+        // Caso 1: subir cantidad de clases → siempre ok
+        if (nuevas > actuales) {
+            boolean actualizado = cursoDAO.actualizarCursoCompleto(curso);
+            if (actualizado) {
+                claseDAO.sincronizarClases(curso);
+            }
+            return actualizado;
+        }
+
+        // Caso 2: misma cantidad → solo actualiza datos del curso
+        if (nuevas == actuales) {
+            return cursoDAO.actualizarCursoCompleto(curso);
+        }
+
+        // Caso 3: bajar cantidad de clases → modo seguro
+        // Queremos bajar de 'actuales' a 'nuevas'
+        int aEliminar = actuales - nuevas;
+
+        // ¿Cuántas clases se pueden borrar realmente?
+        int eliminables = claseDAO.contarClasesSinAsistencia(idCurso);
+
+        if (eliminables < aEliminar) {
+            System.out.println("⚠️ No se puede reducir la cantidad de clases a " + nuevas +
+                    " porque hay clases con asistencia registrada. Mínimo posible: " +
+                    (actuales - eliminables));
+            return false; // rechazamos la modificación
+        }
+
+        // Si llegamos acá, sabemos que se puede
+        boolean actualizado = cursoDAO.actualizarCursoCompleto(curso);
+        if (actualizado) {
+            claseDAO.sincronizarClases(curso);
+        }
+        return actualizado;
+    }
+
     // ================== INSCRIPCIONES ==================
 
     public boolean inscribirAlumnoEnCurso(String legajoAlumno, String tituloCurso) {
