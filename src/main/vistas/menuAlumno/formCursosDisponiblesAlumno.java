@@ -19,12 +19,12 @@ public class formCursosDisponiblesAlumno extends JFrame {
 
     private final Plataforma plataforma = new Plataforma();
     private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
-    private final String emailAlumno; // viene del login
+    private final String legajoAlumno; // viene del login
 
     // =========== CONSTRUCTORES ===========
 
-    public formCursosDisponiblesAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+    public formCursosDisponiblesAlumno(String LegajoAlumno) {
+        this.legajoAlumno = LegajoAlumno;
 
         setContentPane(pnlPrincipal);
         setTitle("Cursos disponibles");
@@ -74,7 +74,7 @@ public class formCursosDisponiblesAlumno extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
         model.setRowCount(0);
 
-        // usa tu método existente
+        // usa tu metodo existente
         List<Curso> cursos = plataforma.listarCursos();
 
         for (Curso c : cursos) {
@@ -103,37 +103,21 @@ public class formCursosDisponiblesAlumno extends JFrame {
 
         inscribirmeButton.addActionListener(e -> {
             int fila = tablaCursos.getSelectedRow();
+
             if (fila == -1) {
-                JOptionPane.showMessageDialog(this,
-                        "Seleccioná un curso de la tabla.",
-                        "Aviso",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            if (emailAlumno == null || emailAlumno.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "No se encontró el alumno logueado.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Seleccioná un curso.");
                 return;
             }
 
-            int idCurso = (int) tablaCursos.getValueAt(fila, 0);
+            String tituloCurso = (String) tablaCursos.getValueAt(fila, 1);
 
-            boolean ok = plataforma.inscribirAlumnoEnCurso(emailAlumno, String.valueOf(idCurso));
+            boolean ok = plataforma.inscribirAlumnoEnCurso(legajoAlumno, tituloCurso);
 
             if (ok) {
-                JOptionPane.showMessageDialog(this,
-                        "Inscripción realizada con éxito.",
-                        "OK",
-                        JOptionPane.INFORMATION_MESSAGE);
-                // recargar tabla para ver inscriptos actualizados
+                JOptionPane.showMessageDialog(this, "Inscripción realizada con éxito.");
                 cargarCursos();
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "No se pudo inscribirte. Verificá si ya estás inscripto o si hay algún problema.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se pudo inscribirte.");
             }
         });
     }

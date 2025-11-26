@@ -84,26 +84,10 @@ public class Plataforma {
             return false;
         }
 
-        if (!curso.isActivo()) {
-            System.out.println("❌ El curso no está disponible actualmente.");
-            return false;
-        }
-
-        int inscriptosActuales = inscripcionDAO.contarInscriptosPorCurso(curso.getIdCurso());
-        if (inscriptosActuales >= curso.getCupoMax()) {
-            System.out.println("❌ No hay cupo disponible para este curso.");
-            return false;
-        }
-
         Inscripcion inscripcion = new Inscripcion(alumno, curso);
-        boolean exito = inscripcionDAO.agregarInscripcion(inscripcion);
-
-        if (exito) {
-            System.out.println("✅ Inscripción realizada con éxito.");
-        }
-
-        return exito;
+        return inscripcionDAO.agregarInscripcion(inscripcion);
     }
+
 
     public List<Inscripcion> obtenerInscripcionesDeAlumno(String legajoAlumno) {
         return inscripcionDAO.listarInscripcionesPorLegajo(legajoAlumno);
@@ -140,6 +124,11 @@ public class Plataforma {
 
         Pago pago = new Pago(monto, alumno);
         return pagoDAO.agregarPago(pago);
+    }
+
+    public String obtenerLegajoPorEmail(String email) {
+        Alumno alumno = alumnoDAO.obtenerAlumnoPorEmail(email);
+        return alumno != null ? alumno.getLegajo() : null;
     }
 
     // ================== ASISTENCIA ==================

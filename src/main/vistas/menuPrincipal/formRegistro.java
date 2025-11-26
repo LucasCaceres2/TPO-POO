@@ -68,7 +68,10 @@ public class formRegistro extends JFrame {
         // 3) Interpretar el resultado
         if ("REGISTRO_OK".equals(resultado)) {
             mostrarMensaje("Registro realizado correctamente.", false);
-            limpiarCampos();
+
+            new main.vistas.menuAlumno.formMenuAlumno(email).setVisible(true);
+            dispose();
+
         } else if (resultado != null && resultado.startsWith("ERROR:")) {
             mostrarMensaje(resultado.substring(6), true);
         } else {

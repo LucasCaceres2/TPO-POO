@@ -1,5 +1,6 @@
 package main.vistas.menuAlumno;
 
+import main.controlador.Plataforma;
 import main.vistas.menuPrincipal.formLogin;
 
 import javax.swing.*;
@@ -16,12 +17,21 @@ public class formMenuAlumno extends JFrame {
     private JButton cerrarSesionButton;
     private JButton miAsistenciaButton;
     private JButton misNotasButton;
-
-    private final String emailAlumno;
+    private final Plataforma plataforma = new Plataforma();
+    private final String legajoAlumno;
 
     // Constructor “real”: recibe el email del login
-    public formMenuAlumno(String emailAlumno) {
-        this.emailAlumno = emailAlumno;
+    public formMenuAlumno(String legajoAlumno) {
+        this.legajoAlumno = plataforma.obtenerLegajoPorEmail(legajoAlumno);
+
+        if (this.legajoAlumno == null) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo obtener el legajo del alumno logueado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
 
         setContentPane(pnlPrincipal);
         setTitle("Menú Alumno");
@@ -43,40 +53,37 @@ public class formMenuAlumno extends JFrame {
 
         // Cursos disponibles
         cursosDisponiblesButton.addActionListener(e -> {
-            formCursosDisponiblesAlumno frm = new formCursosDisponiblesAlumno(emailAlumno);
+            formCursosDisponiblesAlumno frm = new formCursosDisponiblesAlumno(legajoAlumno);
             frm.setVisible(true);
         });
 
         // ✅ Mis cursos
         misCursosButton.addActionListener(e -> {
-            formMisCursosAlumno frm = new formMisCursosAlumno(emailAlumno);
+            formMisCursosAlumno frm = new formMisCursosAlumno(legajoAlumno);
             frm.setVisible(true);
         });
 
         // 🔹 Historial (todas las inscripciones)
         historialButton.addActionListener(e ->
-                new formHistorialAlumno(emailAlumno).setVisible(true)
+                new formHistorialAlumno(legajoAlumno).setVisible(true)
         );
 
         misPagosButton.addActionListener(e ->
-                new formMisPagosAlumno(emailAlumno).setVisible(true)
+                new formMisPagosAlumno(legajoAlumno).setVisible(true)
         );
 
         miPerfilButton.addActionListener(e ->
-                new formMiPerfilAlumno(emailAlumno).setVisible(true)
+                new formMiPerfilAlumno(legajoAlumno).setVisible(true)
         );
 
         misNotasButton.addActionListener(e ->
-                new formMisNotasAlumno(emailAlumno).setVisible(true)
+                new formMisNotasAlumno(legajoAlumno).setVisible(true)
         );
 
-        // 🔹 Mi Asistencia  👈 AÑADÍ ESTO
+        // 🔹 Mi Asistencia
         miAsistenciaButton.addActionListener(e ->
-                new formMiAsistenciaAlumno(emailAlumno).setVisible(true)
+                new formMiAsistenciaAlumno(legajoAlumno).setVisible(true)
         );
-
-
-
 
         // Cerrar sesión
         cerrarSesionButton.addActionListener(e -> {
@@ -84,6 +91,5 @@ public class formMenuAlumno extends JFrame {
             new formLogin().setVisible(true); // vuelvo al login
         });
 
-        // (historial, pagos, perfil: los implementás después igual que estos)
     }
 }

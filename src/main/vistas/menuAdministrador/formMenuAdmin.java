@@ -1,10 +1,6 @@
 package main.vistas.menuAdministrador;
 
 import main.vistas.menuPrincipal.formLogin;
-import main.vistas.menuAdministrador.formAdminAlumnos;
-import main.vistas.menuAdministrador.formAdminDocentes;
-import main.vistas.menuAdministrador.formGestionCursos;
-import main.vistas.menuAdministrador.formVerInscripciones;
 
 import javax.swing.*;
 
@@ -16,10 +12,10 @@ public class formMenuAdmin extends JFrame {
 
     private JButton gestionAlumnosButton;
     private JButton gestionDocentesButton;
-    private JButton gestionAreasButton;
     private JButton gestionCursosButton;
     private JButton verInscripcionesButton;
     private JButton cerrarSesionButton;
+    private JButton gestionAreaButton;
 
     private final String emailAdmin; // opcional
 
@@ -59,6 +55,11 @@ public class formMenuAdmin extends JFrame {
         // 👉 Gestión de Cursos
         gestionCursosButton.addActionListener(e -> {
             formGestionCursos frm = new formGestionCursos();
+            frm.setVisible(true);
+        });
+
+        gestionAreaButton.addActionListener(e -> {
+            formGestionAreas frm = new formGestionAreas();
             frm.setVisible(true);
         });
 

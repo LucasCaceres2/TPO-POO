@@ -261,9 +261,6 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-        // Podés hacer un metodo específico en CursoDAO para actualizar todos los campos.
-        // Como tu DAO actual solo tiene actualizarCampo simple, lo ideal es agregar uno nuevo.
-        // Por ahora, ejemplo simple:
         Curso curso = new Curso(
                 idCursoSeleccionado,
                 titulo,
