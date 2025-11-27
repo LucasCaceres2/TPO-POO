@@ -113,7 +113,7 @@ public class Docente extends Usuario implements IUsuariosAcciones {
     // toString() para debugging
     @Override
     public String toString() {
-        return String.format("Docente{matricula='%s', nombre='%s %s', email='%s'}", 
+        return String.format("%s;%s %s",
             matricula, nombre, apellido, email);
     }
 

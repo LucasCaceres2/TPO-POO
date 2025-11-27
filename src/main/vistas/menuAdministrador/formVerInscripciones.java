@@ -1,7 +1,6 @@
 package main.vistas.menuAdministrador;
 
-import main.dao.CursoDAO;
-import main.dao.InscripcionDAO;
+import main.modelo.Administrador;
 import main.modelo.Curso;
 import main.modelo.Inscripcion;
 
@@ -25,8 +24,14 @@ public class formVerInscripciones extends JFrame {
 
     private JTable tablaInscripciones;
 
-    private final CursoDAO cursoDAO = new CursoDAO();
-    private final InscripcionDAO inscripcionDAO = new InscripcionDAO();
+    // ✅ Usamos Administrador como fachada
+    private final Administrador administrador = new Administrador(
+            0,
+            "Admin",
+            "Sistema",
+            "admin@sistema.com",
+            "admin"
+    );
 
     public formVerInscripciones() {
         setContentPane(pnlPrincipal);
@@ -75,7 +80,8 @@ public class formVerInscripciones extends JFrame {
         comboCurso.removeAllItems();
         comboCurso.addItem(null); // opción "Todos"
 
-        List<Curso> cursos = cursoDAO.listarCursos();
+        // 👉 Ahora usamos administrador.listarCursos()
+        List<Curso> cursos = administrador.listarCursos();
         for (Curso c : cursos) {
             comboCurso.addItem(c); // se ve el título gracias a toString()
         }
@@ -99,7 +105,8 @@ public class formVerInscripciones extends JFrame {
     // ====== Cargar datos ======
 
     private void cargarTodas() {
-        List<Inscripcion> inscripciones = inscripcionDAO.listarTodasInscripciones();
+        // 👉 Ahora usamos administrador.listarTodasLasInscripciones()
+        List<Inscripcion> inscripciones = administrador.listarTodasLasInscripciones();
         cargarEnTabla(inscripciones);
     }
 
@@ -108,15 +115,15 @@ public class formVerInscripciones extends JFrame {
         String legajo = txtLegajo.getText().trim();
         String email = txtEmail.getText().trim();
 
-
+        // Filtro por legajo (usa Admin → InscripcionDAO)
         if (!legajo.isEmpty()) {
-            var lista = inscripcionDAO.listarInscripcionesPorLegajo(legajo);
+            List<Inscripcion> lista = administrador.listarInscripcionesPorLegajo(legajo);
             cargarEnTabla(lista);
             return;
         }
 
+        // Filtro por email (no implementado todavía)
         if (!email.isEmpty()) {
-
             JOptionPane.showMessageDialog(this,
                     "Filtro por email: implementá la búsqueda de alumno por email si lo necesitás.",
                     "Info",
@@ -124,12 +131,14 @@ public class formVerInscripciones extends JFrame {
             return;
         }
 
+        // Filtro por curso
         if (curso != null) {
-            var lista = inscripcionDAO.listarInscripcionesPorCurso(curso.getIdCurso());
+            List<Inscripcion> lista = administrador.listarInscripcionesPorCurso(curso.getIdCurso());
             cargarEnTabla(lista);
             return;
         }
 
+        // Sin filtros → todas
         cargarTodas();
     }
 

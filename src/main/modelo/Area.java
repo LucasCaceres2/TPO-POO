@@ -69,6 +69,7 @@ public class Area {
 
     @Override
     public String toString() {
-        return "Area{" + idArea + " - " + nombre + "}";
+        // Lo que se verá en el comboArea
+        return nombre;           // o: return idArea + " - " + nombre;
     }
 }

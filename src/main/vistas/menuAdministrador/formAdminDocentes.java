@@ -1,6 +1,6 @@
 package main.vistas.menuAdministrador;
 
-import main.dao.DocenteDAO;
+import main.modelo.Administrador;
 import main.modelo.Docente;
 
 import javax.swing.*;
@@ -27,12 +27,18 @@ public class formAdminDocentes extends JFrame {
     private JButton btnRefrescar;
     private JButton btnCerrar;
 
-    private final DocenteDAO docenteDAO = new DocenteDAO();
+    // ✅ Ahora usamos Administrador como fachada de servicios
+    private final Administrador administrador = new Administrador(
+            0,
+            "Admin",
+            "Sistema",
+            "admin@sistema.com",
+            "admin"
+    );
 
     // ===== Constructor real =====
     public formAdminDocentes() {
         setContentPane(pnlPrincipal);
-
         setTitle("Gestión de Docentes");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -68,7 +74,7 @@ public class formAdminDocentes extends JFrame {
 
     // ===== Cargar =====
     private void cargarDocentes() {
-        List<Docente> docentes = docenteDAO.listarDocentes();
+        List<Docente> docentes = administrador.listarDocentes();   // 👈 usa Administrador
         DefaultTableModel model = (DefaultTableModel) tablaDocentes.getModel();
         model.setRowCount(0);
 
@@ -135,8 +141,13 @@ public class formAdminDocentes extends JFrame {
             return;
         }
 
-        Docente docente = new Docente(nombre, apellido, email, contrasena, matricula);
-        boolean ok = docenteDAO.agregarDocente(docente);
+        boolean ok = administrador.crearDocente(   // 👈 usa Administrador
+                matricula,
+                nombre,
+                apellido,
+                email,
+                contrasena
+        );
 
         if (ok) {
             JOptionPane.showMessageDialog(this,
@@ -164,7 +175,7 @@ public class formAdminDocentes extends JFrame {
             return;
         }
 
-        Docente existente = docenteDAO.obtenerDocentePorMatricula(matricula);
+        Docente existente = administrador.obtenerDocentePorMatricula(matricula); // 👈
         if (existente == null) {
             JOptionPane.showMessageDialog(this,
                     "No se encontró un docente con esa matrícula.",
@@ -178,20 +189,12 @@ public class formAdminDocentes extends JFrame {
         String nuevoEmail = txtEmail.getText().trim();
         String nuevaContrasena = txtContrasena.getText().trim();
 
-        boolean ok = true;
+        if (!nuevoNombre.isEmpty()) existente.setNombre(nuevoNombre);
+        if (!nuevoApellido.isEmpty()) existente.setApellido(nuevoApellido);
+        if (!nuevoEmail.isEmpty()) existente.setEmail(nuevoEmail);
+        if (!nuevaContrasena.isEmpty()) existente.setContrasena(nuevaContrasena);
 
-        if (!nuevoNombre.isEmpty() && !nuevoNombre.equals(existente.getNombre())) {
-            ok &= docenteDAO.actualizarDocente(matricula, "nombre", nuevoNombre);
-        }
-        if (!nuevoApellido.isEmpty() && !nuevoApellido.equals(existente.getApellido())) {
-            ok &= docenteDAO.actualizarDocente(matricula, "apellido", nuevoApellido);
-        }
-        if (!nuevoEmail.isEmpty() && !nuevoEmail.equals(existente.getEmail())) {
-            ok &= docenteDAO.actualizarDocente(matricula, "email", nuevoEmail);
-        }
-        if (!nuevaContrasena.isEmpty()) {
-            ok &= docenteDAO.actualizarDocente(matricula, "contrasena", nuevaContrasena);
-        }
+        boolean ok = administrador.actualizarDocente(existente);    // 👈
 
         if (ok) {
             JOptionPane.showMessageDialog(this,
@@ -226,7 +229,7 @@ public class formAdminDocentes extends JFrame {
 
         if (op != JOptionPane.YES_OPTION) return;
 
-        boolean ok = docenteDAO.eliminarDocente(matricula);
+        boolean ok = administrador.eliminarDocente(matricula);   // 👈
 
         if (ok) {
             JOptionPane.showMessageDialog(this,

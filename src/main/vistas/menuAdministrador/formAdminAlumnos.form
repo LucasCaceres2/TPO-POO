@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="main.vistas.menuAdministrador.formAdminAlumnos">
-  <grid id="27dc6" binding="pnlPrincipal" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="pnlPrincipal" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="537" height="498"/>
+      <xy x="20" y="20" width="537" height="526"/>
     </constraints>
-    <properties/>
-    <border type="none"/>
+    <properties>
+      <preferredSize width="500" height="900"/>
+    </properties>
+    <border type="empty">
+      <size top="20" left="20" bottom="20" right="20"/>
+    </border>
     <children>
       <grid id="d6183" binding="pnlTitulo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -29,7 +33,7 @@
       <grid id="8f67f" binding="pnlDatos" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -91,7 +95,9 @@
           </component>
           <component id="a95df" class="javax.swing.JButton" binding="btnNuevo">
             <constraints>
-              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Nuevo"/>
@@ -99,7 +105,9 @@
           </component>
           <component id="833c8" class="javax.swing.JButton" binding="btnGuardar">
             <constraints>
-              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Guardar"/>
@@ -107,7 +115,9 @@
           </component>
           <component id="79154" class="javax.swing.JButton" binding="btnActualizar">
             <constraints>
-              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Actualizar"/>
@@ -115,7 +125,9 @@
           </component>
           <component id="6e908" class="javax.swing.JButton" binding="btnEliminar">
             <constraints>
-              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Eliminar"/>
@@ -123,7 +135,9 @@
           </component>
           <component id="b50ce" class="javax.swing.JButton" binding="btnRefrescar">
             <constraints>
-              <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Refrescar"/>
@@ -131,7 +145,9 @@
           </component>
           <component id="b3d9c" class="javax.swing.JButton" binding="btnCerrar">
             <constraints>
-              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="250" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Cerrar"/>
@@ -179,16 +195,6 @@
           </component>
         </children>
       </grid>
-      <hspacer id="9073e">
-        <constraints>
-          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
-      <hspacer id="cb58f">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
     </children>
   </grid>
 </form>

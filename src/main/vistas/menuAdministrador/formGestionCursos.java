@@ -1,8 +1,5 @@
 package main.vistas.menuAdministrador;
 
-import main.dao.AreaDAO;
-import main.dao.CursoDAO;
-import main.dao.DocenteDAO;
 import main.modelo.Administrador;
 import main.modelo.Area;
 import main.modelo.Curso;
@@ -34,11 +31,7 @@ public class formGestionCursos extends JFrame {
     private JButton btnRefrescar;
     private JButton btnCerrar;
 
-    private final CursoDAO cursoDAO = new CursoDAO();
-    private final DocenteDAO docenteDAO = new DocenteDAO();
-    private final AreaDAO areaDAO = new AreaDAO();
-
-    // 👇 Ahora sí usamos la clase Administrador
+    // ✅ Ahora TODO pasa por Administrador
     private final Administrador administrador = new Administrador(
             0,
             "Admin",
@@ -92,14 +85,16 @@ public class formGestionCursos extends JFrame {
         comboDocente.removeAllItems();
         comboArea.removeAllItems();
 
-        List<Docente> docentes = docenteDAO.listarDocentes();
+        // 👉 Ahora usamos administrador.listarDocentes()
+        List<Docente> docentes = administrador.listarDocentes();
         for (Docente d : docentes) {
-            comboDocente.addItem(d); // Docente.toString() debería devolver "Nombre Apellido"
+            comboDocente.addItem(d); // Docente.toString() → nombre apellido
         }
 
-        var areas = areaDAO.listarAreas();
+        // 👉 Ahora usamos administrador.listarAreas()
+        List<Area> areas = administrador.listarAreas();
         for (Area a : areas) {
-            comboArea.addItem(a); // Area.toString() debería devolver el nombre
+            comboArea.addItem(a); // Area.toString() → nombre
         }
     }
 
@@ -108,7 +103,8 @@ public class formGestionCursos extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tablaCursos.getModel();
         model.setRowCount(0);
 
-        List<Curso> cursos = cursoDAO.listarCursos();
+        // 👉 Ahora usamos administrador.listarCursos()
+        List<Curso> cursos = administrador.listarCursos();
         for (Curso c : cursos) {
             model.addRow(new Object[]{
                     c.getIdCurso(),
@@ -142,7 +138,7 @@ public class formGestionCursos extends JFrame {
         // Guardar: alta usando Administrador
         btnGuardar.addActionListener(e -> guardarCurso());
 
-        // Actualizar: modifica curso seleccionado (sigue usando CursoDAO)
+        // Actualizar: modifica curso seleccionado usando Administrador
         btnActualizar.addActionListener(e -> actualizarCurso());
 
         // Eliminar: baja usando Administrador
@@ -245,7 +241,6 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-
         String matriculaDocente = docente.getMatricula();
         String nombreArea = area.getNombre();
 
@@ -268,7 +263,7 @@ public class formGestionCursos extends JFrame {
         }
     }
 
-    // ==== ACTUALIZAR (sigue usando CursoDAO) ====
+    // ==== ACTUALIZAR usando Administrador ====
     private void actualizarCurso() {
         if (idCursoSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Seleccione un curso de la tabla.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -291,11 +286,11 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-        int cupo, clases;
         double precio;
         try {
-            cupo = Integer.parseInt(cupoStr);
-            clases = Integer.parseInt(clasesStr);
+            // cupo y clases los seguís validando, aunque por ahora no los actualicemos en BD
+            Integer.parseInt(cupoStr);
+            Integer.parseInt(clasesStr);
             precio = Double.parseDouble(precioStr);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
@@ -304,11 +299,14 @@ public class formGestionCursos extends JFrame {
             return;
         }
 
-        boolean okTitulo = cursoDAO.actualizarCurso(idCursoSeleccionado, "titulo", titulo);
-        boolean okContenido = cursoDAO.actualizarCurso(idCursoSeleccionado, "contenido", contenido);
-        boolean okPrecio = cursoDAO.actualizarCurso(idCursoSeleccionado, "precio", String.valueOf(precio));
+        boolean ok = false;
 
-        if (okTitulo || okContenido || okPrecio) {
+        // Usamos los métodos del Administrador que ya tenés
+        ok |= administrador.actualizarCursoTitulo(idCursoSeleccionado, titulo);
+        ok |= administrador.actualizarCursoContenido(idCursoSeleccionado, contenido);
+        ok |= administrador.actualizarCursoPrecio(idCursoSeleccionado, precio);
+
+        if (ok) {
             JOptionPane.showMessageDialog(this, "Curso actualizado.", "OK", JOptionPane.INFORMATION_MESSAGE);
             cargarCursosEnTabla();
         } else {

@@ -1,6 +1,6 @@
 package main.vistas.menuAdministrador;
 
-import main.dao.AlumnoDAO;
+import main.modelo.Administrador;
 import main.modelo.Alumno;
 
 import javax.swing.*;
@@ -27,7 +27,14 @@ public class formAdminAlumnos extends JFrame {
     private JButton btnRefrescar;
     private JButton btnCerrar;
 
-    private final AlumnoDAO alumnoDAO = new AlumnoDAO();
+    // ✅ Ahora usamos el Administrador como fachada
+    private final Administrador administrador = new Administrador(
+            0,
+            "Admin",
+            "Sistema",
+            "admin@sistema.com",
+            "admin"
+    );
 
     // ===== Constructor real =====
     public formAdminAlumnos() {
@@ -78,7 +85,7 @@ public class formAdminAlumnos extends JFrame {
     }
 
     private void cargarAlumnos() {
-        List<Alumno> alumnos = alumnoDAO.listarAlumnos();
+        List<Alumno> alumnos = administrador.listarAlumnos();   // 👈 uso del Admin
         DefaultTableModel model = (DefaultTableModel) tablaAlumnos.getModel();
         cargarAlumnosEnModelo(model, alumnos);
     }
@@ -136,8 +143,13 @@ public class formAdminAlumnos extends JFrame {
             return;
         }
 
-        Alumno alumno = new Alumno(nombre, apellido, email, contrasena, legajo);
-        boolean ok = alumnoDAO.agregarAlumno(alumno);
+        boolean ok = administrador.crearAlumno(      // 👈 uso del Admin
+                legajo,
+                nombre,
+                apellido,
+                email,
+                contrasena
+        );
 
         if (ok) {
             JOptionPane.showMessageDialog(this,
@@ -165,7 +177,7 @@ public class formAdminAlumnos extends JFrame {
             return;
         }
 
-        Alumno alumno = alumnoDAO.obtenerAlumnoPorLegajo(legajo);
+        Alumno alumno = administrador.obtenerAlumnoPorLegajo(legajo);  // 👈
         if (alumno == null) {
             JOptionPane.showMessageDialog(this,
                     "No se encontró un alumno con ese legajo.",
@@ -184,8 +196,7 @@ public class formAdminAlumnos extends JFrame {
         if (!nuevoEmail.isEmpty()) alumno.setEmail(nuevoEmail);
         if (!nuevaContrasena.isEmpty()) alumno.setContrasena(nuevaContrasena);
 
-        // Ajustá este nombre si tu DAO usa otro (por ejemplo actualizarAlumno(alumno))
-        boolean ok = alumnoDAO.actualizarAlumno(alumno);
+        boolean ok = administrador.actualizarAlumno(alumno);    // 👈
 
         if (ok) {
             JOptionPane.showMessageDialog(this,
@@ -220,8 +231,7 @@ public class formAdminAlumnos extends JFrame {
 
         if (op != JOptionPane.YES_OPTION) return;
 
-        // Ajustá si tu DAO tiene otra firma (por ejemplo eliminarAlumnoPorLegajo)
-        boolean ok = alumnoDAO.eliminarAlumno(legajo);
+        boolean ok = administrador.eliminarAlumno(legajo);     // 👈
 
         if (ok) {
             JOptionPane.showMessageDialog(this,
