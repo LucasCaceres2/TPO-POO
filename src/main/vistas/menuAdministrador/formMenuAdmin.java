@@ -46,6 +46,7 @@ public class formMenuAdmin extends JFrame {
     private void initListeners() {
         gestionAlumnosButton.addActionListener(e -> new formAdminAlumnos().setVisible(true));
         gestionDocentesButton.addActionListener(e -> new formAdminDocentes().setVisible(true));
+        gestionAreasButton.addActionListener(e -> new formGestionAreas().setVisible(true));
         gestionCursosButton.addActionListener(e -> new formGestionCursos().setVisible(true));
         verInscripcionesButton.addActionListener(e -> new formVerInscripciones().setVisible(true));
 

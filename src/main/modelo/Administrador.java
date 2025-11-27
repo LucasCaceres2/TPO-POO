@@ -7,10 +7,10 @@ import java.util.List;
 
 public class Administrador extends Usuario {
 
-    // Fachada de reglas de negocio
+
     private final Plataforma plataforma = new Plataforma();
 
-    // Acceso directo a DAOs para operaciones de mantenimiento
+
     private final AreaDAO areaDAO = new AreaDAO();
     private final CursoDAO cursoDAO = new CursoDAO();
     private final AlumnoDAO alumnoDAO = new AlumnoDAO();
@@ -27,7 +27,7 @@ public class Administrador extends Usuario {
 
     // ===================== ÁREAS =====================
 
-    // ya lo usás en formGestionAreas
+
     public boolean crearArea(String nombreArea) {
         return plataforma.crearArea(nombreArea);
     }
@@ -65,12 +65,12 @@ public class Administrador extends Usuario {
         );
     }
 
-    // ya lo usás en formGestionCursos (eliminar)
+
     public boolean eliminarCurso(int idCurso) {
         return plataforma.eliminarCurso(idCurso);
     }
 
-    // soporte para pantallas de consulta
+
     public List<Curso> listarCursos() {
         return cursoDAO.listarCursos();
     }

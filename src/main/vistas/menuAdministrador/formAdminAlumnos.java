@@ -27,7 +27,7 @@ public class formAdminAlumnos extends JFrame {
     private JButton btnRefrescar;
     private JButton btnCerrar;
 
-    // ✅ Ahora usamos el Administrador como fachada
+    //Ahora usamos el Administrador como fachada
     private final Administrador administrador = new Administrador(
             0,
             "Admin",
@@ -85,7 +85,7 @@ public class formAdminAlumnos extends JFrame {
     }
 
     private void cargarAlumnos() {
-        List<Alumno> alumnos = administrador.listarAlumnos();   // 👈 uso del Admin
+        List<Alumno> alumnos = administrador.listarAlumnos();
         DefaultTableModel model = (DefaultTableModel) tablaAlumnos.getModel();
         cargarAlumnosEnModelo(model, alumnos);
     }
